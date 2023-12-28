@@ -22,12 +22,11 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-
-
+namespace JmapClient;
 /**
  * JMAP Client
  */
-class JmapClient
+class Client
 {
     /**
      * Transport Version

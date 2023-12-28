@@ -1,0 +1,31 @@
+{
+    "name": "ksainc/jmap-client-php",
+    "type": "library",
+    "description": "JMAP PHP Client",
+    "keywords": ["enum"],
+    "homepage": "https://github.com/ksainc/jmap-client-php",
+    "license": "AGL3",
+    "authors": [
+        {
+            "name": "Sebastian Krupinski",
+            "homepage": "https://github.com/ksainc"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "JmapClient\\": "lib/"
+         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "JmapClient\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.0",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
