@@ -124,9 +124,14 @@ class Client
     /**
      * Constructor for the ExchangeWebServices class
      *
+<<<<<<< HEAD
      * @param string $host              EAS Service Provider (FQDN, IPv4, IPv6)
      * @param string $authentication    EAS Authentication
      * @param string $version           EAS Protocol Version
+=======
+     * @param string $host              Service Host (FQDN, IPv4, IPv6)
+     * @param string $authentication    SErvice Authentication
+>>>>>>> 68561ac (Testing Composer)
      */
     public function __construct(
         $host = '',
@@ -134,9 +139,19 @@ class Client
     ) {
 
         // set service host
+<<<<<<< HEAD
         $this->setHost($host);
         // set service authentication
         $this->setAuthentication($authentication);
+=======
+        if (!empty($host)) {
+            $this->setHost($host);
+        }
+        // set service authentication
+        if (isset($authentication)) {
+            $this->setAuthentication($authentication);
+        }
+>>>>>>> 68561ac (Testing Composer)
 
     }
 

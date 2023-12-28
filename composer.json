@@ -7,9 +7,17 @@
     "license": "AGL3",
     "authors": [
         {
+<<<<<<< HEAD
             "name": "Sebastian Krupinski",
             "homepage": "https://github.com/ksainc"
         }
+=======
+			"name": "Sebastian Krupinski",
+			"email": "krupinski01@gmail.com",
+            "homepage": "https://github.com/ksainc/",
+            "role": "Just another Minion in the cogs of time"
+		}
+>>>>>>> 68561ac (Testing Composer)
     ],
     "autoload": {
         "psr-4": {
