@@ -29,7 +29,7 @@ namespace JmapClient;
 class Client
 {
     /**
-     * Transport Version
+     * Transport Versions
      *
      * @var int
      */
@@ -37,7 +37,7 @@ class Client
     const TRANSPORT_VERSION_1_1 = CURL_HTTP_VERSION_1_1;
     const TRANSPORT_VERSION_2 = CURL_HTTP_VERSION_2_0;
     /**
-     * Transport Mode
+     * Transport Modes
      *
      * @var string
      */
@@ -55,7 +55,7 @@ class Client
     protected array $_TransportHeader = [
 		'Connection' => 'Connection: Keep-Alive',
         'Cache-Control' => 'Cache-Control: no-cache, no-store, must-revalidate',
-        'Content-Type' => 'Content-Type: application/json',
+        'Content-Type' => 'Content-Type: application/json; charset=utf-8',
         'Accept' => 'Accept: application/json'
     ];
     /**
@@ -65,13 +65,20 @@ class Client
         CURLOPT_USERAGENT => 'NextCloudJMAP/1.0 (1.0; x64)',
         CURLOPT_HTTP_VERSION => self::TRANSPORT_VERSION_2,
         CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_SSL_VERIFYPEER => true,
+        CURLOPT_SSL_VERIFYPEER => 1,
+        CURLOPT_SSL_VERIFYHOST => 1,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => true,
         CURLOPT_POST => true,
         CURLOPT_CUSTOMREQUEST => null
     ];
-     /**
+    /**
+     * cURL resource used to make the request
+     *
+     * @var CurlHandle
+     */
+    protected $_client;
+    /**
      * Service Host
      *
      * @var string
@@ -115,11 +122,24 @@ class Client
     protected $_ServiceAuthentication;
 
     /**
-     * cURL resource used to make the request
+     * Session Connected
      *
-     * @var CurlHandle
+     * @var bool
      */
-    protected $_client;
+    protected bool $_SessionConnected = false;
+    /**
+     * Session Capabilities
+     *
+     * @var bool
+     */
+    protected array $_SessionCapabilities = [];
+    /**
+     * Session Accounts
+     *
+     * @var array
+     */
+    protected array $_SessionAccounts = [];
+    
     
     /**
      * Constructor for the ExchangeWebServices class
@@ -185,7 +205,8 @@ class Client
     public function configureTransportVerification(bool $value): void {
 
         // store parameter
-        $this->_TransportOptions[CURLOPT_SSL_VERIFYPEER] = $value;
+        $this->_TransportOptions[CURLOPT_SSL_VERIFYPEER] = (int) $value;
+        $this->_TransportOptions[CURLOPT_SSL_VERIFYHOST] = (int) $value;
         // destroy existing client will need to be initilized again
         $this->_client = null;
 
@@ -380,21 +401,18 @@ class Client
             unset($this->_TransportOptions[CURLOPT_HTTPAUTH]);
             $this->_TransportHeader['Authorization'] = 'Authorization: Bearer ' . $this->_ServiceAuthentication->Token;
         }
-        // construct service query
-        $this->constructServiceUriQuery();
 
     }
 
-    public function performCommand($message): null|string {
+    public function transceive(string $message): null|string {
+
         // clear last headers and response
         $this->_ResponseHeaders = '';
         $this->_ResponseData = '';
-
         // evaluate if http client is initilized and location is the same
         if (!isset($this->_client)) {
             $this->_client = curl_init();
         }
-
         curl_setopt_array($this->_client, $this->_TransportOptions);
         curl_setopt($this->_client, CURLOPT_HTTPHEADER, array_values($this->_TransportHeader));
         // set request data
@@ -407,7 +425,7 @@ class Client
         // evealuate execution errors
         $code = curl_errno($this->_client);
         if ($code > 0) {
-            throw new RuntimeException(curl_error($this->_client), $code);
+            throw new \RuntimeException(curl_error($this->_client), $code);
         }
 
         // evaluate http responses
@@ -415,16 +433,16 @@ class Client
         if ($code > 400) {
             switch ($code) {
                 case 401:
-                    throw new RuntimeException('Unauthorized', $code);
+                    throw new \RuntimeException('Unauthorized', $code);
                     break;
                 case 403:
-                    throw new RuntimeException('Forbidden', $code);
+                    throw new \RuntimeException('Forbidden', $code);
                     break;
                 case 404:
-                    throw new RuntimeException('Not Found', $code);
+                    throw new \RuntimeException('Not Found', $code);
                     break;
                 case 408:
-                    throw new RuntimeException('Request Timeout', $code);
+                    throw new \RuntimeException('Request Timeout', $code);
                     break;
             }
         }
@@ -435,22 +453,62 @@ class Client
         $this->_ResponseData = substr($this->_ResponseData, $size);
         // return body
         return $this->_ResponseData;
+
     }
 
-    public function connect(): null|string {
+    public function connect(): array {
 
         // configure client for command
         unset($this->_TransportOptions[CURLOPT_POST]);
         $this->_TransportOptions[CURLOPT_HTTPGET];
-        $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceUriBase;
-        // perform command
-        $data = $this->performCommand('');
+        $this->_TransportOptions[CURLOPT_URL] = $this->_TransportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
+        // perform transmit and recieve
+        $session = $this->transceive('');
         // configure client to defaults
         $this->_TransportOptions[CURLOPT_POST] = true;
         unset($this->_TransportOptions[CURLOPT_CUSTOMREQUEST]);
+        // convert text to object
+        $session = json_decode($session, true, 512, JSON_THROW_ON_ERROR);
+        // service locations
+        $this->_ServiceCommandLocation = (isset($session['apiUrl'])) ? $session['apiUrl'] : '';
+        $this->_ServiceDownloadLocation = (isset($session['downloadUrl'])) ? $session['downloadUrl'] : '';
+        $this->_ServiceUploadLocation = (isset($session['uploadUrl'])) ? $session['uploadUrl'] : '';
+        $this->_ServiceEventLocation = (isset($session['eventSourceUrl'])) ? $session['eventSourceUrl'] : '';
+        // session capabilities
+        $this->_SessionCapabilities = (isset($session['capabilities'])) ? $session['capabilities'] : '';
+        // session accounts
+        $this->_SessionAccounts = (isset($session['accounts'])) ? $session['accounts'] : '';
+        // session connected
+        $this->_SessionConnected = true;
         // return response body
-        return $data;
+        return $session;
 
+    }
+
+    public function perform(string $space, array $command): ResponseCollection {
+
+        $request  = new RequestCollection([$space], [$command]);
+
+        $request = $request->phrase();
+
+        $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceCommandLocation;
+
+        $response = $this->transceive($request);
+
+        $response = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+
+        $response = new ResponseCollection($response);
+
+        return $response;
+
+    }
+
+    public function download(string $aid, string $oid, string $type, string $name): void {
+        
+    }
+
+    public function upload(string $aid, string $oid, string $type, int $size): void {
+        
     }
 
 }
