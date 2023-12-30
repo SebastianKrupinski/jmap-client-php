@@ -27,12 +27,28 @@ namespace JmapClient;
 class RequestChanges extends Request
 {
 
-    public function __construct(string $class, string $account, int $limit = 512, string $identifier = '') {
+    public function __construct(string $class, string $account, string $identifier = '') {
 
         parent::__construct($class, 'changes', $account, $identifier);
         
-        $this->_request[1]['maxChanges'][] = $limit;
-        
+    }
+
+    public function state(string $value) {
+
+        // creates or updates parameter and assigns new value
+        $this->_request[1]['sinceState'] = $value;
+        // return self for function chaining 
+        return $this;
+
+    }
+
+    public function limitRelative(int $value) {
+
+        // creates or updates parameter and assigns new value
+        $this->_request[1]['maxChanges'] = $value;
+        // return self for function chaining 
+        return $this;
+
     }
 
 }
