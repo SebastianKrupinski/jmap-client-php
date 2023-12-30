@@ -473,29 +473,30 @@ class Client
 
     }
 
-    public function perform(string $space, array $command): ResponseCollection {
+    public function perform(string $space, Request $command): ResponseCollection {
 
+        // construct request collection object
         $request  = new RequestCollection([$space], [$command]);
-
+        // serialize request
         $request = $request->phrase();
-
+        // assign transceiver location
         $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceCommandLocation;
-
+        // transmit and recieve
         $response = $this->transceive($request);
-
+        // deserialize response
         $response = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
-
+        // construct response collection object
         $response = new ResponseCollection($response);
-
+        // return response
         return $response;
 
     }
 
-    public function download(string $aid, string $oid, string $type, string $name): void {
+    public function download(string $aid, string $oid, string $type, string $name, string|resource &$data): void {
         
     }
 
-    public function upload(string $aid, string $oid, string $type, int $size): void {
+    public function upload(string $aid, string $oid, string $type, int $size, string|resource &$data): void {
         
     }
 
