@@ -26,20 +26,20 @@ namespace JmapClient;
 
 class FilterCondition implements \JsonSerializable
 {
-    protected object $_request;
+    protected object $_condition;
 
     public function __construct () {
-        $this->_request = new stdClass();
+        $this->_condition = new stdClass();
     }
 
     public function jsonSerialize() {
-        return $this->_request;
+        return $this->_condition;
     }
 
     public function condition(string $property, string $value): FilterCondition {
 
         // create property and assign value
-        $this->_request->$property = $value;
+        $this->_condition->$property = $value;
         // return self for function chaining
         return $this;
 

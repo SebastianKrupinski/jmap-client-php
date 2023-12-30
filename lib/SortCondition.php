@@ -26,20 +26,20 @@ namespace JmapClient;
 
 class SortCondition implements \JsonSerializable
 {
-    protected object $_request;
+    protected object $_condition;
 
     public function __construct () {
-        $this->_request = new stdClass();
+        $this->_condition = new stdClass();
     }
 
     public function jsonSerialize() {
-        return $this->_request;
+        return $this->_condition;
     }
 
     public function property(string $value): SortCondition {
 
         // create property and assign value
-        $this->_request->property = $value;
+        $this->_condition->property = $value;
         // return self for function chaining
         return $this;
 
@@ -48,7 +48,7 @@ class SortCondition implements \JsonSerializable
     public function direction(bool $value): SortCondition {
 
         // create property and assign value
-        $this->_request->isAscending = $value;
+        $this->_condition->isAscending = $value;
         // return self for function chaining
         return $this;
 
@@ -57,7 +57,7 @@ class SortCondition implements \JsonSerializable
     public function keyword(string $value): SortCondition {
 
         // create property and assign value
-        $this->_request->keyword = $value;
+        $this->_condition->keyword = $value;
         // return self for function chaining
         return $this;
 
@@ -66,7 +66,7 @@ class SortCondition implements \JsonSerializable
     public function collation(string $value): SortCondition {
 
         // create property and assign value
-        $this->_request->collation = $value;
+        $this->_condition->collation = $value;
         // return self for function chaining
         return $this;
 

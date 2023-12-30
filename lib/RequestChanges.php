@@ -31,7 +31,7 @@ class RequestChanges extends Request
 
         parent::__construct($class, 'changes', $account, $identifier);
         
-        $this->_request[1]['maxChanges'][] = $id;
+        $this->_request[1]['maxChanges'][] = $limit;
         
     }
 
