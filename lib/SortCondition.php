@@ -38,7 +38,7 @@ class SortCondition implements \JsonSerializable
 
     public function property(string $value): SortCondition {
 
-        // create property and assign value
+        // creates or updates parameter and assigns value
         $this->_condition->property = $value;
         // return self for function chaining
         return $this;
@@ -47,7 +47,7 @@ class SortCondition implements \JsonSerializable
 
     public function direction(bool $value): SortCondition {
 
-        // create property and assign value
+        // creates or updates parameter and assigns value
         $this->_condition->isAscending = $value;
         // return self for function chaining
         return $this;
@@ -56,7 +56,7 @@ class SortCondition implements \JsonSerializable
 
     public function keyword(string $value): SortCondition {
 
-        // create property and assign value
+        // creates or updates parameter and assigns value
         $this->_condition->keyword = $value;
         // return self for function chaining
         return $this;
@@ -65,7 +65,7 @@ class SortCondition implements \JsonSerializable
 
     public function collation(string $value): SortCondition {
 
-        // create property and assign value
+        // creates or updates parameter and assigns value
         $this->_condition->collation = $value;
         // return self for function chaining
         return $this;

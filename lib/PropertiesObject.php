@@ -38,7 +38,7 @@ class PropertiesObject implements \JsonSerializable
 
     public function property(string $name, mixed $value): PropertiesObject {
 
-        // create property and assign value
+        // creates or updates parameter and assigns value
         $this->_property->$name = $value;
         // return self for function chaining
         return $this;

@@ -35,7 +35,7 @@ class RequestQuery extends Request
 
     public function filter(FilterCondition $condition) {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['filter'] = $condition;
         // return self for function chaining 
         return $this;
@@ -44,44 +44,53 @@ class RequestQuery extends Request
 
     public function sort(SortCondition $condition) {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['sort'][] = $condition;
         // return self for function chaining 
         return $this;
 
     }
+    
+    public function limitRelative(int $value) {
 
-    public function limit(int $value) {
-
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['limit'] = $value;
         // return self for function chaining 
         return $this;
 
     }
 
-    public function position(int $value) {
+    public function startRelative(int $value) {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['position'] = $value;
         // return self for function chaining 
         return $this;
 
     }
 
-    public function anchor(string $value) {
+    public function startAbsolute(string $value) {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['anchor'] = $value;
         // return self for function chaining 
         return $this;
 
     }
 
-    public function anchorOffset(int $value) {
+    public function startAbsoluteOffset(int $value) {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['anchorOffset'] = $value;
+        // return self for function chaining 
+        return $this;
+
+    }
+
+    public function tally(bool $value) {
+
+        // creates or updates parameter and assigns new value
+        $this->_request[1]['calculateTotal'] = $value;
         // return self for function chaining 
         return $this;
 

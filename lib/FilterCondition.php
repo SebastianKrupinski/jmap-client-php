@@ -38,7 +38,7 @@ class FilterCondition implements \JsonSerializable
 
     public function condition(string $property, string $value): FilterCondition {
 
-        // create property and assign value
+        // creates or updates parameter and assigns value
         $this->_condition->$property = $value;
         // return self for function chaining
         return $this;

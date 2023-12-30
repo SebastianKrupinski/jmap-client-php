@@ -35,7 +35,7 @@ class RequestGet extends Request
 
     public function appendId(string $id): RequestGet {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['ids'][] = $id;
         // return self for function chaining 
         return $this;
@@ -57,7 +57,7 @@ class RequestGet extends Request
 
     public function appendProperty(string $id): RequestGet {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['properties'][] = $id;
         // return self for function chaining 
         return $this;

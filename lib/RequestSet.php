@@ -35,7 +35,7 @@ class RequestSet extends Request
 
     public function state(string $state): RequestSet {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['ifInState'] = $state;
         // return self for function chaining 
         return $this;
@@ -44,7 +44,7 @@ class RequestSet extends Request
 
     public function create(string $id, PropertiesObject $properties): RequestSet {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['create']->$id = $properties;
         // return self for function chaining 
         return $this;
@@ -53,7 +53,7 @@ class RequestSet extends Request
 
     public function update(string $id, PropertiesObject $properties): RequestSet {
 
-        // creates id collection if missing and appends new id
+        // creates or updates parameter and assigns new value
         $this->_request[1]['update']->$id = $properties;
         // return self for function chaining 
         return $this;
