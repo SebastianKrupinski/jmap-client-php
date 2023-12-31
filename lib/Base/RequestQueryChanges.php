@@ -22,18 +22,20 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient;
+namespace JmapClient\Base;
 
-class RequestQuery extends Request
+use JmapClient\Base\Request;
+
+class RequestQueryChanges extends Request
 {
 
-    public function __construct(string $class, string $account, string $identifier = '') {
+    public function __construct(string $space, string $class, string $account, string $identifier = '') {
 
-        parent::__construct($class, 'queryChanges', $account, $identifier);
+        parent::__construct($space, $class, 'queryChanges', $account, $identifier);
         
     }
 
-    public function filter(FilterCondition $condition) {
+    public function filter(FilterCondition $condition): RequestQuery {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['filter'] = $condition;
@@ -42,7 +44,7 @@ class RequestQuery extends Request
 
     }
 
-    public function sort(SortCondition $condition) {
+    public function sort(SortCondition $condition): RequestQuery {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['sort'][] = $condition;
@@ -51,7 +53,7 @@ class RequestQuery extends Request
 
     }
 
-    public function state(string $value) {
+    public function state(string $value): RequestQuery {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['sinceQueryState'] = $value;
@@ -60,7 +62,7 @@ class RequestQuery extends Request
 
     }
 
-    public function limitRelative(int $value) {
+    public function limitRelative(int $value): RequestQuery {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['maxChanges'] = $value;
@@ -69,7 +71,7 @@ class RequestQuery extends Request
 
     }
 
-    public function limitAbsolute(string $value) {
+    public function limitAbsolute(string $value): RequestQuery {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['upToId'] = $value;
@@ -78,7 +80,7 @@ class RequestQuery extends Request
 
     }
 
-    public function tally(bool $value) {
+    public function tally(bool $value): RequestQuery {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['calculateTotal'] = $value;

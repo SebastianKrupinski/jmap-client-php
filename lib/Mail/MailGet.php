@@ -24,14 +24,14 @@ declare(strict_types=1);
 */
 namespace JmapClient\Mail;
 
-use JmapClient\RequestGet;
+use JmapClient\Base\RequestGet;
 
 class MailGet extends RequestGet
 {
 
     public function __construct(string $account, string $identifier = '') {
 
-        parent::__construct('Email', 'get', $account, $identifier);
+        parent::__construct('urn:ietf:params:jmap:mail', 'Email', 'get', $account, $identifier);
         
     }
 

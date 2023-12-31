@@ -23,6 +23,8 @@
 *
 */
 namespace JmapClient;
+
+use JmapClient\Base\Request;
 /**
  * JMAP Client
  */
@@ -473,10 +475,22 @@ class Client
 
     }
 
-    public function perform(string $space, Request $command): ResponseCollection {
+    public function perform(RequestCollection|array $commands): ResponseCollection {
 
-        // construct request collection object
-        $request  = new RequestCollection([$space], [$command]);
+        // evaluate if command(s) was passed as a request bundled
+        if ($commands instanceof RequestCollection){
+            $request = $commands;
+        }
+        else {
+            // construct request bundle object
+            $request  = new RequestCollection();
+            // append commands to bundle
+            foreach ($commands as $entry) {
+                $request->appendRequest($entry->namespace(), $entry);
+            }
+        }
+        
+        //
         // serialize request
         $request = $request->phrase();
         // assign transceiver location

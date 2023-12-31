@@ -22,18 +22,20 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient;
+namespace JmapClient\Base;
 
 class Request implements \JsonSerializable
 {
+    protected string $_space = '';
     protected string $_class = '';
     protected string $_method = '';
     protected string $_account = '';
     protected string $_identifier = '';
     protected array $_request = [];
 
-    public function __construct (string $class, string $method, string $account, string $identifier = '') {
+    public function __construct (string $space, string $class, string $method, string $account, string $identifier = '') {
 
+        $this->_space = $space;
         $this->_class = $class;
         $this->_method = $method;
         $this->_account = $account;
@@ -42,6 +44,10 @@ class Request implements \JsonSerializable
         $this->_request[1] = ['accountId' => $this->_account];
         $this->_request[2] = $this->_identifier;
         
+    }
+
+    public function namespace() {
+        return $this->_space;
     }
 
     public function jsonSerialize() {

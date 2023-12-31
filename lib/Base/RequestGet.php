@@ -22,14 +22,16 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient;
+namespace JmapClient\Base;
+
+use JmapClient\Base\Request;
 
 class RequestGet extends Request
 {
 
-    public function __construct(string $class, string $account, string $identifier = '') {
+    public function __construct(string $space, string $class, string $account, string $identifier = '') {
 
-        parent::__construct($class, 'get', $account, $identifier);
+        parent::__construct($space, $class, 'get', $account, $identifier);
         
     }
 

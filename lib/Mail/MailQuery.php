@@ -24,14 +24,14 @@ declare(strict_types=1);
 */
 namespace JmapClient\Mail;
 
-use JmapClient\RequestQuery;
+use JmapClient\Base\RequestQuery;
 
 class MailQuery extends RequestQuery
 {
 
     public function __construct(string $account, string $identifier = '') {
 
-        parent::__construct('Email', 'changes', $account, $identifier);
+        parent::__construct('urn:ietf:params:jmap:mail', 'Email', 'changes', $account, $identifier);
         
     }
 

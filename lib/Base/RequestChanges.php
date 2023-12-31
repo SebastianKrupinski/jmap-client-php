@@ -22,42 +22,35 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient;
+namespace JmapClient\Base;
 
-class RequestSet extends Request
+use JmapClient\Base\Request;
+
+class RequestChanges extends Request
 {
 
-    public function __construct(string $class, string $account, string $identifier = '') {
+    public function __construct(string $space, string $class, string $account, string $identifier = '') {
 
-        parent::__construct($class, 'set', $account, $identifier);
+        parent::__construct($space, $class, 'changes', $account, $identifier);
         
     }
 
-    public function state(string $state): RequestSet {
+    public function state(string $value): RequestChanges {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['ifInState'] = $state;
+        $this->_request[1]['sinceState'] = $value;
         // return self for function chaining 
         return $this;
 
     }
 
-    public function create(string $id, PropertiesObject $properties): RequestSet {
+    public function limitRelative(int $value): RequestChanges {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['create']->$id = $properties;
+        $this->_request[1]['maxChanges'] = $value;
         // return self for function chaining 
         return $this;
-        
-    }
 
-    public function update(string $id, PropertiesObject $properties): RequestSet {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['update']->$id = $properties;
-        // return self for function chaining 
-        return $this;
-        
     }
 
 }
