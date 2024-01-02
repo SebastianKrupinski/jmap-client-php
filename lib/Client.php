@@ -24,7 +24,9 @@
 */
 namespace JmapClient;
 
-use JmapClient\Base\Request;
+use JmapClient\Requests\Request;
+use JmapClient\Requests\RequestBundle;
+use JmapClient\Responses\ResponseBundle;
 /**
  * JMAP Client
  */
@@ -475,15 +477,15 @@ class Client
 
     }
 
-    public function perform(RequestCollection|array $commands): ResponseCollection {
+    public function perform(RequestBundle|array $commands): ResponseBundle {
 
         // evaluate if command(s) was passed as a request bundled
-        if ($commands instanceof RequestCollection){
+        if ($commands instanceof RequestBundle){
             $request = $commands;
         }
         else {
             // construct request bundle object
-            $request  = new RequestCollection();
+            $request  = new RequestBundle();
             // append commands to bundle
             foreach ($commands as $entry) {
                 $request->appendRequest($entry->namespace(), $entry);
@@ -500,7 +502,7 @@ class Client
         // deserialize response
         $response = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
         // construct response collection object
-        $response = new ResponseCollection($response);
+        $response = new ResponseBundle($response);
         // return response
         return $response;
 
