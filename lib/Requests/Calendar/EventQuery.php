@@ -22,7 +22,7 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestQuery;
 
