@@ -35,7 +35,7 @@ class MailGet extends RequestGet
         
     }
 
-    public function bodyProperty(string $value): MailGet {
+    public function bodyProperty(string $value): self {
 
         // creates or updates parameter and assigns value
         $this->_request[1]['bodyProperties'][] = $value;
@@ -44,7 +44,7 @@ class MailGet extends RequestGet
 
     }
 
-    public function bodyText(bool $value): MailGet {
+    public function bodyText(bool $value): self {
 
         // creates or updates parameter and assigns value
         $this->_request[1]['fetchTextBodyValues'] = $value;
@@ -53,7 +53,7 @@ class MailGet extends RequestGet
 
     }
 
-    public function bodyHtml(bool $value): MailGet {
+    public function bodyHtml(bool $value): self {
 
         // creates or updates parameter and assigns value
         $this->_request[1]['fetchHTMLBodyValues'] = $value;
@@ -62,7 +62,7 @@ class MailGet extends RequestGet
         
     }
 
-    public function bodyAll(bool $value): MailGet {
+    public function bodyAll(bool $value): self {
 
         // creates or updates parameter and assigns value
         $this->_request[1]['fetchAllBodyValues'] = $value;
@@ -71,7 +71,7 @@ class MailGet extends RequestGet
         
     }
 
-    public function bodyTruncate(int $value): MailGet {
+    public function bodyTruncate(int $value): self {
 
         // creates or updates parameter and assigns value
         $this->_request[1]['maxBodyValueBytes'] = $value;

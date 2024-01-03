@@ -33,7 +33,7 @@ class RequestBundle
         $this->_requests['methodCalls'] = $requests;
     }
 
-    public function appendRequest(string $space, object $request): RequestBundle {
+    public function appendRequest(string $space, object $request): self {
 
         // check if name space exist already
         if (array_search($space, $this->_requests['using']) === false) {
@@ -46,7 +46,7 @@ class RequestBundle
 
     }
 
-    public function removeRequest(int $index): RequestBundle {
+    public function removeRequest(int $index): self {
 
         // evaluate if request exists in collection
         if (isset($this->_requests['methodCalls'][$index])) {

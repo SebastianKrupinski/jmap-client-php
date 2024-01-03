@@ -35,7 +35,7 @@ class RequestChanges extends Request
         
     }
 
-    public function state(string $value): RequestChanges {
+    public function state(string $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['sinceState'] = $value;
@@ -44,7 +44,7 @@ class RequestChanges extends Request
 
     }
 
-    public function limitRelative(int $value): RequestChanges {
+    public function limitRelative(int $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['maxChanges'] = $value;

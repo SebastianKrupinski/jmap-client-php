@@ -49,7 +49,7 @@ class MailboxQuery extends RequestQuery
 
     }
 
-    public function filterAsTree(bool $value): MailboxQuery {
+    public function filterAsTree(bool $value): self {
 
         // creates or updates parameter and assigns value
         $this->_request[1]['filterAsTree'] = $value;
@@ -58,7 +58,7 @@ class MailboxQuery extends RequestQuery
         
     }
 
-    public function sortAsTree(bool $value): MailboxQuery {
+    public function sortAsTree(bool $value): self {
 
         // creates or updates parameter and assigns value
         $this->_request[1]['sortAsTree'] = $value;

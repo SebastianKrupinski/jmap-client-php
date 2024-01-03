@@ -35,7 +35,7 @@ class MailboxSet extends RequestSet
         
     }
 
-    public function destroy(string $id): MailboxSet {
+    public function destroy(string $id): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['destroy'][] = $id;
@@ -44,7 +44,7 @@ class MailboxSet extends RequestSet
         
     }
 
-    public function destroyContents(bool $value): MailboxSet {
+    public function destroyContents(bool $value): self {
 
         // creates or updates parameter and assigns value
         $this->_request[1]['onDestroyRemoveEmails'] = $value;

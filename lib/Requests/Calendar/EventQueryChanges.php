@@ -49,13 +49,4 @@ class EventQueryChanges extends RequestQueryChanges
 
     }
 
-    public function collapseThreads(bool $value): MailQueryChanges {
-
-        // creates or updates parameter and assigns value
-        $this->_request[1]['collapseThreads'] = $value;
-        // return self for function chaining 
-        return $this;
-        
-    }
-
 }

@@ -35,7 +35,7 @@ class EventSet extends RequestSet
         
     }
 
-    public function delete(string $id): EventSet {
+    public function delete(string $id): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['destroy'][] = $id;

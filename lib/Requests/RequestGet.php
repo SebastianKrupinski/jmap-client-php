@@ -35,7 +35,7 @@ class RequestGet extends Request
         
     }
 
-    public function target(string $id): RequestGet {
+    public function target(string $id): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['ids'][] = $id;
@@ -44,7 +44,7 @@ class RequestGet extends Request
 
     }
 
-    public function targetFromRequest(Request $request, string $selector): RequestGet {
+    public function targetFromRequest(Request $request, string $selector): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['#ids'] = new \stdClass();
@@ -56,7 +56,7 @@ class RequestGet extends Request
 
     }
 
-    public function property(string $id): RequestGet {
+    public function property(string $id): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['properties'][] = $id;

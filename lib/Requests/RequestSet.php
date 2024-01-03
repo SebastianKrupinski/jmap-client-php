@@ -35,7 +35,7 @@ class RequestSet extends Request
         
     }
 
-    public function state(string $state): RequestSet {
+    public function state(string $state): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['ifInState'] = $state;
@@ -44,7 +44,7 @@ class RequestSet extends Request
 
     }
 
-    public function create(string $id, PropertiesObject $properties): RequestSet {
+    public function create(string $id, PropertiesObject $properties): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['create']->$id = $properties;
@@ -53,7 +53,7 @@ class RequestSet extends Request
         
     }
 
-    public function update(string $id, PropertiesObject $properties): RequestSet {
+    public function update(string $id, PropertiesObject $properties): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['update']->$id = $properties;

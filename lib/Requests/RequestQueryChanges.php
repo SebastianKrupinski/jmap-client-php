@@ -49,7 +49,7 @@ class RequestQueryChanges extends Request
 
     }
 
-    public function state(string $value): RequestQuery {
+    public function state(string $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['sinceQueryState'] = $value;
@@ -58,7 +58,7 @@ class RequestQueryChanges extends Request
 
     }
 
-    public function limitRelative(int $value): RequestQuery {
+    public function limitRelative(int $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['maxChanges'] = $value;
@@ -67,7 +67,7 @@ class RequestQueryChanges extends Request
 
     }
 
-    public function limitAbsolute(string $value): RequestQuery {
+    public function limitAbsolute(string $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['upToId'] = $value;
@@ -76,7 +76,7 @@ class RequestQueryChanges extends Request
 
     }
 
-    public function tally(bool $value): RequestQuery {
+    public function tally(bool $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['calculateTotal'] = $value;

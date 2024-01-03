@@ -35,7 +35,7 @@ class CalendarSet extends RequestSet
         
     }
 
-    public function delete(string $id): CalendarSet {
+    public function delete(string $id): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['destroy'][] = $id;
@@ -44,7 +44,7 @@ class CalendarSet extends RequestSet
         
     }
 
-    public function deleteContents(bool $value): CalendarSet {
+    public function deleteContents(bool $value): self {
 
         // creates or updates parameter and assigns value
         $this->_request[1]['onDestroyRemoveEvents'] = $value;

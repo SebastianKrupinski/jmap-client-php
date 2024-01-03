@@ -35,7 +35,7 @@ class MailSet extends RequestSet
         
     }
 
-    public function destroy(string $id): MailSet {
+    public function destroy(string $id): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['destroy'][] = $id;

@@ -49,7 +49,7 @@ class EventQuery extends RequestQuery
 
     }
 
-    public function timezone(\DateTimeZone $value): EventQuery {
+    public function timezone(\DateTimeZone $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['timeZone'] = $value->getName();
