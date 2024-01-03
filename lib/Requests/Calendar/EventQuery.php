@@ -35,6 +35,20 @@ class EventQuery extends RequestQuery
         
     }
 
+    public function filter(): EventFilter {
+        
+        // return self for function chaining 
+        return new EventFilter($this->_request);
+
+    }
+
+    public function sort(): EventSort {
+
+        // return self for function chaining 
+        return new EventSort($this->_request);
+
+    }
+
     public function timezone(\DateTimeZone $value): EventQuery {
 
         // creates or updates parameter and assigns new value

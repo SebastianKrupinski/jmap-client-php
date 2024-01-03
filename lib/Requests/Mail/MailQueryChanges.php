@@ -34,7 +34,21 @@ class MailQueryChanges extends RequestQueryChanges
         parent::__construct('urn:ietf:params:jmap:mail', 'Email', $account, $identifier);
         
     }
+    
+    public function filter(): MailFilter {
 
+        // return self for function chaining 
+        return new MailFilter($this->_request);
+
+    }
+
+    public function sort(): MailSort {
+
+        // return self for function chaining 
+        return new MailSort($this->_request);
+
+    }
+    
     public function collapseThreads(bool $value): MailQueryChanges {
 
         // creates or updates parameter and assigns value

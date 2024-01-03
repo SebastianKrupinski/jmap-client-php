@@ -35,6 +35,20 @@ class EventQueryChanges extends RequestQueryChanges
         
     }
 
+    public function filter(): EventFilter {
+        
+        // return self for function chaining 
+        return new EventFilter($this->_request);
+
+    }
+
+    public function sort(): EventSort {
+
+        // return self for function chaining 
+        return new EventSort($this->_request);
+
+    }
+
     public function collapseThreads(bool $value): MailQueryChanges {
 
         // creates or updates parameter and assigns value

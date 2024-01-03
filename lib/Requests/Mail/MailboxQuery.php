@@ -45,7 +45,7 @@ class MailboxQuery extends RequestQuery
     public function sort(): MailboxSort {
 
         // return self for function chaining 
-        return new RequestSort($this->_request);
+        return new MailboxSort($this->_request);
 
     }
 
