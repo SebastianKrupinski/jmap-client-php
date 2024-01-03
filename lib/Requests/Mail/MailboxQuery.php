@@ -35,6 +35,20 @@ class MailboxQuery extends RequestQuery
         
     }
 
+    public function filter(): MailboxFilter {
+        
+        // return self for function chaining 
+        return new MailboxFilter($this->_request);
+
+    }
+
+    public function sort(): MailboxSort {
+
+        // return self for function chaining 
+        return new RequestSort($this->_request);
+
+    }
+
     public function filterAsTree(bool $value): MailboxQuery {
 
         // creates or updates parameter and assigns value

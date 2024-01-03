@@ -22,30 +22,29 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Requests;
 
-use JmapClient\Requests\RequestQueryChanges;
-
-class MailboxQueryChanges extends RequestQueryChanges
+class RequestFilter
 {
+    protected array $_request;
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(&$request) {
 
-        parent::__construct('urn:ietf:params:jmap:mail', 'Mailbox', $account, $identifier);
-        
+        $this->_request = $request;
+
+        // evaluate if filter paramater exist and create if needed
+        if (!isset($this->_request[1]['filter'])) {
+            $this->_request[1]['filter'] = new \stdClass();
+        }
+
     }
 
-    public function filter(): MailboxFilter {
-        
-        // return self for function chaining 
-        return new MailboxFilter($this->_request);
+    public function condition(string $property, mixed $value): self {
 
-    }
-
-    public function sort(): MailboxSort {
-
-        // return self for function chaining 
-        return new RequestSort($this->_request);
+        // creates or updates parameter and assigns value
+        $this->_request[1]['filter']->$property = $value;
+        // return self for function chaining
+        return $this;
 
     }
 

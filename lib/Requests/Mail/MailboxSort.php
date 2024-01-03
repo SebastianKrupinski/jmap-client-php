@@ -22,30 +22,32 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests;
+namespace JmapClient\Requests\Mail;
 
-class FilterCondition implements \JsonSerializable
+use JmapClient\Requests\RequestSort;
+
+class MailboxSort extends RequestSort
 {
-    protected object $_condition;
+    
+    public function __construct(&$request) {
 
-    public function __construct(string $property = null, string $value = null) {
+        parent::__construct($request);
         
-        //
-        $this->_condition = new \stdClass();
-        // evaluate if property and value exist
-        if (!empty($property) && !empty($value)) {
-            $this->condition($property, $value);
-        }
     }
-
-    public function jsonSerialize() {
-        return $this->_condition;
-    }
-
-    public function condition(string $property, string $value): FilterCondition {
+    
+    public function name(bool $value = false): self {
 
         // creates or updates parameter and assigns value
-        $this->_condition->$property = $value;
+        $this->condition('name', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function order(bool $value = false): self {
+
+        // creates or updates parameter and assigns value
+        $this->condition('sortOrder', $value);
         // return self for function chaining
         return $this;
 

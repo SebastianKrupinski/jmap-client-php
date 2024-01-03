@@ -35,21 +35,17 @@ class RequestQuery extends Request
         
     }
 
-    public function filter(FilterCondition $condition): RequestQuery {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['filter'] = $condition;
+    public function filter(): RequestFilter {
+        
         // return self for function chaining 
-        return $this;
+        return new RequestFilter($this->_request);
 
     }
 
-    public function sort(SortCondition $condition): RequestQuery {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['sort'][] = $condition;
+    public function sort(): RequestSort {
+        
         // return self for function chaining 
-        return $this;
+        return new RequestSort($this->_request);
 
     }
     

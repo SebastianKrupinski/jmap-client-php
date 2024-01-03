@@ -35,6 +35,20 @@ class MailQuery extends RequestQuery
         
     }
 
+    public function filter(): MailFilter {
+
+        // return self for function chaining 
+        return new MailFilter($this->_request);
+
+    }
+
+    public function sort(): MailSort {
+
+        // return self for function chaining 
+        return new MailSort($this->_request);
+
+    }
+    
     public function collapseThreads(bool $value): MailQuery {
 
         // creates or updates parameter and assigns value
