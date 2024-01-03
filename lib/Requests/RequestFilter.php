@@ -30,7 +30,7 @@ class RequestFilter
 
     public function __construct(&$request) {
 
-        $this->_request = $request;
+        $this->_request = &$request;
 
         // evaluate if filter paramater exist and create if needed
         if (!isset($this->_request[1]['filter'])) {
