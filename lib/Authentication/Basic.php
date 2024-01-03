@@ -22,9 +22,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient;
+namespace JmapClient\Authentication;
 
-class AuthenticationBasic
+class Basic
 {
     public string $Id;
     public string $Secret;

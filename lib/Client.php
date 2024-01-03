@@ -24,6 +24,8 @@
 */
 namespace JmapClient;
 
+use JmapClient\Authentication\Basic;
+use JmapClient\Authentication\Bearer;
 use JmapClient\Requests\Request;
 use JmapClient\Requests\RequestBundle;
 use JmapClient\Responses\ResponseBundle;
@@ -121,7 +123,7 @@ class Client
     /**
      * Authentication to use when connecting to the service
      *
-     * @var AuthenticationBasic|AuthenticationBearer
+     * @var Basic|Bearer
      */
     protected $_ServiceAuthentication;
 
@@ -363,9 +365,9 @@ class Client
      /**
      * Gets the authentication parameters object
      *
-     * @return AuthenticationBasic|AuthenticationBeare
+     * @return Basic|AuthenticationBeare
      */
-    public function getAuthentication(): AuthenticationBasic|AuthenticationBearer {
+    public function getAuthentication(): Basic|Bearer {
         
         // return authentication information
         return $this->_ServiceAuthentication;
@@ -375,21 +377,21 @@ class Client
      /**
      * Sets the authentication parameters to be used for all requests
      *
-     * @param AuthenticationBasic|AuthenticationBearer $value
+     * @param Basic|Bearer $value
      */
-    public function setAuthentication(AuthenticationBasic|AuthenticationBearer $value): void {
+    public function setAuthentication(Basic|Bearer $value): void {
         
         // store parameter
         $this->_ServiceAuthentication = $value;
         // destroy existing client will need to be initilized again
         $this->_client = null;
         // set service basic authentication
-        if ($this->_ServiceAuthentication instanceof AuthenticationBasic) {
+        if ($this->_ServiceAuthentication instanceof Basic) {
             $this->_TransportOptions[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
             $this->_TransportOptions[CURLOPT_USERPWD] = $this->_ServiceAuthentication->Id . ':' . $this->_ServiceAuthentication->Secret;
         }
         // set service bearer authentication
-        if ($this->_ServiceAuthentication instanceof AuthenticationBearer) {
+        if ($this->_ServiceAuthentication instanceof Bearer) {
             unset($this->_TransportOptions[CURLOPT_HTTPAUTH]);
             $this->_TransportHeader['Authorization'] = 'Authorization: Bearer ' . $this->_ServiceAuthentication->Token;
         }
