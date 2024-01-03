@@ -134,19 +134,19 @@ class MailFilter extends RequestFilter
 
     }
 
-    public function receivedBefore(string $value): self {
+    public function receivedBefore(\DateTime $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('before', $value);
+        $this->condition('before', $value->format('Y-m-d\\TH:i:s'));
         // return self for function chaining
         return $this;
 
     }
 
-    public function receivedAfter(string $value): self {
+    public function receivedAfter(\DateTime $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('after', $value);
+        $this->condition('after', $value->format('Y-m-d\\TH:i:s'));
         // return self for function chaining
         return $this;
 
