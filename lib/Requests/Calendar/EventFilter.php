@@ -38,16 +38,34 @@ class EventFilter extends RequestFilter
     public function in(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('inMailbox', $value);
+        $this->condition('inCalendars', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function inOmit(array $value): self {
+    public function uid(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('inMailboxOtherThan', $value);
+        $this->condition('uid', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+    
+    public function after(\DateTime $value): self {
+
+        // creates or updates parameter and assigns value
+        $this->condition('after', $value->format('Y-m-d\\TH:i:s'));
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function before(\DateTime $value): self {
+
+        // creates or updates parameter and assigns value
+        $this->condition('before', $value->format('Y-m-d\\TH:i:s'));
         // return self for function chaining
         return $this;
 
@@ -62,109 +80,55 @@ class EventFilter extends RequestFilter
 
     }
 
-    public function from(string $value): self {
+    public function title(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('from', $value);
+        $this->condition('title', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function to(string $value): self {
+    public function description(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('to', $value);
+        $this->condition('description', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function cc(string $value): self {
+    public function location(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('cc', $value);
+        $this->condition('location', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function bcc(string $value): self {
+    public function owner(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('bcc', $value);
+        $this->condition('owner', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function subject(string $value): self {
+    public function attendee(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('subject', $value);
+        $this->condition('attendee', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function body(string $value): self {
+    public function participation(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('body', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function keywordPresent(string $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->condition('before', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function keywordAbsent(string $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->condition('after', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function receivedBefore(string $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->condition('before', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function receivedAfter(string $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->condition('after', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function sizeMin(int $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->condition('minSize', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function sizeMax(int $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->condition('maxSize', $value);
+        $this->condition('participationStatus', $value);
         // return self for function chaining
         return $this;
 
