@@ -59,9 +59,21 @@ class ResponseBundle
 
     }
 
+    public function response(int $position): mixed {
+
+        return (isset($this->_response['methodResponses'])) ? $this->_response['methodResponses'][$position] : null;
+
+    }
+
     public function state(): string {
 
         return (isset($this->_response['sessionState'])) ? $this->_response['sessionState'] : '';
+
+    }
+
+    public function tally(): int {
+
+        return (isset($this->_response['methodResponses'])) ? count($this->_response['methodResponses']) : 0;
 
     }
 

@@ -54,8 +54,12 @@ class ResponseGet extends Response
         return (isset($this->_response[1]['state'])) ? $this->_response[1]['state'] : '';
     }
 
-    public function list(): array {
+    public function objects(): array {
         return (isset($this->_response[1]['list'])) ? $this->_response[1]['list'] : [];
+    }
+
+    public function object(int $position): mixed {
+        return (isset($this->_response[1]['list'])) ? $this->_response[1]['list'][$position] : null;
     }
 
 }
