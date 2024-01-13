@@ -43,8 +43,8 @@ class ResponseGet extends Response
         // evaluate if class was found
         if ($class !== null) {
             // convert response objects to classes
-            foreach ($this->_response['list'] as $key => $entry) {
-                $this->_response['list'][$key] = new $class($entry);
+            foreach ($this->_response[1]['list'] as $key => $entry) {
+                $this->_response[1]['list'][$key] = new $class($entry);
             }
         }
 

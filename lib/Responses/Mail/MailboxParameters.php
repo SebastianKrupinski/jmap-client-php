@@ -22,14 +22,14 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Responses;
+namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseParameters;
 
 class MailboxParameters extends ResponseParameters
 {
     
-    public function __construct(object $response) {
+    public function __construct(array $response = []) {
 
         parent::__construct($response);
 

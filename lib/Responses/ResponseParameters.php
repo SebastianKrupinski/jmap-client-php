@@ -22,13 +22,13 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Response;
+namespace JmapClient\Responses;
 
 class ResponseParameters
 {
-    protected object $_response;
+    protected array $_response;
 
-    public function __construct(object $response) {
+    public function __construct(array $response = []) {
 
         $this->_response = $response;
 
