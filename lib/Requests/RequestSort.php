@@ -32,11 +32,6 @@ class RequestSort
 
         $this->_request = &$request;
 
-        // evaluate if filter paramater exist and create if needed
-        if (!isset($this->_request[1]['sort'])) {
-            $this->_request[1]['sort'] = [];
-        }
-
     }
 
     public function condition(string $property, bool|null $direction = null, string|null $keyword = null, string|null $collation = null): self {
@@ -55,7 +50,7 @@ class RequestSort
         }
         
         // creates or updates parameter and assigns value
-        array_push($this->_request[1]['sort'], $condition);
+        $this->_request[1]['sort'][] = $condition;
         // return self for function chaining
         return $this;
 
