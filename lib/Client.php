@@ -510,12 +510,18 @@ class Client
 
     }
 
-    public function download(string $aid, string $oid, string $type, string $name, string|resource &$data): void {
-        
+    public function download(string $account, string $identifier, string $type, string $name, string|resource &$data): void {
+
+        // assign transceiver location
+        $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceDownloadLocation;
+
     }
 
-    public function upload(string $aid, string $oid, string $type, int $size, string|resource &$data): void {
+    public function upload(string $account, string $identifier, string $type, int $size, string|resource &$data): void {
         
+        // assign transceiver location
+        $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceUploadLocation;
+
     }
 
 }
