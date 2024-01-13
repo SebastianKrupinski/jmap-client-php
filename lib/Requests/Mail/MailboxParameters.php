@@ -24,46 +24,50 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Mail;
 
-use JmapClient\Requests\RequestSet;
-use JmapClient\Requests\Mail\MailboxParameters;
+use JmapClient\Requests\RequestParameters;
 
-class MailboxSet extends RequestSet
+class MailboxParameters extends RequestParameters
 {
+    public function __construct(&$request, $action, $id) {
 
-    public function __construct(string $account, string $identifier = '') {
-
-        parent::__construct('urn:ietf:params:jmap:mail', 'Mailbox', $account, $identifier);
-        
-    }
-
-    public function create(string $id): MailboxParameters {
-        
-        return new MailboxParameters($this->_request, 'create', $id);
+        parent::__construct($request, $action, $id);
 
     }
 
-    public function update(string $id): MailboxParameters {
+    public function in(string $value): self {
         
-        return new MailboxParameters($this->_request, 'update', $id);
-
-    }
-
-    public function delete(string $id): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['destroy'][] = $id;
-        // return self for function chaining 
-        return $this;
-        
-    }
-
-    public function destroyContents(bool $value): self {
-
         // creates or updates parameter and assigns value
-        $this->_request[1]['onDestroyRemoveEmails'] = $value;
-        // return self for function chaining 
+        $this->parameter('parentId', $value);
+        // return self for function chaining
         return $this;
+
+    }
+
+    public function name(string $value): self {
         
+        // creates or updates parameter and assigns value
+        $this->parameter('name', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function role(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('role', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function priority(int $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('sortOrder', $value);
+        // return self for function chaining
+        return $this;
+
     }
 
 }

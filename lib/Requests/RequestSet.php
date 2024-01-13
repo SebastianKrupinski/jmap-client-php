@@ -44,21 +44,15 @@ class RequestSet extends Request
 
     }
 
-    public function create(string $id, PropertiesObject $properties): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['create']->$id = $properties;
-        // return self for function chaining 
-        return $this;
+    public function create(string $id): RequestParameters {
+        
+        return new RequestParameters($this->_request, 'create', $id);
         
     }
 
-    public function update(string $id, PropertiesObject $properties): self {
+    public function update(string $id): RequestParameters {
 
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['update']->$id = $properties;
-        // return self for function chaining 
-        return $this;
+        return new RequestParameters($this->_request, 'update', $id);
         
     }
 

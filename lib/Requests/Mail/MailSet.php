@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Mail;
 
 use JmapClient\Requests\RequestSet;
+use JmapClient\Requests\Mail\MailParameters;
 
 class MailSet extends RequestSet
 {
@@ -33,6 +34,18 @@ class MailSet extends RequestSet
 
         parent::__construct('urn:ietf:params:jmap:mail', 'Email', $account, $identifier);
         
+    }
+
+    public function create(string $id): MailParameters {
+        
+        return new MailParameters($this->_request, 'create', $id);
+
+    }
+
+    public function update(string $id): MailParameters {
+        
+        return new MailParameters($this->_request, 'update', $id);
+
     }
 
     public function delete(string $id): self {
