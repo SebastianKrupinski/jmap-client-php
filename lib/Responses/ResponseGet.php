@@ -29,9 +29,24 @@ use JmapClient\Responses\Response;
 class ResponseGet extends Response
 {
 
+    protected array $_map = [
+        'Mailbox' => 'JmapClient\Responses\Mail\MailboxParameters',
+        'Email' => 'JmapClient\Responses\Mail\MailParameters',
+    ];
+
     public function __construct (array $response = []) {
 
         parent::__construct($response);
+
+        // evaluate if class exists for this response object type
+        $class = isset($this->_map[$this->class()]) ? $this->_map[$this->class()] : null;
+        // evaluate if class was found
+        if ($class !== null) {
+            // convert response objects to classes
+            foreach ($this->_response['list'] as $key => $entry) {
+                $this->_response['list'][$key] = new $class($entry);
+            }
+        }
 
     }
 

@@ -41,6 +41,7 @@ class ResponseBundle
     protected array $_response = [];
 
     public function __construct (array $response = []) {
+        
         $this->_response = $response;
 
         foreach ($this->_response['methodResponses'] as $key => $entry) {
