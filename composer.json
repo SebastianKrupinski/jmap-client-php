@@ -3,13 +3,13 @@
     "type": "library",
     "description": "JMAP PHP Client",
     "keywords": ["enum"],
-    "homepage": "https://github.com/ksainc/jmap-client-php",
+    "homepage": "https://github.com/SebastianKrupinski/jmap-client-php",
     "license": "AGL3",
     "authors": [
         {
 			"name": "Sebastian Krupinski",
 			"email": "krupinski01@gmail.com",
-            "homepage": "https://github.com/ksainc/",
+            "homepage": "https://github.com/SebastianKrupinski/",
             "role": "Just another Minion in the cogs of time"
 		}
     ],
