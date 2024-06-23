@@ -1,5 +1,5 @@
 {
-    "name": "ksainc/jmap-client-php",
+    "name": "sebastiankrupinski/jmap-client-php",
     "type": "library",
     "description": "JMAP PHP Client",
     "keywords": ["enum"],
