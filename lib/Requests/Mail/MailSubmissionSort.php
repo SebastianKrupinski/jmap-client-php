@@ -24,47 +24,39 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Mail;
 
-use JmapClient\Requests\RequestParameters;
+use JmapClient\Requests\RequestSort;
 
-class MailboxParameters extends RequestParameters
+class MailSubmissionSort extends RequestSort
 {
-    public function __construct(&$request, $action, $id) {
+    
+    public function __construct(&$request) {
 
-        parent::__construct($request, $action, $id);
-
-    }
-
-    public function in(string $value): self {
+        parent::__construct($request);
         
+    }
+    
+    public function sent(bool $value = false): self {
+
         // creates or updates parameter and assigns value
-        $this->parameter('parentId', $value);
+        $this->condition('sentAt', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function label(string $value): self {
-        
+    public function messageId(bool $value = false): self {
+
         // creates or updates parameter and assigns value
-        $this->parameter('name', $value);
+        $this->condition('emailId', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function role(string $value): self {
-        
-        // creates or updates parameter and assigns value
-        $this->parameter('role', $value);
-        // return self for function chaining
-        return $this;
+    public function threadId(bool $value = false): self {
 
-    }
-
-    public function priority(int $value): self {
-        
         // creates or updates parameter and assigns value
-        $this->parameter('sortOrder', $value);
+        $this->condition('threadId', $value);
         // return self for function chaining
         return $this;
 

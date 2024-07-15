@@ -24,47 +24,39 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Mail;
 
-use JmapClient\Requests\RequestParameters;
+use JmapClient\Requests\RequestFilter;
 
-class MailboxParameters extends RequestParameters
+class MailSubmissionFilter extends RequestFilter
 {
-    public function __construct(&$request, $action, $id) {
 
-        parent::__construct($request, $action, $id);
+    public function __construct(&$request) {
 
+        parent::__construct($request);
+        
     }
 
-    public function in(string $value): self {
-        
+    public function undoStatus(string $value): self {
+
         // creates or updates parameter and assigns value
-        $this->parameter('parentId', $value);
+        $this->condition('undoStatus', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function label(string $value): self {
-        
+    public function sendBefore(\DateTime $value): self {
+
         // creates or updates parameter and assigns value
-        $this->parameter('name', $value);
+        $this->condition('before', $value->format('Y-m-d\\TH:i:s'));
         // return self for function chaining
         return $this;
 
     }
 
-    public function role(string $value): self {
-        
-        // creates or updates parameter and assigns value
-        $this->parameter('role', $value);
-        // return self for function chaining
-        return $this;
+    public function sendAfter(\DateTime $value): self {
 
-    }
-
-    public function priority(int $value): self {
-        
         // creates or updates parameter and assigns value
-        $this->parameter('sortOrder', $value);
+        $this->condition('after', $value->format('Y-m-d\\TH:i:s'));
         // return self for function chaining
         return $this;
 

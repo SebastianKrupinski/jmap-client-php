@@ -134,17 +134,11 @@ class Client
      */
     protected bool $_SessionConnected = false;
     /**
-     * Session Capabilities
+     * Session meta data
      *
      * @var bool
      */
-    protected array $_SessionCapabilities = [];
-    /**
-     * Session Accounts
-     *
-     * @var array
-     */
-    protected array $_SessionAccounts = [];
+    protected array $_SessionData = [];
     
     
     /**
@@ -398,6 +392,30 @@ class Client
 
     }
 
+    public function sessionStatus(): bool {
+    
+        return $this->_SessionConnected;
+
+    }
+
+    public function sessionData(): array {
+    
+        return $this->_SessionData;
+
+    }
+
+    public function sessionCapabilities(): array {
+    
+        return $this->_SessionCapabilities;
+
+    }
+
+    public function sessionAccounts(): array {
+    
+        return (isset($this->_SessionData['eventSourceUrl'])) ? $this->_SessionData['eventSourceUrl'] : [];
+
+    }
+
     public function transceive(string $message): null|string {
 
         // clear last headers and response
@@ -468,10 +486,8 @@ class Client
         $this->_ServiceDownloadLocation = (isset($session['downloadUrl'])) ? $session['downloadUrl'] : '';
         $this->_ServiceUploadLocation = (isset($session['uploadUrl'])) ? $session['uploadUrl'] : '';
         $this->_ServiceEventLocation = (isset($session['eventSourceUrl'])) ? $session['eventSourceUrl'] : '';
-        // session capabilities
-        $this->_SessionCapabilities = (isset($session['capabilities'])) ? $session['capabilities'] : '';
-        // session accounts
-        $this->_SessionAccounts = (isset($session['accounts'])) ? $session['accounts'] : '';
+        // session meta data
+        $this->_SessionData = $session;
         // session connected
         $this->_SessionConnected = true;
         // return response body
@@ -510,14 +526,14 @@ class Client
 
     }
 
-    public function download(string $account, string $identifier, string $type, string $name, string|resource &$data): void {
+    public function download(string $account, string $identifier, string $type, string $name, string|\resource &$data): void {
 
         // assign transceiver location
         $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceDownloadLocation;
 
     }
 
-    public function upload(string $account, string $identifier, string $type, int $size, string|resource &$data): void {
+    public function upload(string $account, string $identifier, string $type, int $size, string|\resource &$data): void {
         
         // assign transceiver location
         $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceUploadLocation;

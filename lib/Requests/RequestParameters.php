@@ -88,4 +88,15 @@ class RequestParameters
 
     }
 
+    public function parametersRaw(array $value): self {
+        
+        $action = $this->_action;
+        $id = $this->_id;
+        // creates or updates parameter and assigns value
+        $this->_request[1][$action]->$id = (object) $value;
+        // return self for function chaining
+        return $this;
+
+    }
+
 }

@@ -38,7 +38,7 @@ class MailParameters extends ResponseParameters
     public function in(): array|null {
         
         // return value of parameter
-        return $this->parameter('mailboxIds');
+        return array_keys($this->parameter('mailboxIds'));
 
     }
 
@@ -105,10 +105,45 @@ class MailParameters extends ResponseParameters
 
     }
 
+    public function bcc(): array|null {
+        
+        // return value of parameter
+        return $this->parameter('bcc');
+
+    }
+
     public function subject(): string|null {
         
         // return value of parameter
         return $this->parameter('subject');
+
+    }
+
+    public function body(): string|null {
+        
+        // return value of parameter
+        return !empty($this->parameter('htmlBody')) ? : $this->parameter('textBody');
+
+    }
+
+    public function bodyHtml(): string|null {
+        
+        // return value of parameter
+        return $this->parameter('htmlBody');
+
+    }
+
+    public function bodyText(): string|null {
+        
+        // return value of parameter
+        return $this->parameter('textBody');
+
+    }
+
+    public function attachments(): string|null {
+        
+        // return value of parameter
+        return $this->parameter('attachments');
 
     }
 

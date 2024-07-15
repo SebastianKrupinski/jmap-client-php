@@ -48,8 +48,17 @@ class RequestQuery extends Request
         return new RequestSort($this->_request);
 
     }
+
+    public function startAbsolute(int $value): self {
+
+        // creates or updates parameter and assigns new value
+        $this->_request[1]['position'] = $value;
+        // return self for function chaining 
+        return $this;
+
+    }
     
-    public function limitRelative(int $value): self {
+    public function limitAbsolute(int $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['limit'] = $value;
@@ -58,16 +67,7 @@ class RequestQuery extends Request
 
     }
 
-    public function startRelative(int $value): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['position'] = $value;
-        // return self for function chaining 
-        return $this;
-
-    }
-
-    public function startAbsolute(string $value): self {
+    public function startRelative(string $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['anchor'] = $value;
@@ -76,7 +76,7 @@ class RequestQuery extends Request
 
     }
 
-    public function startAbsoluteOffset(int $value): self {
+    public function startRelativeOffset(int $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['anchorOffset'] = $value;
@@ -84,6 +84,16 @@ class RequestQuery extends Request
         return $this;
 
     }
+
+    public function limitRelative(int $value): self {
+
+        // creates or updates parameter and assigns new value
+        $this->_request[1]['limit'] = $value;
+        // return self for function chaining 
+        return $this;
+
+    }
+    
 
     public function tally(bool $value): self {
 

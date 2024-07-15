@@ -22,29 +22,39 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Responses;
+namespace JmapClient\Requests\Mail;
 
-class ResponseParameters
+use JmapClient\Requests\RequestSet;
+use JmapClient\Requests\Mail\MailSubmissionParameters;
+
+class MailSubmissionSet extends RequestSet
 {
-    protected array $_response;
 
-    public function __construct(array $response = []) {
+    public function __construct(string $account, string $identifier = '') {
 
-        $this->_response = $response;
-
-    }
-
-    public function parameter(string $name): mixed {
+        parent::__construct('urn:ietf:params:jmap:submission', 'EmailSubmission', $account, $identifier);
         
-        // return value of parameter
-        return (isset($this->_response[$name]))? $this->_response[$name] : null;
+    }
+
+    public function create(string $id): MailSubmissionParameters {
+        
+        return new MailSubmissionParameters($this->_request, 'create', $id);
 
     }
 
-    public function parametersRaw(): array {
+    public function update(string $id): MailParameters {
+        
+        return new MailSubmissionParameters($this->_request, 'update', $id);
 
-        return $this->_response;
+    }
 
+    public function delete(string $id): self {
+
+        // creates or updates parameter and assigns new value
+        $this->_request[1]['destroy'][] = $id;
+        // return self for function chaining 
+        return $this;
+        
     }
 
 }

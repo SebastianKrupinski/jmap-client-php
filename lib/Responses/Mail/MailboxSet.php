@@ -24,7 +24,7 @@ declare(strict_types=1);
 */
 namespace JmapClient\Responses\Mail;
 
-use JmapClient\Responses\ResponseChanges;
+use JmapClient\Responses\ResponseSet;
 
 class MailboxSet extends ResponseSet
 {
