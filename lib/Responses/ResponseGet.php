@@ -30,8 +30,10 @@ class ResponseGet extends Response
 {
 
     protected array $_map = [
+        'Identity' => 'JmapClient\Responses\Identity\IdentityParameters',
         'Mailbox' => 'JmapClient\Responses\Mail\MailboxParameters',
         'Email' => 'JmapClient\Responses\Mail\MailParameters',
+        'EmailSubmission' => 'JmapClient\Responses\Mail\MailSubmissionParameters',
     ];
 
     public function __construct (array $response = []) {

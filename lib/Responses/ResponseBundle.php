@@ -27,6 +27,9 @@ namespace JmapClient\Responses;
 class ResponseBundle
 {
     protected array $_map = [
+        'Identity/get' => 'JmapClient\Responses\Identity\IdentityGet',
+        'Identity/set' => 'JmapClient\Responses\Identity\IdentitySet',
+        'Identity/changes' => 'JmapClient\Responses\Identity\IdentityChanges',
         'Mailbox/get' => 'JmapClient\Responses\Mail\MailboxGet',
         'Mailbox/set' => 'JmapClient\Responses\Mail\MailboxSet',
         'Mailbox/changes' => 'JmapClient\Responses\Mail\MailboxChanges',
@@ -37,6 +40,11 @@ class ResponseBundle
         'Email/changes' => 'JmapClient\Responses\Mail\MailChanges',
         'Email/query' => 'JmapClient\Responses\Mail\MailQuery',
         'Email/queryChanges' => 'JmapClient\Responses\Mail\MailQueryChanges',
+        'EmailSubmission/get' => 'JmapClient\Responses\Mail\MailSubmissionGet',
+        'EmailSubmission/set' => 'JmapClient\Responses\Mail\MailSubmissionSet',
+        'EmailSubmission/changes' => 'JmapClient\Responses\Mail\MailSubmissionChanges',
+        'EmailSubmission/query' => 'JmapClient\Responses\Mail\MailSubmissionQuery',
+        'EmailSubmission/queryChanges' => 'JmapClient\Responses\Mail\MailSubmissionQueryChanges',
     ];
     protected array $_response = [];
 
