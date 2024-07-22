@@ -404,15 +404,39 @@ class Client
 
     }
 
-    public function sessionCapabilities(): array {
+    public function sessionCapable(string $value): bool {
+
+        return isset($this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value]) ? true : false;
+
+    }
+
+    public function sessionCapabilities(?string $value = null): array {
     
-        return $this->_SessionCapabilities;
+        if (!empty($value)) {
+            return isset($this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value]) ?
+                   $this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value] : 
+                   [];
+        } else {
+            return $this->_SessionData['capabilities'];
+        }
 
     }
 
     public function sessionAccounts(): array {
     
-        return (isset($this->_SessionData['eventSourceUrl'])) ? $this->_SessionData['eventSourceUrl'] : [];
+        return $this->_SessionData['accounts'];
+
+    }
+
+    public function sessionAccountDefault(?string $value = null): string | null {
+
+        if (!empty($value)) {
+            return isset($this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:' . $value]) ?
+                   $this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:' . $value] : 
+                   $this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:core'];
+        } else {
+            return $this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:core'];
+        }
 
     }
 
