@@ -45,6 +45,8 @@ class ResponseBundle
         'EmailSubmission/changes' => 'JmapClient\Responses\Mail\MailSubmissionChanges',
         'EmailSubmission/query' => 'JmapClient\Responses\Mail\MailSubmissionQuery',
         'EmailSubmission/queryChanges' => 'JmapClient\Responses\Mail\MailSubmissionQueryChanges',
+        'Thread/get' => 'JmapClient\Responses\Mail\MailThreadGet',
+        'Thread/changes' => 'JmapClient\Responses\Mail\MailThreadChanges',
     ];
     protected array $_response = [];
 
