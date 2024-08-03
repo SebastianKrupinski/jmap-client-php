@@ -84,6 +84,91 @@ class Client
      * @var CurlHandle
      */
     protected $_client;
+
+    /**
+     * Retain Last Transport Request Header Flag
+     *
+     * @var bool
+     */
+    protected bool $_TransportRequestHeaderFlag = false;
+
+    /**
+     * Retain Last Transport Request Body Flag
+     *
+     * @var bool
+     */
+    protected bool $_TransportRequestBodyFlag = false;
+
+    /**
+     * Last Transport Request Header Data
+     *
+     * @var string
+     */
+    protected string $_TransportRequestHeaderData = '';
+
+    /**
+     * Last Transport Request Body Data
+     *
+     * @var string
+     */
+    protected string $_TransportRequestBodyData = '';
+
+    /**
+     * Retain Last Transport Response Header Flag
+     *
+     * @var bool
+     */
+    protected bool $_TransportRepsonseHeaderFlag = false;
+
+    /**
+     * Retain Last Transport Response Body Flag
+     *
+     * @var bool
+     */
+    protected bool $_TransportRepsonseBodyFlag = false;
+
+    /**
+     * Last Transport Response Code
+     *
+     * @var string
+     */
+    protected string $_TransportRepsonseCode = '';
+
+    /**
+     * Last Transport Response Header Data
+     *
+     * @var string
+     */
+    protected string $_TransportRepsonseHeaderData = '';
+
+    /**
+     * Last Transport Response Header Data
+     *
+     * @var string
+     */
+    protected string $_TransportRepsonseBodyData = '';
+
+    /**
+     * Transport Logging State (ON/OFF)
+     *
+     * @var bool
+     */
+    protected bool $_TransportLogState = false;
+
+    /**
+     * Transport Log File Location
+     *
+     * @var string
+     */
+    protected string $_TransportLogLocation = '/tmp/php-jmap.log';
+
+    /**
+     * Transport Redirect Max
+     *
+     * @var int
+     */
+    protected int $_TransportRedirectAttempts = 3;
+
     /**
      * Service Host
      *
@@ -198,6 +283,111 @@ class Client
         // destroy existing client will need to be initilized again
         $this->_client = null;
 
+    }
+
+    /**
+     * enables or disables transport log
+     * 
+     * @param bool $value           ture or false flag
+     */
+    public function configureTransportLogState(bool $value): void {
+
+        // store parameter
+        $this->_TransportLogState = $value;
+
+    }
+
+    /**
+     * configures transport log location
+     * 
+     * @param bool $value           ture or false flag
+     */
+    public function configureTransportLogLocation(string $value): void {
+
+        // store parameter
+        $this->_TransportLogLocation = $value;
+
+    }
+
+    /**
+     * Enables or disables retention of raw request headers sent
+     * 
+     * @param bool $value           ture or false flag
+     */
+    public function retainTransportRequestHeader(bool $value): void {
+        $this->_TransportRequestHeaderFlag = $value;
+    }
+
+    /**
+     * Enables or disables retention of raw request body sent
+     * 
+     * @param bool $value           ture or false flag
+     */
+    public function retainTransportRequestBody(bool $value): void {
+        $this->_TransportRequestBodyFlag = $value;
+    }
+
+    /**
+     * Enables or disables retention of raw response headers recieved
+     * 
+     * @param bool $value           ture or false flag
+     */
+    public function retainTransportResponseHeader(bool $value): void {
+        $this->_TransportRepsonseHeaderFlag = $value;
+    }
+
+    /**
+     * Enables or disables retention of raw response body recieved
+     * 
+     * @param bool $value           ture or false flag
+     */
+    public function retainTransportResponseBody(bool $value): void {
+        $this->_TransportRepsonseBodyFlag = $value;
+    }
+
+    /**
+     * returns last retained raw request header sent
+     * 
+     * @return string
+     */
+    public function discloseTransportRequestHeader(): string {
+        return $this->_TransportRequestHeaderData;
+    }
+
+    /**
+     * returns last retained raw request body sent
+     * 
+     * @return string
+     */
+    public function discloseTransportRequestBody(): string {
+        return $this->_TransportRequestBodyData;
+    }
+
+    /**
+     * returns last retained response code recieved
+     * 
+     * @return int
+     */
+    public function discloseTransportResponseCode(): int {
+        return $this->_TransportRepsonseCode;
+    }
+
+    /**
+     * returns last retained raw response header recieved
+     * 
+     * @return string
+     */
+    public function discloseTransportResponseHeader(): string {
+        return $this->_TransportRepsonseHeaderData;
+    }
+
+    /**
+     * returns last retained raw response body recieved
+     * 
+     * @return string
+     */
+    public function discloseTransportResponseBody(): string {
+        return $this->_TransportRepsonseBodyData;
     }
 
     public function setTransportAgent(string $value): void {
@@ -442,53 +632,97 @@ class Client
 
     public function transceive(string $message): null|string {
 
-        // clear last headers and response
-        $this->_ResponseHeaders = '';
-        $this->_ResponseData = '';
-        // evaluate if http client is initilized and location is the same
+        // evaluate if http client is initilized
         if (!isset($this->_client)) {
             $this->_client = curl_init();
         }
+        // reset responses
+        $this->_TransportRepsonseCode = 0;
+        $this->_TransportRepsonseHeaderData = '';
+        $this->_TransportRepsonseBodyData = '';
+        // set request options
         curl_setopt_array($this->_client, $this->_TransportOptions);
+        // set request header
         curl_setopt($this->_client, CURLOPT_HTTPHEADER, array_values($this->_TransportHeader));
         // set request data
         if (!empty($message)) {
             curl_setopt($this->_client, CURLOPT_POSTFIELDS, $message);
         }
-        // execute request
-        $this->_ResponseData = curl_exec($this->_client);
+        // evaluate, if we are retaining request headers
+        if ($this->_TransportRequestHeaderFlag) { $this->_TransportRequestHeaderData = $header; }
+        // evaluate, if we are retaining request body
+        if ($this->_TransportRequestBodyFlag) { $this->_TransportRequestBodyData = $request; }
+        // evaluate, if logging is enabled and write request to log
+        if ($this->_TransportLogState) { 
+            file_put_contents(
+                $this->_TransportLogLocation, 
+                PHP_EOL . date("Y-m-d H:i:s.").gettimeofday()["usec"] . ' - Request' . PHP_EOL . $message . PHP_EOL, 
+                FILE_APPEND
+            );
+        }
 
-        // evealuate execution errors
+        // execute request
+        $response = curl_exec($this->_client);
+        // evaluate execution errors
         $code = curl_errno($this->_client);
         if ($code > 0) {
-            throw new \RuntimeException(curl_error($this->_client), $code);
+            // evaluate, if logging is enabled and write error to log
+            if ($this->_TransportLogState) { 
+                file_put_contents(
+                    $this->_TransportLogLocation, 
+                    PHP_EOL . date("Y-m-d H:i:s.").gettimeofday()["usec"] . ' - Error' . PHP_EOL . curl_error($this->_client) . PHP_EOL . $response . PHP_EOL, 
+                    FILE_APPEND
+                );
+            }
+            // thrown exception
+            throw new RuntimeException(curl_error($this->_client), $code);
         }
 
         // evaluate http responses
         $code = (int) curl_getinfo($this->_client, CURLINFO_RESPONSE_CODE);
         if ($code > 400) {
+            // evaluate, if logging is enabled and write error to log
+            if ($this->_TransportLogState) { 
+                file_put_contents(
+                    $this->_TransportLogLocation, 
+                    PHP_EOL . date("Y-m-d H:i:s.").gettimeofday()["usec"] . ' - Error' . PHP_EOL . $response . PHP_EOL, 
+                    FILE_APPEND
+                );
+            }
+            // thrown exception
             switch ($code) {
                 case 401:
-                    throw new \RuntimeException('Unauthorized', $code);
+                    throw new RuntimeException('Unauthorized', $code);
                     break;
                 case 403:
-                    throw new \RuntimeException('Forbidden', $code);
+                    throw new RuntimeException('Forbidden', $code);
                     break;
                 case 404:
-                    throw new \RuntimeException('Not Found', $code);
+                    throw new RuntimeException('Not Found', $code);
                     break;
                 case 408:
-                    throw new \RuntimeException('Request Timeout', $code);
+                    throw new RuntimeException('Request Timeout', $code);
                     break;
             }
         }
-
-        // separate headers and body
-        $size = curl_getinfo($this->_client, CURLINFO_HEADER_SIZE);
-        $this->_ResponseHeaders = substr($this->_ResponseData, 0, $size);
-        $this->_ResponseData = substr($this->_ResponseData, $size);
-        // return body
-        return $this->_ResponseData;
+        // retain response code
+        $this->_TransportRepsonseCode = $code;
+        // extract header size
+        $header_size = curl_getinfo($this->_client, CURLINFO_HEADER_SIZE);
+        // evaluate, if we are retaining response headers
+        if ($this->_TransportRepsonseHeaderFlag || $code == 302) { $this->_TransportRepsonseHeaderData = substr($response, 0, $header_size); }
+        // evaluate, if we are retaining response body
+        if ($this->_TransportRepsonseBodyFlag) { $this->_TransportRepsonseBodyData = substr($response, $header_size); }
+        // evaluate, if logging is enabled and write response body to log
+        if ($this->_TransportLogState) { 
+            file_put_contents(
+                $this->_TransportLogLocation,
+                PHP_EOL . date("Y-m-d H:i:s.").gettimeofday()["usec"] . ' - Response' . PHP_EOL . substr($response, $header_size) . PHP_EOL, 
+                FILE_APPEND
+            ); 
+        }
+        // return response
+        return substr($response, $header_size);
 
     }
 
@@ -498,8 +732,29 @@ class Client
         unset($this->_TransportOptions[CURLOPT_POST]);
         $this->_TransportOptions[CURLOPT_HTTPGET];
         $this->_TransportOptions[CURLOPT_URL] = $this->_TransportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
-        // perform transmit and recieve
-        $session = $this->transceive('');
+        // 
+        $RequestAttempt = true;
+        $RequestAttempts = 0;
+        while ($RequestAttempt && ($RequestAttempts < $this->_TransportRedirectAttempts)) {
+            // Increment attempts
+            $RequestAttempts++;
+            $RequestAttempt = false;
+            // perform transmit and recieve
+            $session = $this->transceive('');
+            // determine if request was redirected
+            if ($this->_TransportRepsonseCode == 302) {
+                foreach (explode("\r\n", trim($this->_TransportRepsonseHeaderData)) as $line) {
+                    if (strpos($line, 'location:') !== false) {
+                        $location = explode(':', $line, 2);
+                        break;
+                    }
+                }
+                if (isset($location) && !empty($location[1])) {
+                    $RequestAttempt = true;
+                    $this->_TransportOptions[CURLOPT_URL] = trim($location[1]);
+                }
+            }
+        }
         // configure client to defaults
         $this->_TransportOptions[CURLOPT_POST] = true;
         unset($this->_TransportOptions[CURLOPT_CUSTOMREQUEST]);

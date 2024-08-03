@@ -32,7 +32,7 @@ class IdentitySet extends RequestSet
 
     public function __construct(string $account, string $identifier = '') {
 
-        parent::__construct('urn:ietf:params:jmap:identity', 'Identity', $account, $identifier);
+        parent::__construct('urn:ietf:params:jmap:submission', 'Identity', $account, $identifier);
         
     }
 
