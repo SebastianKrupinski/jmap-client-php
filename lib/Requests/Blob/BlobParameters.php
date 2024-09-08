@@ -22,22 +22,40 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests;
+namespace JmapClient\Requests\Blob;
 
-class RequestFilter
+use JmapClient\Requests\RequestParameters;
+
+class BlobParameters extends RequestParameters
 {
-    protected object $_filter;
+    public function __construct(object &$parameters) {
 
-    public function __construct(object &$filter) {
-
-        $this->_filter = &$filter;
+        parent::__construct($parameters);
 
     }
 
-    public function condition(string $property, mixed $value): self {
+    public function type(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('type', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function dataPlain(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->_filter->$property = $value;
+        $this->parameterStructured('data', 'data:asText', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function dataEncoded(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameterStructured('data', 'data:asBase64', $value);
         // return self for function chaining
         return $this;
 

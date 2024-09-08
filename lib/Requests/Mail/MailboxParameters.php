@@ -28,9 +28,9 @@ use JmapClient\Requests\RequestParameters;
 
 class MailboxParameters extends RequestParameters
 {
-    public function __construct(&$request, $action, $id) {
+    public function __construct(object &$parameters) {
 
-        parent::__construct($request, $action, $id);
+        parent::__construct($parameters);
 
     }
 

@@ -25,12 +25,13 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Mail;
 
 use JmapClient\Requests\RequestParameters;
+use JmapClient\Requests\Mail\MailPart;
 
 class MailParameters extends RequestParameters
 {
-    public function __construct(&$request, $action, $id) {
+    public function __construct(&$parameters) {
 
-        parent::__construct($request, $action, $id);
+        parent::__construct($parameters);
 
     }
 
@@ -114,6 +115,17 @@ class MailParameters extends RequestParameters
     public function contentsHtml(string $content, string $id = null): self {
         
         return $this->contents($content, 'text/html', $id);
+
+    }
+
+    public function structure(): MailPart {
+        
+        // creates or updates parameter and assigns value
+        if (!isset($this->_parameters->bodyStructure)) {
+            $this->parameter('bodyStructure', new \stdClass());
+        }
+
+        return new MailPart($this->_parameters->bodyStructure);
 
     }
 

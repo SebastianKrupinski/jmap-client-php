@@ -24,9 +24,9 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Mail;
 
-use JmapClient\Requests\RequestGet;
+use JmapClient\Requests\RequestParse;
 
-class MailGet extends RequestGet
+class MailParse extends RequestParse
 {
 
     public function __construct(string $account, string $identifier = '') {

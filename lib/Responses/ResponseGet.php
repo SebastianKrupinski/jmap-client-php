@@ -25,23 +25,17 @@ declare(strict_types=1);
 namespace JmapClient\Responses;
 
 use JmapClient\Responses\Response;
+use JmapClient\Responses\ResponseClasses;
 
 class ResponseGet extends Response
 {
-
-    protected array $_map = [
-        'Identity' => 'JmapClient\Responses\Identity\IdentityParameters',
-        'Mailbox' => 'JmapClient\Responses\Mail\MailboxParameters',
-        'Email' => 'JmapClient\Responses\Mail\MailParameters',
-        'EmailSubmission' => 'JmapClient\Responses\Mail\MailSubmissionParameters',
-    ];
 
     public function __construct (array $response = []) {
 
         parent::__construct($response);
 
         // evaluate if class exists for this response object type
-        $class = isset($this->_map[$this->class()]) ? $this->_map[$this->class()] : null;
+        $class = isset(ResponseClasses::$Parameters[$this->class()]) ? ResponseClasses::$Parameters[$this->class()] : null;
         // evaluate if class was found
         if ($class !== null) {
             // convert response objects to classes

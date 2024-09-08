@@ -25,12 +25,19 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseParameters;
+use JmapClient\Responses\Mail\MailPart;
 
 class MailParameters extends ResponseParameters
 {
+
+    protected MailPart $_structure;
     
     public function __construct(array $response = []) {
 
+        if (isset($response['bodyStructure'])) {
+            $this->_structure = new MailPart($response['bodyStructure']);
+        }
+        
         parent::__construct($response);
 
     }
@@ -140,7 +147,17 @@ class MailParameters extends ResponseParameters
 
     }
 
-    public function attachments(): string|null {
+    public function structure(): MailPart|null {
+        
+        if (!$this->_structure) {
+            $this->_structure = new MailPart($this->parameter('bodyStructure'));
+        }
+        // return value of parameter
+        return $this->parameter('bodyStructure');
+
+    }
+
+    public function attachments(): array|null {
         
         // return value of parameter
         return $this->parameter('attachments');

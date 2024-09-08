@@ -35,10 +35,10 @@ class RequestGet extends Request
         
     }
 
-    public function target(string $id): self {
+    public function target(string ...$id): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['ids'][] = $id;
+        $this->_command['ids'] = $id;
         // return self for function chaining 
         return $this;
 
@@ -47,19 +47,19 @@ class RequestGet extends Request
     public function targetFromRequest(Request $request, string $selector): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['#ids'] = new \stdClass();
-        $this->_request[1]['#ids']->resultOf = $request->identifier();
-        $this->_request[1]['#ids']->name = $request->class() . '/' . $request->method();
-        $this->_request[1]['#ids']->path = $selector;
+        $this->_command['#ids'] = new \stdClass();
+        $this->_command['#ids']->resultOf = $request->identifier();
+        $this->_command['#ids']->name = $request->class() . '/' . $request->method();
+        $this->_command['#ids']->path = $selector;
         // return self for function chaining
         return $this;
 
     }
 
-    public function property(string $id): self {
+    public function property(string ...$id): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['properties'][] = $id;
+        $this->_command['properties'] = $id;
         // return self for function chaining 
         return $this;
 

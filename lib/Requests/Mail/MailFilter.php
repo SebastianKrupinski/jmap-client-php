@@ -29,9 +29,9 @@ use JmapClient\Requests\RequestFilter;
 class MailFilter extends RequestFilter
 {
 
-    public function __construct(&$request) {
+    public function __construct(&$filter) {
 
-        parent::__construct($request);
+        parent::__construct($filter);
         
     }
 

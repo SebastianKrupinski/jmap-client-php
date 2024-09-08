@@ -28,9 +28,9 @@ use JmapClient\Requests\RequestParameters;
 
 class MailSubmissionParameters extends RequestParameters
 {
-    public function __construct(&$request, $action, $id) {
+    public function __construct(&$parameters) {
 
-        parent::__construct($request, $action, $id);
+        parent::__construct($parameters);
 
     }
 

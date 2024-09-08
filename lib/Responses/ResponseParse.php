@@ -24,48 +24,38 @@ declare(strict_types=1);
 */
 namespace JmapClient\Responses;
 
+use JmapClient\Responses\Response;
 use JmapClient\Responses\ResponseClasses;
 
-class ResponseBundle
+class ResponseParse extends Response
 {
 
-    protected array $_response = [];
-
     public function __construct (array $response = []) {
-        
-        $this->_response = $response;
 
-        foreach ($this->_response['methodResponses'] as $key => $entry) {
-            if (isset(ResponseClasses::$Commands[$entry[0]])) {
-                $class = ResponseClasses::$Commands[$entry[0]];
-                $this->_response['methodResponses'][$key] = new $class($entry);
+        parent::__construct($response);
+
+        // evaluate if class exists for this response object type
+        $class = isset(ResponseClasses::$Parameters[$this->class()]) ? ResponseClasses::$Parameters[$this->class()] : null;
+        // evaluate if class was found
+        if ($class !== null) {
+            // convert response objects to classes
+            foreach ($this->_response[1]['parsed'] as $key => $entry) {
+                $this->_response[1]['parsed'][$key] = new $class($entry);
             }
         }
 
     }
 
-    public function responses(): array {
-
-        return (isset($this->_response['methodResponses'])) ? $this->_response['methodResponses'] : [];
-
-    }
-
-    public function response(int $position): mixed {
-
-        return (isset($this->_response['methodResponses'])) ? $this->_response['methodResponses'][$position] : null;
-
-    }
-
     public function state(): string {
-
-        return (isset($this->_response['sessionState'])) ? $this->_response['sessionState'] : '';
-
+        return (isset($this->_response[1]['state'])) ? $this->_response[1]['state'] : '';
     }
 
-    public function tally(): int {
+    public function objects(): array {
+        return (isset($this->_response[1]['parsed'])) ? $this->_response[1]['parsed'] : [];
+    }
 
-        return (isset($this->_response['methodResponses'])) ? count($this->_response['methodResponses']) : 0;
-
+    public function object(int $position): mixed {
+        return (isset($this->_response[1]['parsed'])) ? $this->_response[1]['parsed'][$position] : null;
     }
 
 }

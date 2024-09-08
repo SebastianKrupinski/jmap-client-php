@@ -31,6 +31,7 @@ class Request implements \JsonSerializable
     protected string $_method = '';
     protected string $_account = '';
     protected string $_identifier = '';
+    protected array $_command;
     protected array $_request = [];
 
     public function __construct (string $space, string $class, string $method, string $account, string $identifier = '') {
@@ -43,6 +44,8 @@ class Request implements \JsonSerializable
         $this->_request[0] = $this->_class . '/' . $this->_method;
         $this->_request[1] = ['accountId' => $this->_account];
         $this->_request[2] = $this->_identifier;
+
+        $this->_command =& $this->_request[1];
         
     }
 

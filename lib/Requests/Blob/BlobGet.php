@@ -22,25 +22,35 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests;
+namespace JmapClient\Requests\Blob;
 
-class RequestFilter
+use JmapClient\Requests\RequestGet;
+
+class BlobGet extends RequestGet
 {
-    protected object $_filter;
 
-    public function __construct(object &$filter) {
+    public function __construct(string $account, string $identifier = '') {
 
-        $this->_filter = &$filter;
-
+        parent::__construct('urn:ietf:params:jmap:blob', 'Blob', $account, $identifier);
+        
     }
 
-    public function condition(string $property, mixed $value): self {
+    public function offset(int $value): self {
 
         // creates or updates parameter and assigns value
-        $this->_filter->$property = $value;
-        // return self for function chaining
+        $this->_command['offset'] = $value;
+        // return self for function chaining 
         return $this;
+        
+    }
 
+    public function length(int $value): self {
+
+        // creates or updates parameter and assigns value
+        $this->_command['length'] = $value;
+        // return self for function chaining 
+        return $this;
+        
     }
 
 }

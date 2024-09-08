@@ -36,23 +36,31 @@ class RequestQueryChanges extends Request
     }
 
     public function filter(): RequestFilter {
-
+        
+        // evaluate if filter paramater exist and create if needed
+        if (!isset($this->_requestCommand['filter'])) {
+            $this->_requestCommand['filter'] = new \stdClass();
+        }
         // return self for function chaining 
-        return new RequestFilter($this->_request);
+        return new RequestFilter($this->_requestCommand['filter']);
 
     }
 
     public function sort(): RequestSort {
         
+        // evaluate if filter paramater exist and create if needed
+        if (!isset($this->_requestCommand['sort'])) {
+            $this->_requestCommand['sort'] = [];
+        }
         // return self for function chaining 
-        return new RequestSort($this->_request);
+        return new RequestSort($this->_requestCommand['sort']);
 
     }
 
     public function state(string $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['sinceQueryState'] = $value;
+        $this->_requestCommand['sinceQueryState'] = $value;
         // return self for function chaining 
         return $this;
 
@@ -61,7 +69,7 @@ class RequestQueryChanges extends Request
     public function limitRelative(int $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['maxChanges'] = $value;
+        $this->_requestCommand['maxChanges'] = $value;
         // return self for function chaining 
         return $this;
 
@@ -70,7 +78,7 @@ class RequestQueryChanges extends Request
     public function limitAbsolute(string $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['upToId'] = $value;
+        $this->_requestCommand['upToId'] = $value;
         // return self for function chaining 
         return $this;
 
@@ -79,7 +87,7 @@ class RequestQueryChanges extends Request
     public function tally(bool $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['calculateTotal'] = $value;
+        $this->_requestCommand['calculateTotal'] = $value;
         // return self for function chaining 
         return $this;
 

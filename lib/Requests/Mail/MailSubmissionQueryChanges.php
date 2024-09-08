@@ -37,15 +37,23 @@ class MailSubmissionQueryChanges extends RequestQueryChanges
     
     public function filter(): MailSubmissionFilter {
 
+        // evaluate if filter paramater exist and create if needed
+        if (!isset($this->_command['filter'])) {
+            $this->_command['filter'] = new \stdClass();
+        }
         // return self for function chaining 
-        return new MailSubmissionFilter($this->_request);
+        return new MailSubmissionFilter($this->_command['filter']);
 
     }
 
     public function sort(): MailSubmissionSort {
 
+        // evaluate if sort paramater exist and create if needed
+        if (!isset($this->_command['sort'])) {
+            $this->_command['sort'] = [];
+        }
         // return self for function chaining 
-        return new MailSubmissionSort($this->_request);
+        return new MailSubmissionSort($this->_command['sort']);
 
     }
     

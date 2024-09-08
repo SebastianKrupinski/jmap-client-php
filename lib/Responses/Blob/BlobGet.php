@@ -22,24 +22,16 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests;
+namespace JmapClient\Responses\Blob;
 
-class RequestFilter
+use JmapClient\Responses\ResponseGet;
+
+class BlobGet extends ResponseGet
 {
-    protected object $_filter;
 
-    public function __construct(object &$filter) {
+    public function __construct (array $response = []) {
 
-        $this->_filter = &$filter;
-
-    }
-
-    public function condition(string $property, mixed $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->_filter->$property = $value;
-        // return self for function chaining
-        return $this;
+        parent::__construct($response);
 
     }
 

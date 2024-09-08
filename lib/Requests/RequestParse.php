@@ -24,21 +24,31 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests;
 
-class RequestFilter
+use JmapClient\Requests\Request;
+
+class RequestParse extends Request
 {
-    protected object $_filter;
 
-    public function __construct(object &$filter) {
+    public function __construct(string $space, string $class, string $account, string $identifier = '') {
 
-        $this->_filter = &$filter;
+        parent::__construct($space, $class, 'parse', $account, $identifier);
+        
+    }
+
+    public function target(string ...$id): self {
+
+        // creates or updates parameter and assigns new value
+        $this->_command['blobIds'] = $id;
+        // return self for function chaining 
+        return $this;
 
     }
 
-    public function condition(string $property, mixed $value): self {
+    public function property(string ...$id): self {
 
-        // creates or updates parameter and assigns value
-        $this->_filter->$property = $value;
-        // return self for function chaining
+        // creates or updates parameter and assigns new value
+        $this->_command['properties'] = $id;
+        // return self for function chaining 
         return $this;
 
     }

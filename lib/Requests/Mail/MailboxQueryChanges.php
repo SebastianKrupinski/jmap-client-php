@@ -37,15 +37,23 @@ class MailboxQueryChanges extends RequestQueryChanges
 
     public function filter(): MailboxFilter {
         
+        // evaluate if filter paramater exist and create if needed
+        if (!isset($this->_command['filter'])) {
+            $this->_command['filter'] = new \stdClass();
+        }
         // return self for function chaining 
-        return new MailboxFilter($this->_request);
+        return new MailboxFilter($this->_command['filter']);
 
     }
 
     public function sort(): MailboxSort {
 
+        // evaluate if sort paramater exist and create if needed
+        if (!isset($this->_command['sort'])) {
+            $this->_command['sort'] = [];
+        }
         // return self for function chaining 
-        return new MailboxSort($this->_request);
+        return new MailboxSort($this->_command['sort']);
 
     }
 

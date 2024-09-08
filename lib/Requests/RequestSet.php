@@ -38,7 +38,7 @@ class RequestSet extends Request
     public function state(string $state): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['ifInState'] = $state;
+        $this->_command['ifInState'] = $state;
         // return self for function chaining 
         return $this;
 
@@ -46,14 +46,24 @@ class RequestSet extends Request
 
     public function create(string $id): RequestParameters {
         
-        return new RequestParameters($this->_request, 'create', $id);
-        
+        // evaluate if create paramater exist and create if needed
+        if (!isset($this->_command['create'][$id])) {
+            $this->_command['create'][$id] = new \stdClass();
+        }
+        // return self for function chaining 
+        return new RequestParameters($this->_command['create'][$id]);
+
     }
 
     public function update(string $id): RequestParameters {
 
-        return new RequestParameters($this->_request, 'update', $id);
-        
+        // evaluate if create paramater exist and create if needed
+        if (!isset($this->_command['update'][$id])) {
+            $this->_command['update'][$id] = new \stdClass();
+        }
+        // return self for function chaining 
+        return new RequestParameters($this->_command['update'][$id]);
+
     }
 
 }

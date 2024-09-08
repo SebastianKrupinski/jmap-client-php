@@ -24,6 +24,7 @@
 */
 namespace JmapClient;
 
+use resource;
 use JmapClient\Authentication\Basic;
 use JmapClient\Authentication\Bearer;
 use JmapClient\Requests\Request;
@@ -58,7 +59,7 @@ class Client
     /**
      * Transpost Header
      */
-    protected array $_TransportHeader = [
+    protected array $_TransportHeaders = [
 		'Connection' => 'Connection: Keep-Alive',
         'Cache-Control' => 'Cache-Control: no-cache, no-store, must-revalidate',
         'Content-Type' => 'Content-Type: application/json; charset=utf-8',
@@ -577,7 +578,7 @@ class Client
         // set service bearer authentication
         if ($this->_ServiceAuthentication instanceof Bearer) {
             unset($this->_TransportOptions[CURLOPT_HTTPAUTH]);
-            $this->_TransportHeader['Authorization'] = 'Authorization: Bearer ' . $this->_ServiceAuthentication->Token;
+            $this->_TransportHeaders['Authorization'] = 'Authorization: Bearer ' . $this->_ServiceAuthentication->Token;
         }
 
     }
@@ -643,7 +644,7 @@ class Client
         // set request options
         curl_setopt_array($this->_client, $this->_TransportOptions);
         // set request header
-        curl_setopt($this->_client, CURLOPT_HTTPHEADER, array_values($this->_TransportHeader));
+        curl_setopt($this->_client, CURLOPT_HTTPHEADER, array_values($this->_TransportHeaders));
         // set request data
         if (!empty($message)) {
             curl_setopt($this->_client, CURLOPT_POSTFIELDS, $message);
@@ -805,17 +806,110 @@ class Client
 
     }
 
-    public function download(string $account, string $identifier, string $type, string $name, string|\resource &$data): void {
+    public function download(string $account, string $identifier, &$data, string $type = 'application/octet-stream', string $name = 'file.bin'): void {
 
-        // assign transceiver location
-        $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceDownloadLocation;
+        // replace command options
+        $location = $this->_ServiceDownloadLocation;
+        $location = str_replace("{accountId}", $account, $location);
+        $location = str_replace("{blobId}", $identifier, $location);
+        $location = str_replace("{type}", $type, $location);
+        $location = str_replace("{name}", $name, $location);
+        // clone default headers
+        $transportHeaders = $this->_TransportHeaders;
+        // remove some headers
+        unset(
+            $transportHeaders['Content-Type'],
+            $transportHeaders['Accept'],
+        );
+        // set specific headers
+        $transportHeaders['Connection'] = 'Connection: Close';
+        // clone default options
+        $transportOptions = $this->_TransportOptions;
+        // remove some options
+        unset(
+            $transportOptions[CURLOPT_POST],
+            $transportOptions[CURLOPT_CUSTOMREQUEST],
+            $transportOptions[CURLOPT_RETURNTRANSFER]
+        );
+        // set specific options
+        $transportOptions[CURLOPT_HTTPHEADER] = array_values($transportHeaders);
+        $transportOptions[CURLOPT_HTTPGET];
+        $transportOptions[CURLOPT_URL] = $location;
+        // determine data destiantion and set recieving options
+        if (is_resource($data)) {
+            if (get_resource_type($data) !== 'stream') {
+                throw new InvalidArgumentException('Invalid resource passed');
+            }
+            $transportOptions[CURLOPT_FILE] = $data;
+            $transportOptions[CURLOPT_HEADER] = 0;
+        } else {
+            $transportOptions[CURLOPT_RETURNTRANSFER] = true;
+        }
+        // initilize client
+        $client = curl_init();
+        // set request options
+        curl_setopt_array($client, $transportOptions);
+        // execute request for different methods
+        if (is_resource($data)) {
+            curl_exec($client);
+        } else {
+            $response = curl_exec($client);
+            // extract header size
+            $header_size = curl_getinfo($client, CURLINFO_HEADER_SIZE);
+            // extract data
+            $data = substr($response, $header_size);
+        }
+        // close client
+        curl_close($client);
 
     }
 
-    public function upload(string $account, string $identifier, string $type, int $size, string|\resource &$data): void {
-        
-        // assign transceiver location
-        $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceUploadLocation;
+    public function upload(string $account, string $type, &$data): string {
+    
+        // replace command options
+        $location = str_replace("{accountId}", $account, $this->_ServiceUploadLocation);
+        // clone default headers
+        $transportHeaders = $this->_TransportHeaders;
+        // remove some headers
+        unset(
+            $transportHeaders['Accept'],
+        );
+        // set specific headers
+        $transportHeaders['Connection'] = 'Connection: Close';
+        $transportHeaders['Content-Type'] = 'Content-Type: ' . $type;
+        // clone default transport options
+        $transportOptions = $this->_TransportOptions;
+        // remove some transport options
+        unset(
+            $transportOptions[CURLOPT_CUSTOMREQUEST],
+        );
+        // set specific options
+        $transportOptions[CURLOPT_HTTPHEADER] = array_values($transportHeaders);
+        $transportOptions[CURLOPT_URL] = $location;
+        $transportOptions[CURLOPT_POST] = true;
+        // determine data source and set sending options
+        if (is_resource($data)) {
+            if (get_resource_type($data) !== 'stream') {
+                throw new InvalidArgumentException('Invalid resource passed');
+            }
+            $transportOptions[CURLOPT_INFILESIZE] = $size;
+            $transportOptions[CURLOPT_INFILE] = $data; // ($in=fopen($tmpFile, 'r'))
+        }
+        else {
+            $transportOptions[CURLOPT_POSTFIELDS] = $data;
+        }
+        // initialize client
+        $client = curl_init();
+        // set request options
+        curl_setopt_array($client, $transportOptions);
+        // execute request
+        $response = curl_exec($client);
+        // extract header size
+        $header_size = curl_getinfo($client, CURLINFO_HEADER_SIZE);
+        // close client
+        curl_close($client);
+        // return response
+        return substr($response, $header_size);
 
     }
 

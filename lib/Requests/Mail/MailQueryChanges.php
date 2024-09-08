@@ -37,22 +37,30 @@ class MailQueryChanges extends RequestQueryChanges
     
     public function filter(): MailFilter {
 
+        // evaluate if filter paramater exist and create if needed
+        if (!isset($this->_command['filter'])) {
+            $this->_command['filter'] = new \stdClass();
+        }
         // return self for function chaining 
-        return new MailFilter($this->_request);
+        return new MailFilter($this->_command['filter']);
 
     }
 
     public function sort(): MailSort {
 
+        // evaluate if sort paramater exist and create if needed
+        if (!isset($this->_command['sort'])) {
+            $this->_command['sort'] = [];
+        }
         // return self for function chaining 
-        return new MailSort($this->_request);
+        return new MailSort($this->_command['sort']);
 
     }
     
     public function collapseThreads(bool $value): self {
 
         // creates or updates parameter and assigns value
-        $this->_request[1]['collapseThreads'] = $value;
+        $this->_command['collapseThreads'] = $value;
         // return self for function chaining 
         return $this;
         

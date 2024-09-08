@@ -22,24 +22,28 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests;
+namespace JmapClient\Requests\Blob;
 
-class RequestFilter
+use JmapClient\Requests\RequestUpload;
+use JmapClient\Requests\Blob\BlobParameters;
+
+class BlobSet extends RequestUpload
 {
-    protected object $_filter;
 
-    public function __construct(object &$filter) {
+    public function __construct(string $account, string $identifier = '') {
 
-        $this->_filter = &$filter;
-
+        parent::__construct('urn:ietf:params:jmap:Blob', 'Blob', $account, $identifier);
+        
     }
 
-    public function condition(string $property, mixed $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->_filter->$property = $value;
-        // return self for function chaining
-        return $this;
+    public function create(string $id): BlobParameters {
+        
+        // evaluate if create paramater exist and create if needed
+        if (!isset($this->_command['create'][$id])) {
+            $this->_command['create'][$id] = new \stdClass();
+        }
+        // return self for function chaining 
+        return new BlobParameters($this->_command['create'][$id]);
 
     }
 

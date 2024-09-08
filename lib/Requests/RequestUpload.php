@@ -22,27 +22,23 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Requests;
 
-class MailObject implements \JsonSerializable
+use JmapClient\Requests\Request;
+
+class RequestUpload extends Request
 {
-    protected object $_property;
 
-    public function __construct () {
-        $this->_property = new stdClass();
+    public function __construct(string $space, string $class, string $account, string $identifier = '') {
+
+        parent::__construct($space, $class, 'upload', $account, $identifier);
+        
     }
 
-    public function jsonSerialize() {
-        return $this->_property;
-    }
-
-    public function property(string $name, mixed $value): MailObject {
-
-        // creates or updates parameter and assigns value
-        $this->_property->$name = $value;
-        // return self for function chaining
-        return $this;
-
+    public function create(string $id): RequestParameters {
+        
+        return new RequestParameters($this->_request, 'create', $id);
+        
     }
 
 }

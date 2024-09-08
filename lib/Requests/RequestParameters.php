@@ -26,33 +26,18 @@ namespace JmapClient\Requests;
 
 class RequestParameters
 {
-    protected array $_request;
-    protected string $_action;
-    protected string $_id;
+    protected object $_parameters;
 
-    public function __construct(&$request, $action, $id) {
+    public function __construct(object &$parameters) {
 
-        $this->_request = &$request;
-        $this->_action = $action;
-        $this->_id = $id;
+        $this->_parameters =& $parameters;
 
-        // evaluate if parameter exists
-        if (!$this->_request[1][$action] instanceof \stdClass) {
-            $this->_request[1][$action] = new \stdClass();
-        }
-        // evaluate if object exists
-        if (!$this->_request[1][$action]->$id instanceof \stdClass) {
-            $this->_request[1][$action]->$id = new \stdClass();
-        }
-        
     }
 
     public function parameter(string $name, mixed $value): self {
         
-        $action = $this->_action;
-        $id = $this->_id;
         // creates or updates parameter and assigns value
-        $this->_request[1][$action]->$id->$name = $value;
+        $this->_parameters->$name = $value;
         // return self for function chaining
         return $this;
 
@@ -60,14 +45,12 @@ class RequestParameters
 
     public function parameterStructured(string $name, string $label, mixed $value): self {
         
-        $action = $this->_action;
-        $id = $this->_id;
         // evaluate if parameter is an object
-        if (!is_object($this->_request[1][$action]->$id->$name)) {
-            $this->_request[1][$action]->$id->$name = new \stdClass();
+        if (!is_object($this->_parameters->$name)) {
+            $this->_parameters->$name = new \stdClass();
         }
         // creates or updates parameter and assigns value
-        $this->_request[1][$action]->$id->$name->$label = $value;
+        $this->_parameters->$name->$label = $value;
         // return self for function chaining
         return $this;
 
@@ -75,25 +58,21 @@ class RequestParameters
 
     public function parameterCollection(string $name, mixed $value): self {
         
-        $action = $this->_action;
-        $id = $this->_id;
         // evaluate if parameter is an object
-        if (!is_array($this->_request[1][$action]->$id->$name)) {
-            $this->_request[1][$action]->$id->$name = [];
+        if (!is_array($this->_parameters->$name)) {
+            $this->_parameters->$name = [];
         }
         // creates or updates parameter and assigns value
-        $this->_request[1][$action]->$id->$name[] = $value;
+        $this->_parameters->$name[] = $value;
         // return self for function chaining
         return $this;
 
     }
 
     public function parametersRaw(array $value): self {
-        
-        $action = $this->_action;
-        $id = $this->_id;
+
         // creates or updates parameter and assigns value
-        $this->_request[1][$action]->$id = (object) $value;
+        $this->_parameters = (object) $value;
         // return self for function chaining
         return $this;
 

@@ -38,20 +38,30 @@ class MailboxSet extends RequestSet
 
     public function create(string $id): MailboxParameters {
         
-        return new MailboxParameters($this->_request, 'create', $id);
+        // evaluate if create paramater exist and create if needed
+        if (!isset($this->_command['create'][$id])) {
+            $this->_command['create'][$id] = new \stdClass();
+        }
+        // return self for function chaining 
+        return new MailboxParameters($this->_command['create'][$id]);
 
     }
 
     public function update(string $id): MailboxParameters {
         
-        return new MailboxParameters($this->_request, 'update', $id);
+        // evaluate if create paramater exist and create if needed
+        if (!isset($this->_command['update'][$id])) {
+            $this->_command['update'][$id] = new \stdClass();
+        }
+        // return self for function chaining 
+        return new MailboxParameters($this->_command['update'][$id]);
 
     }
 
     public function delete(string $id): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['destroy'][] = $id;
+        $this->_command['destroy'][] = $id;
         // return self for function chaining 
         return $this;
         
@@ -60,7 +70,7 @@ class MailboxSet extends RequestSet
     public function destroyContents(bool $value): self {
 
         // creates or updates parameter and assigns value
-        $this->_request[1]['onDestroyRemoveEmails'] = $value;
+        $this->_command['onDestroyRemoveEmails'] = $value;
         // return self for function chaining 
         return $this;
         

@@ -26,11 +26,11 @@ namespace JmapClient\Requests;
 
 class RequestSort
 {
-    protected array $_request;
+    protected array $_sort;
 
-    public function __construct(&$request) {
+    public function __construct(array &$sort) {
 
-        $this->_request = &$request;
+        $this->_sort = &$sort;
 
     }
 
@@ -50,7 +50,7 @@ class RequestSort
         }
         
         // creates or updates parameter and assigns value
-        $this->_request[1]['sort'][] = $condition;
+        $this->_sort[] = $condition;
         // return self for function chaining
         return $this;
 

@@ -29,9 +29,9 @@ use JmapClient\Requests\RequestSort;
 class MailSubmissionSort extends RequestSort
 {
     
-    public function __construct(&$request) {
+    public function __construct(array &$sort) {
 
-        parent::__construct($request);
+        parent::__construct($sort);
         
     }
     
