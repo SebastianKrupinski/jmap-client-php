@@ -24,13 +24,10 @@
 */
 namespace JmapClient\Authentication;
 
-class Basic
+class Basic implements IAuthentication
 {
-    public string $Id;
-    public string $Secret;
-
-    public function __construct (string $id = '', string $secret = '') {
-        $this->Id = $id;
-        $this->Secret = $secret;
-    }
+    public function __construct (
+        public ?string $Id = null,
+        public ?string $Secret = null
+    ) {}
 }

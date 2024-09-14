@@ -25,8 +25,10 @@
 namespace JmapClient;
 
 use resource;
+use JmapClient\Authentication\IAuthentication;
 use JmapClient\Authentication\Basic;
 use JmapClient\Authentication\Bearer;
+use JmapClient\Authentication\JsonBasic;
 use JmapClient\Requests\Request;
 use JmapClient\Requests\RequestBundle;
 use JmapClient\Responses\ResponseBundle;
@@ -55,11 +57,11 @@ class Client
      *
      * @var string
      */
-    protected string $_TransportMode = self::TRANSPORT_MODE_SECURE;
+    protected string $_transportMode = self::TRANSPORT_MODE_SECURE;
     /**
      * Transpost Header
      */
-    protected array $_TransportHeaders = [
+    protected array $_transportHeaders = [
 		'Connection' => 'Connection: Keep-Alive',
         'Cache-Control' => 'Cache-Control: no-cache, no-store, must-revalidate',
         'Content-Type' => 'Content-Type: application/json; charset=utf-8',
@@ -68,8 +70,8 @@ class Client
     /**
      * Transpost Options
      */
-    protected array $_TransportOptions = [
-        CURLOPT_USERAGENT => 'NextCloudJMAP/1.0 (1.0; x64)',
+    protected array $_transportOptions = [
+        CURLOPT_USERAGENT => 'PHP-JMAP-Client/1.0 (1.0; x64)',
         CURLOPT_HTTP_VERSION => self::TRANSPORT_VERSION_2,
         CURLOPT_CONNECTTIMEOUT => 30,
         CURLOPT_SSL_VERIFYPEER => 1,
@@ -91,84 +93,84 @@ class Client
      *
      * @var bool
      */
-    protected bool $_TransportRequestHeaderFlag = false;
+    protected bool $_transportRequestHeaderFlag = false;
 
     /**
      * Retain Last Transport Request Body Flag
      *
      * @var bool
      */
-    protected bool $_TransportRequestBodyFlag = false;
+    protected bool $_transportRequestBodyFlag = false;
 
     /**
      * Last Transport Request Header Data
      *
      * @var string
      */
-    protected string $_TransportRequestHeaderData = '';
+    protected string $_transportRequestHeaderData = '';
 
     /**
      * Last Transport Request Body Data
      *
      * @var string
      */
-    protected string $_TransportRequestBodyData = '';
+    protected string $_transportRequestBodyData = '';
 
     /**
      * Retain Last Transport Response Header Flag
      *
      * @var bool
      */
-    protected bool $_TransportRepsonseHeaderFlag = false;
+    protected bool $_transportResponseHeaderFlag = false;
 
     /**
      * Retain Last Transport Response Body Flag
      *
      * @var bool
      */
-    protected bool $_TransportRepsonseBodyFlag = false;
+    protected bool $_transportResponseBodyFlag = false;
 
     /**
      * Last Transport Response Code
      *
      * @var string
      */
-    protected string $_TransportRepsonseCode = '';
+    protected string $_transportResponseCode = '';
 
     /**
      * Last Transport Response Header Data
      *
      * @var string
      */
-    protected string $_TransportRepsonseHeaderData = '';
+    protected string $_transportResponseHeaderData = '';
 
     /**
      * Last Transport Response Header Data
      *
      * @var string
      */
-    protected string $_TransportRepsonseBodyData = '';
+    protected string $_transportResponseBodyData = '';
 
     /**
      * Transport Logging State (ON/OFF)
      *
      * @var bool
      */
-    protected bool $_TransportLogState = false;
+    protected bool $_transportLogState = false;
 
     /**
      * Transport Log File Location
      *
      * @var string
      */
-    protected string $_TransportLogLocation = '/tmp/php-jmap.log';
+    protected string $_transportLogLocation = '/tmp/php-jmap.log';
 
     /**
      * Transport Redirect Max
      *
      * @var int
      */
-    protected int $_TransportRedirectAttempts = 3;
+    protected int $_transportRedirectAttempts = 3;
 
     /**
      * Service Host
@@ -209,9 +211,9 @@ class Client
     /**
      * Authentication to use when connecting to the service
      *
-     * @var Basic|Bearer
+     * @var IAuthentication
      */
-    protected $_ServiceAuthentication;
+    protected IAuthentication $_ServiceAuthentication;
 
     /**
      * Session Connected
@@ -252,8 +254,8 @@ class Client
     public function configureTransportVersion(int $value): void {
         
         // store parameter
-        $this->_TransportOptions[CURLOPT_HTTP_VERSION] = $value;
-        // destroy existing client will need to be initilized again
+        $this->_transportOptions[CURLOPT_HTTP_VERSION] = $value;
+        // destroy existing client will need to be initialized again
         $this->_client = null;
 
     }
@@ -261,8 +263,8 @@ class Client
     public function configureTransportMode(string $value): void {
 
         // store parameter
-        $this->_TransportMode = $value;
-        // destroy existing client will need to be initilized again
+        $this->_transportMode = $value;
+        // destroy existing client will need to be initialized again
         $this->_client = null;
 
     }
@@ -270,8 +272,8 @@ class Client
     public function configureTransportOptions(array $options): void {
 
         // store parameter
-        $this->_TransportOptions = array_replace($this->_TransportOptions, $options);
-        // destroy existing client will need to be initilized again
+        $this->_transportOptions = array_replace($this->_transportOptions, $options);
+        // destroy existing client will need to be initialized again
         $this->_client = null;
 
     }
@@ -279,9 +281,9 @@ class Client
     public function configureTransportVerification(bool $value): void {
 
         // store parameter
-        $this->_TransportOptions[CURLOPT_SSL_VERIFYPEER] = (int) $value;
-        $this->_TransportOptions[CURLOPT_SSL_VERIFYHOST] = (int) $value;
-        // destroy existing client will need to be initilized again
+        $this->_transportOptions[CURLOPT_SSL_VERIFYPEER] = (int) $value;
+        $this->_transportOptions[CURLOPT_SSL_VERIFYHOST] = (int) $value;
+        // destroy existing client will need to be initialized again
         $this->_client = null;
 
     }
@@ -289,61 +291,61 @@ class Client
     /**
      * enables or disables transport log
      * 
-     * @param bool $value           ture or false flag
+     * @param bool $value           true or false flag
      */
     public function configureTransportLogState(bool $value): void {
 
         // store parameter
-        $this->_TransportLogState = $value;
+        $this->_transportLogState = $value;
 
     }
 
     /**
      * configures transport log location
      * 
-     * @param bool $value           ture or false flag
+     * @param bool $value           true or false flag
      */
     public function configureTransportLogLocation(string $value): void {
 
         // store parameter
-        $this->_TransportLogLocation = $value;
+        $this->_transportLogLocation = $value;
 
     }
 
     /**
      * Enables or disables retention of raw request headers sent
      * 
-     * @param bool $value           ture or false flag
+     * @param bool $value           true or false flag
      */
     public function retainTransportRequestHeader(bool $value): void {
-        $this->_TransportRequestHeaderFlag = $value;
+        $this->_transportRequestHeaderFlag = $value;
     }
 
     /**
      * Enables or disables retention of raw request body sent
      * 
-     * @param bool $value           ture or false flag
+     * @param bool $value           true or false flag
      */
     public function retainTransportRequestBody(bool $value): void {
-        $this->_TransportRequestBodyFlag = $value;
+        $this->_transportRequestBodyFlag = $value;
     }
 
     /**
-     * Enables or disables retention of raw response headers recieved
+     * Enables or disables retention of raw response headers received
      * 
-     * @param bool $value           ture or false flag
+     * @param bool $value           true or false flag
      */
     public function retainTransportResponseHeader(bool $value): void {
-        $this->_TransportRepsonseHeaderFlag = $value;
+        $this->_transportResponseHeaderFlag = $value;
     }
 
     /**
-     * Enables or disables retention of raw response body recieved
+     * Enables or disables retention of raw response body received
      * 
-     * @param bool $value           ture or false flag
+     * @param bool $value           true or false flag
      */
     public function retainTransportResponseBody(bool $value): void {
-        $this->_TransportRepsonseBodyFlag = $value;
+        $this->_transportResponseBodyFlag = $value;
     }
 
     /**
@@ -352,7 +354,7 @@ class Client
      * @return string
      */
     public function discloseTransportRequestHeader(): string {
-        return $this->_TransportRequestHeaderData;
+        return $this->_transportRequestHeaderData;
     }
 
     /**
@@ -361,49 +363,77 @@ class Client
      * @return string
      */
     public function discloseTransportRequestBody(): string {
-        return $this->_TransportRequestBodyData;
+        return $this->_transportRequestBodyData;
     }
 
     /**
-     * returns last retained response code recieved
+     * returns last retained response code received
      * 
      * @return int
      */
     public function discloseTransportResponseCode(): int {
-        return $this->_TransportRepsonseCode;
+        return $this->_transportResponseCode;
     }
 
     /**
-     * returns last retained raw response header recieved
+     * returns last retained raw response header received
      * 
      * @return string
      */
     public function discloseTransportResponseHeader(): string {
-        return $this->_TransportRepsonseHeaderData;
+        return $this->_transportResponseHeaderData;
     }
 
     /**
-     * returns last retained raw response body recieved
+     * returns last retained raw response body received
      * 
      * @return string
      */
     public function discloseTransportResponseBody(): string {
-        return $this->_TransportRepsonseBodyData;
+        return $this->_transportResponseBodyData;
     }
 
     public function setTransportAgent(string $value): void {
 
         // store transport agent parameter
-        $this->_TransportOptions[CURLOPT_USERAGENT] = $value;
-        // destroy existing client will need to be initilized again
+        $this->_transportOptions[CURLOPT_USERAGENT] = $value;
+        // destroy existing client will need to be initialized again
         $this->_client = null;
 
     }
 
     public function getTransportAgent(): string {
 
-        // return transport agent paramater
-        return $this->_TransportOptions[CURLOPT_USERAGENT];
+        // return transport agent parameter
+        return $this->_transportOptions[CURLOPT_USERAGENT];
+
+    }
+
+    
+
+    /**
+     * Gets the service host parameter
+     *
+     * @return string
+     */
+    public function getTransportSessionCookie(): string {
+        
+        // return service host parameter
+        return $this->_ServiceHost;
+
+    }
+
+    /**
+     * Sets the service host parameter to be used for all requests
+     *
+     * @param string $value
+     */
+    public function setTransportSessionCookie(string $value): void {
+
+        // store service host
+        $this->_ServiceHost = $value;
+        // destroy existing client will need to be initialized again
+        $this->_client = null;
 
     }
 
@@ -428,7 +458,7 @@ class Client
 
         // store service host
         $this->_ServiceHost = $value;
-        // destroy existing client will need to be initilized again
+        // destroy existing client will need to be initialized again
         $this->_client = null;
 
     }
@@ -454,7 +484,7 @@ class Client
 
         // store service path parameter
         $this->_ServiceDiscoveryPath = $value;
-        // destroy existing client will need to be initilized again
+        // destroy existing client will need to be initialized again
         $this->_client = null;
 
     }
@@ -550,9 +580,9 @@ class Client
      /**
      * Gets the authentication parameters object
      *
-     * @return Basic|AuthenticationBeare
+     * @return IAuthentication
      */
-    public function getAuthentication(): Basic|Bearer {
+    public function getAuthentication(): IAuthentication {
         
         // return authentication information
         return $this->_ServiceAuthentication;
@@ -562,23 +592,36 @@ class Client
      /**
      * Sets the authentication parameters to be used for all requests
      *
-     * @param Basic|Bearer $value
+     * @param IAuthentication $value
      */
-    public function setAuthentication(Basic|Bearer $value): void {
+    public function setAuthentication(IAuthentication $value, bool $reset = true): void {
         
         // store parameter
         $this->_ServiceAuthentication = $value;
-        // destroy existing client will need to be initilized again
-        $this->_client = null;
+        // destroy existing client will need to be initialized again
+        if ($reset) {
+            $this->_client = null;
+        }
+        // set service json basic authentication
+        if ($this->_ServiceAuthentication instanceof None) {
+            unset($this->_transportOptions[CURLOPT_HTTPAUTH]);
+            unset($this->_transportHeaders['Authorization']);
+        }
+        // set service json basic authentication
+        if ($this->_ServiceAuthentication instanceof JsonBasic) {
+            unset($this->_transportOptions[CURLOPT_HTTPAUTH]);
+            unset($this->_transportHeaders['Authorization']);
+        }
         // set service basic authentication
         if ($this->_ServiceAuthentication instanceof Basic) {
-            $this->_TransportOptions[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
-            $this->_TransportOptions[CURLOPT_USERPWD] = $this->_ServiceAuthentication->Id . ':' . $this->_ServiceAuthentication->Secret;
+            unset($this->_transportHeaders['Authorization']);
+            $this->_transportOptions[CURLOPT_HTTPAUTH] = CURLAUTH_BASIC;
+            $this->_transportOptions[CURLOPT_USERPWD] = $this->_ServiceAuthentication->Id . ':' . $this->_ServiceAuthentication->Secret;
         }
         // set service bearer authentication
         if ($this->_ServiceAuthentication instanceof Bearer) {
-            unset($this->_TransportOptions[CURLOPT_HTTPAUTH]);
-            $this->_TransportHeaders['Authorization'] = 'Authorization: Bearer ' . $this->_ServiceAuthentication->Token;
+            unset($this->_transportOptions[CURLOPT_HTTPAUTH]);
+            $this->_transportHeaders['Authorization'] = 'Authorization: Bearer ' . $this->_ServiceAuthentication->Token;
         }
 
     }
@@ -633,30 +676,30 @@ class Client
 
     public function transceive(string $message): null|string {
 
-        // evaluate if http client is initilized
+        // evaluate if http client is initialized
         if (!isset($this->_client)) {
             $this->_client = curl_init();
         }
         // reset responses
-        $this->_TransportRepsonseCode = 0;
-        $this->_TransportRepsonseHeaderData = '';
-        $this->_TransportRepsonseBodyData = '';
+        $this->_transportResponseCode = 0;
+        $this->_transportResponseHeaderData = '';
+        $this->_transportResponseBodyData = '';
         // set request options
-        curl_setopt_array($this->_client, $this->_TransportOptions);
+        curl_setopt_array($this->_client, $this->_transportOptions);
         // set request header
-        curl_setopt($this->_client, CURLOPT_HTTPHEADER, array_values($this->_TransportHeaders));
+        curl_setopt($this->_client, CURLOPT_HTTPHEADER, array_values($this->_transportHeaders));
         // set request data
         if (!empty($message)) {
             curl_setopt($this->_client, CURLOPT_POSTFIELDS, $message);
         }
         // evaluate, if we are retaining request headers
-        if ($this->_TransportRequestHeaderFlag) { $this->_TransportRequestHeaderData = $header; }
+        if ($this->_transportRequestHeaderFlag) { $this->_transportRequestHeaderData = $header; }
         // evaluate, if we are retaining request body
-        if ($this->_TransportRequestBodyFlag) { $this->_TransportRequestBodyData = $request; }
+        if ($this->_transportRequestBodyFlag) { $this->_transportRequestBodyData = $request; }
         // evaluate, if logging is enabled and write request to log
-        if ($this->_TransportLogState) { 
+        if ($this->_transportLogState) { 
             file_put_contents(
-                $this->_TransportLogLocation, 
+                $this->_transportLogLocation, 
                 PHP_EOL . date("Y-m-d H:i:s.").gettimeofday()["usec"] . ' - Request' . PHP_EOL . $message . PHP_EOL, 
                 FILE_APPEND
             );
@@ -668,9 +711,9 @@ class Client
         $code = curl_errno($this->_client);
         if ($code > 0) {
             // evaluate, if logging is enabled and write error to log
-            if ($this->_TransportLogState) { 
+            if ($this->_transportLogState) { 
                 file_put_contents(
-                    $this->_TransportLogLocation, 
+                    $this->_transportLogLocation, 
                     PHP_EOL . date("Y-m-d H:i:s.").gettimeofday()["usec"] . ' - Error' . PHP_EOL . curl_error($this->_client) . PHP_EOL . $response . PHP_EOL, 
                     FILE_APPEND
                 );
@@ -683,9 +726,9 @@ class Client
         $code = (int) curl_getinfo($this->_client, CURLINFO_RESPONSE_CODE);
         if ($code > 400) {
             // evaluate, if logging is enabled and write error to log
-            if ($this->_TransportLogState) { 
+            if ($this->_transportLogState) { 
                 file_put_contents(
-                    $this->_TransportLogLocation, 
+                    $this->_transportLogLocation, 
                     PHP_EOL . date("Y-m-d H:i:s.").gettimeofday()["usec"] . ' - Error' . PHP_EOL . $response . PHP_EOL, 
                     FILE_APPEND
                 );
@@ -707,17 +750,17 @@ class Client
             }
         }
         // retain response code
-        $this->_TransportRepsonseCode = $code;
+        $this->_transportResponseCode = $code;
         // extract header size
         $header_size = curl_getinfo($this->_client, CURLINFO_HEADER_SIZE);
         // evaluate, if we are retaining response headers
-        if ($this->_TransportRepsonseHeaderFlag || $code == 302) { $this->_TransportRepsonseHeaderData = substr($response, 0, $header_size); }
+        if ($this->_transportResponseHeaderFlag || $code == 302) { $this->_transportResponseHeaderData = substr($response, 0, $header_size); }
         // evaluate, if we are retaining response body
-        if ($this->_TransportRepsonseBodyFlag) { $this->_TransportRepsonseBodyData = substr($response, $header_size); }
+        if ($this->_transportResponseBodyFlag) { $this->_transportResponseBodyData = substr($response, $header_size); }
         // evaluate, if logging is enabled and write response body to log
-        if ($this->_TransportLogState) { 
+        if ($this->_transportLogState) { 
             file_put_contents(
-                $this->_TransportLogLocation,
+                $this->_transportLogLocation,
                 PHP_EOL . date("Y-m-d H:i:s.").gettimeofday()["usec"] . ' - Response' . PHP_EOL . substr($response, $header_size) . PHP_EOL, 
                 FILE_APPEND
             ); 
@@ -728,23 +771,50 @@ class Client
     }
 
     public function connect(): array {
+        // authenticate and retrieve json session
+        $this->_SessionData = $session = $this->authenticate();
+        // service authentication
+        if (isset($session['accessToken'])) {
+            $this->setAuthentication(new Bearer($this->_ServiceAuthentication->Id, $session['accessToken'], 0));
+        }
+        // service locations
+        $this->_ServiceCommandLocation = (isset($session['apiUrl'])) ? $session['apiUrl'] : '';
+        $this->_ServiceDownloadLocation = (isset($session['downloadUrl'])) ? $session['downloadUrl'] : '';
+        $this->_ServiceUploadLocation = (isset($session['uploadUrl'])) ? $session['uploadUrl'] : '';
+        $this->_ServiceEventLocation = (isset($session['eventSourceUrl'])) ? $session['eventSourceUrl'] : '';
+        // session connected
+        $this->_SessionConnected = true;
+        // return response body
+        return $session;
 
+    }
+
+    protected function authenticate(): ?array {
+        // perform initial authentication
+        if ($this->_ServiceAuthentication instanceof JsonBasic) {
+            return $this->authenticateJson();
+        } else {
+            return $this->authenticateBasic();
+        }
+    }
+
+    protected function authenticateBasic(): ?array {
         // configure client for command
-        unset($this->_TransportOptions[CURLOPT_POST]);
-        $this->_TransportOptions[CURLOPT_HTTPGET];
-        $this->_TransportOptions[CURLOPT_URL] = $this->_TransportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
+        $this->_transportOptions[CURLOPT_URL] = $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
+        $this->_transportOptions[CURLOPT_HTTPGET];
+        unset($this->_transportOptions[CURLOPT_POST]);
         // 
         $RequestAttempt = true;
         $RequestAttempts = 0;
-        while ($RequestAttempt && ($RequestAttempts < $this->_TransportRedirectAttempts)) {
+        while ($RequestAttempt && ($RequestAttempts < $this->_transportRedirectAttempts)) {
             // Increment attempts
             $RequestAttempts++;
             $RequestAttempt = false;
-            // perform transmit and recieve
-            $session = $this->transceive('');
+            // perform transmit and receive
+            $response = $this->transceive('');
             // determine if request was redirected
-            if ($this->_TransportRepsonseCode == 302) {
-                foreach (explode("\r\n", trim($this->_TransportRepsonseHeaderData)) as $line) {
+            if ($this->_transportResponseCode == 302) {
+                foreach (explode("\r\n", trim($this->_transportResponseHeaderData)) as $line) {
                     if (strpos($line, 'location:') !== false) {
                         $location = explode(':', $line, 2);
                         break;
@@ -752,27 +822,79 @@ class Client
                 }
                 if (isset($location) && !empty($location[1])) {
                     $RequestAttempt = true;
-                    $this->_TransportOptions[CURLOPT_URL] = trim($location[1]);
+                    $this->_transportOptions[CURLOPT_URL] = trim($location[1]);
                 }
             }
         }
         // configure client to defaults
-        $this->_TransportOptions[CURLOPT_POST] = true;
-        unset($this->_TransportOptions[CURLOPT_CUSTOMREQUEST]);
-        // convert text to object
-        $session = json_decode($session, true, 512, JSON_THROW_ON_ERROR);
-        // service locations
-        $this->_ServiceCommandLocation = (isset($session['apiUrl'])) ? $session['apiUrl'] : '';
-        $this->_ServiceDownloadLocation = (isset($session['downloadUrl'])) ? $session['downloadUrl'] : '';
-        $this->_ServiceUploadLocation = (isset($session['uploadUrl'])) ? $session['uploadUrl'] : '';
-        $this->_ServiceEventLocation = (isset($session['eventSourceUrl'])) ? $session['eventSourceUrl'] : '';
-        // session meta data
-        $this->_SessionData = $session;
-        // session connected
-        $this->_SessionConnected = true;
-        // return response body
-        return $session;
+        $this->_transportOptions[CURLOPT_POST] = true;
+        unset($this->_transportOptions[CURLOPT_CUSTOMREQUEST]);
 
+        return json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+    }
+
+    protected function authenticateJson(): ?array {
+
+        $cookie_jar = tempnam('/tmp','');
+        // configure client transport settings
+        $this->_transportOptions[CURLOPT_URL] = $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
+        $this->_transportOptions[CURLOPT_POST] = true;
+        unset($this->_transportOptions[CURLOPT_CUSTOMREQUEST]);
+        $this->retainTransportResponseHeader(true);
+
+        /*===== perform initial transaction =====*/
+        $this->_transportOptions[CURLOPT_COOKIEJAR] = $cookie_jar;
+        $requestData = '{"type":"start"}';
+        $RequestAttempt = true;
+        $RequestAttempts = 0;
+        while ($RequestAttempt && ($RequestAttempts < $this->_transportRedirectAttempts)) {
+            // Increment attempts
+            $RequestAttempts++;
+            $RequestAttempt = false;
+            // perform transmit and receive
+            $responseData = $this->transceive($requestData);
+            // determine if request was redirected
+            if ($this->_transportResponseCode == 302) {
+                foreach (explode("\r\n", trim($this->_transportResponseHeaderData)) as $line) {
+                    if (strpos($line, 'location:') !== false) {
+                        $location = explode(':', $line, 2);
+                        break;
+                    }
+                }
+                if (isset($location) && !empty($location[1])) {
+                    $RequestAttempt = true;
+                    $this->_transportOptions[CURLOPT_URL] = trim($location[1]);
+                }
+            }
+        }
+        $responseData = json_decode($responseData, true, 512, JSON_THROW_ON_ERROR);
+        // determine if login id was returned in initial request and fail if not
+        if (!isset($responseData['loginId'])) {
+            return null;
+        }
+
+        /*===== perform username exchange transaction =====*/
+        unset($this->_transportOptions[CURLOPT_COOKIEJAR]);
+        $this->_transportOptions[CURLOPT_COOKIEFILE] = $cookie_jar;
+        $serviceLoginId = $responseData['loginId'];
+        $requestData = sprintf('{"type":"username","username":"%s","loginId":"%s"}', $this->_ServiceAuthentication->Id, $serviceLoginId);
+        // perform transmit and receive
+        $responseData = $this->transceive($requestData);
+        $responseData = json_decode($responseData, true, 512, JSON_THROW_ON_ERROR);
+        // determine if login id was returned in initial request and fail if not
+        if (!isset($responseData['loginId'])) {
+            return null;
+        }
+
+        /*===== perform password exchange transaction =====*/
+        $this->_transportOptions[CURLOPT_COOKIEFILE] = $cookie_jar;
+        $serviceLoginId = $responseData['loginId'];
+        $requestData = sprintf('{"type":"password","value":"%s","remember":false,"loginId":"%s"}', $this->_ServiceAuthentication->Secret, $serviceLoginId);
+        // perform transmit and receive
+        $responseData = $this->transceive($requestData);
+        $responseData = json_decode($responseData, true, 512, JSON_THROW_ON_ERROR);
+
+        return $responseData;
     }
 
     public function perform(RequestBundle|array $commands): ResponseBundle {
@@ -794,8 +916,8 @@ class Client
         // serialize request
         $request = $request->phrase();
         // assign transceiver location
-        $this->_TransportOptions[CURLOPT_URL] = $this->_ServiceCommandLocation;
-        // transmit and recieve
+        $this->_transportOptions[CURLOPT_URL] = $this->_ServiceCommandLocation;
+        // transmit and receive
         $response = $this->transceive($request);
         // deserialize response
         $response = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
@@ -815,7 +937,7 @@ class Client
         $location = str_replace("{type}", $type, $location);
         $location = str_replace("{name}", $name, $location);
         // clone default headers
-        $transportHeaders = $this->_TransportHeaders;
+        $transportHeaders = $this->_transportHeaders;
         // remove some headers
         unset(
             $transportHeaders['Content-Type'],
@@ -824,7 +946,7 @@ class Client
         // set specific headers
         $transportHeaders['Connection'] = 'Connection: Close';
         // clone default options
-        $transportOptions = $this->_TransportOptions;
+        $transportOptions = $this->_transportOptions;
         // remove some options
         unset(
             $transportOptions[CURLOPT_POST],
@@ -869,7 +991,7 @@ class Client
         // replace command options
         $location = str_replace("{accountId}", $account, $this->_ServiceUploadLocation);
         // clone default headers
-        $transportHeaders = $this->_TransportHeaders;
+        $transportHeaders = $this->_transportHeaders;
         // remove some headers
         unset(
             $transportHeaders['Accept'],
@@ -878,7 +1000,7 @@ class Client
         $transportHeaders['Connection'] = 'Connection: Close';
         $transportHeaders['Content-Type'] = 'Content-Type: ' . $type;
         // clone default transport options
-        $transportOptions = $this->_TransportOptions;
+        $transportOptions = $this->_transportOptions;
         // remove some transport options
         unset(
             $transportOptions[CURLOPT_CUSTOMREQUEST],

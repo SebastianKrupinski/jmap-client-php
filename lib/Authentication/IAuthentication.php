@@ -24,11 +24,4 @@
 */
 namespace JmapClient\Authentication;
 
-class Bearer implements IAuthentication
-{
-    public function __construct (
-        public ?string $Id = null,
-        public ?string $Token = null,
-        int $Expiry = 0
-    ) {}
-}
+interface IAuthentication {}
