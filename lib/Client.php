@@ -25,6 +25,7 @@
 namespace JmapClient;
 
 use resource;
+use RuntimeException;
 use JmapClient\Authentication\IAuthentication;
 use JmapClient\Authentication\Basic;
 use JmapClient\Authentication\Bearer;
@@ -59,7 +60,7 @@ class Client
      */
     protected string $_transportMode = self::TRANSPORT_MODE_SECURE;
     /**
-     * Transpost Header
+     * Transport Header
      */
     protected array $_transportHeaders = [
 		'Connection' => 'Connection: Keep-Alive',
@@ -68,7 +69,7 @@ class Client
         'Accept' => 'Accept: application/json'
     ];
     /**
-     * Transpost Options
+     * Transport Options
      */
     protected array $_transportOptions = [
         CURLOPT_USERAGENT => 'PHP-JMAP-Client/1.0 (1.0; x64)',
@@ -638,18 +639,24 @@ class Client
 
     }
 
-    public function sessionCapable(string $value): bool {
+    public function sessionCapable(string $value, bool $standard = true): bool {
 
-        return isset($this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value]) ? true : false;
+        if ($standard === false) {
+            return isset($this->_SessionData['capabilities'][$value]) ? true : false;
+        } else {
+            return isset($this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value]) ? true : false;
+        }
 
     }
 
-    public function sessionCapabilities(?string $value = null): array {
+    public function sessionCapabilities(?string $value = null, bool $standard = true): array {
     
-        if (!empty($value)) {
+        if ($standard === true && !empty($value)) {
             return isset($this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value]) ?
-                   $this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value] : 
-                   [];
+                   $this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value] : [];
+        } elseif ($standard === false && !empty($value)) {
+            return isset($this->_SessionData['capabilities'][$value]) ?
+                   $this->_SessionData['capabilities'][$value] : [];
         } else {
             return $this->_SessionData['capabilities'];
         }
@@ -662,12 +669,14 @@ class Client
 
     }
 
-    public function sessionAccountDefault(?string $value = null): string | null {
+    public function sessionAccountDefault(?string $value = null, bool $standard = true): string | null {
 
-        if (!empty($value)) {
+        if ($standard === true && !empty($value)) {
             return isset($this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:' . $value]) ?
-                   $this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:' . $value] : 
-                   $this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:core'];
+                   $this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:' . $value] : null;
+        } elseif ($standard === false && !empty($value)) {
+            return isset($this->_SessionData['primaryAccounts'][$value]) ?
+                   $this->_SessionData['primaryAccounts'][$value] : null;
         } else {
             return $this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:core'];
         }

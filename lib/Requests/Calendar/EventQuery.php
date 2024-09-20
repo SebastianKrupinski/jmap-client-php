@@ -29,9 +29,12 @@ use JmapClient\Requests\RequestQuery;
 class EventQuery extends RequestQuery
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:calendar', 'CalendarEvent', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:calendars';
+        $class = $resource ?? 'CalendarEvent';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 

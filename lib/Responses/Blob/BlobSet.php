@@ -22,7 +22,7 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Responses\Mail;
+namespace JmapClient\Responses\Blob;
 
 use JmapClient\Responses\ResponseSet;
 
@@ -34,7 +34,5 @@ class BlobSet extends ResponseSet
         parent::__construct($response);
 
     }
-
-    
 
 }

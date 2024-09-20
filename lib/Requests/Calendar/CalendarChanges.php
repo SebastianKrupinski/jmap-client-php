@@ -29,9 +29,12 @@ use JmapClient\Requests\RequestChanges;
 class CalendarChanges extends RequestChanges
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:calendars', 'Calendar', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:calendars';
+        $class = $resource ?? 'Calendar';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 

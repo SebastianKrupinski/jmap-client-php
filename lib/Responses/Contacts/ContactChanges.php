@@ -22,20 +22,17 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Calendar;
+namespace JmapClient\Responses\Calendar;
 
-use JmapClient\Requests\RequestGet;
+use JmapClient\Responses\ResponseChanges;
 
-class CalendarGet extends RequestGet
+class ContactChanges extends ResponseChanges
 {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+    public function __construct (array $response = []) {
 
-        $space = $namespace ?? 'urn:ietf:params:jmap:calendars';
-        $class = $resource ?? 'Calendar';
+        parent::__construct($response);
 
-        parent::__construct($space, $class, $account, $identifier);
-        
     }
-    
+
 }

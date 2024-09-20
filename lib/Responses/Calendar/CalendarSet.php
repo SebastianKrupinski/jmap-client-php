@@ -24,7 +24,7 @@ declare(strict_types=1);
 */
 namespace JmapClient\Responses\Calendar;
 
-use JmapClient\Responses\ResponseChanges;
+use JmapClient\Responses\ResponseSet;
 
 class CalendarSet extends ResponseSet
 {

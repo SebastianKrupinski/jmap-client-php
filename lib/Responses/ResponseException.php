@@ -22,20 +22,27 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Calendar;
+namespace JmapClient\Responses;
 
-use JmapClient\Requests\RequestGet;
-
-class CalendarGet extends RequestGet
+class ResponseException
 {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+    protected array $_response = [];
 
-        $space = $namespace ?? 'urn:ietf:params:jmap:calendars';
-        $class = $resource ?? 'Calendar';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
+    public function __construct (array $response = []) {
+        $this->_response = $response;
     }
-    
+
+    public function identifier(): string {
+        return isset($this->_response[2]) ? $this->_response[2] : '';
+    }
+
+    public function type(): string {
+        return isset($this->_response[1]['type']) ? $this->_response[1]['type'] : '';
+    }
+
+    public function description(): string {
+        return isset($this->_response[1]['description']) ? $this->_response[1]['description'] : '';
+    }
+
 }

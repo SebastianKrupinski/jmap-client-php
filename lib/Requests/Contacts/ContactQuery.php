@@ -29,23 +29,26 @@ use JmapClient\Requests\RequestQuery;
 class ContactQuery extends RequestQuery
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:contacts', 'CalendarEvent', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:contacts';
+        $class = $resource ?? 'ContactCard';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 
-    public function filter(): EventFilter {
+    public function filter(): ContactFilter {
         
         // return self for function chaining 
-        return new EventFilter($this->_request);
+        return new ContactFilter($this->_request);
 
     }
 
-    public function sort(): EventSort {
+    public function sort(): ContactSort {
 
         // return self for function chaining 
-        return new EventSort($this->_request);
+        return new ContactSort($this->_request);
 
     }
 

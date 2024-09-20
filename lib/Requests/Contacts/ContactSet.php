@@ -29,9 +29,12 @@ use JmapClient\Requests\RequestSet;
 class ContactSet extends RequestSet
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:contacts', 'CalendarEvent', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:contacts';
+        $class = $resource ?? 'ContactCard';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 

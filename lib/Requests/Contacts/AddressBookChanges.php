@@ -29,9 +29,12 @@ use JmapClient\Requests\RequestChanges;
 class AddressBookChanges extends RequestChanges
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:contacts', 'AddressBook', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:contacts';
+        $class = $resource ?? 'AddressBook';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 
