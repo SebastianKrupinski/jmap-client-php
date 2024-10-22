@@ -40,15 +40,23 @@ class EventQueryChanges extends RequestQueryChanges
 
     public function filter(): EventFilter {
         
+        // evaluate if filter parameter exist and create if needed
+        if (!isset($this->_command['filter'])) {
+            $this->_command['filter'] = new \stdClass();
+        }
         // return self for function chaining 
-        return new EventFilter($this->_request);
+        return new EventFilter($this->_command['filter']);
 
     }
 
     public function sort(): EventSort {
 
+        // evaluate if sort parameter exist and create if needed
+        if (!isset($this->_command['sort'])) {
+            $this->_command['sort'] = [];
+        }
         // return self for function chaining 
-        return new EventSort($this->_request);
+        return new EventSort($this->_command['sort']);
 
     }
 

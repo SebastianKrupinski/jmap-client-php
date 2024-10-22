@@ -37,7 +37,7 @@ class MailboxQuery extends RequestQuery
 
     public function filter(): MailboxFilter {
         
-        // evaluate if filter paramater exist and create if needed
+        // evaluate if filter parameter exist and create if needed
         if (!isset($this->_command['filter'])) {
             $this->_command['filter'] = new \stdClass();
         }
@@ -48,7 +48,7 @@ class MailboxQuery extends RequestQuery
 
     public function sort(): MailboxSort {
 
-        // evaluate if sort paramater exist and create if needed
+        // evaluate if sort parameter exist and create if needed
         if (!isset($this->_command['sort'])) {
             $this->_command['sort'] = [];
         }

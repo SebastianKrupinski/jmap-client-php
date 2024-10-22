@@ -76,7 +76,7 @@ class Client
         CURLOPT_HTTP_VERSION => self::TRANSPORT_VERSION_2,
         CURLOPT_CONNECTTIMEOUT => 30,
         CURLOPT_SSL_VERIFYPEER => 1,
-        CURLOPT_SSL_VERIFYHOST => 1,
+        CURLOPT_SSL_VERIFYHOST => 2,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HEADER => true,
         CURLOPT_POST => true,
@@ -282,8 +282,8 @@ class Client
     public function configureTransportVerification(bool $value): void {
 
         // store parameter
-        $this->_transportOptions[CURLOPT_SSL_VERIFYPEER] = (int) $value;
-        $this->_transportOptions[CURLOPT_SSL_VERIFYHOST] = (int) $value;
+        $this->_transportOptions[CURLOPT_SSL_VERIFYPEER] = $value ? 1 : 0;
+        $this->_transportOptions[CURLOPT_SSL_VERIFYHOST] = $value ? 2 : 0;
         // destroy existing client will need to be initialized again
         $this->_client = null;
 

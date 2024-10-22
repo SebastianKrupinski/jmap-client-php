@@ -37,7 +37,7 @@ class RequestQueryChanges extends Request
 
     public function filter(): RequestFilter {
         
-        // evaluate if filter paramater exist and create if needed
+        // evaluate if filter parameter exist and create if needed
         if (!isset($this->_requestCommand['filter'])) {
             $this->_requestCommand['filter'] = new \stdClass();
         }
@@ -48,7 +48,7 @@ class RequestQueryChanges extends Request
 
     public function sort(): RequestSort {
         
-        // evaluate if filter paramater exist and create if needed
+        // evaluate if filter parameter exist and create if needed
         if (!isset($this->_requestCommand['sort'])) {
             $this->_requestCommand['sort'] = [];
         }

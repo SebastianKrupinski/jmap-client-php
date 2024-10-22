@@ -24,6 +24,9 @@ declare(strict_types=1);
 */
 namespace JmapClient\Responses\Calendar;
 
+use DateInterval;
+use DateTime;
+use DateTimeInterface;
 use JmapClient\Responses\ResponseParameters;
 
 class EventParameters extends ResponseParameters
@@ -35,80 +38,219 @@ class EventParameters extends ResponseParameters
 
     }
 
-    public function id(): string|null {
+    /* Metadata Properties */
+
+    public function in(): array|null {
         
         // return value of parameter
+        return array_keys($this->parameter('calendarIds'));
+
+    }
+    
+    public function id(): string|null {
+
         return $this->parameter('id');
 
     }
 
-    public function name(): string|null {
+    public function uid(): string|null {
         
-        // return value of parameter
-        return $this->parameter('name');
+        return $this->parameter('uid');
 
     }
 
-    public function description(): string|null {
+    public function method(): string|null {
         
-        // return value of parameter
-        return $this->parameter('description');
+        return $this->parameter('method');
 
     }
 
-    public function color(): string|null {
+    public function created(): DateTimeInterface|null {
         
-        // return value of parameter
-        return $this->parameter('color');
+        $value = $this->parameter('created');
+        return ($value) ? new DateTime($value) : null;
 
     }
 
-    public function priority(): int|null {
+    public function updated(): DateTimeInterface|null {
         
-        // return value of parameter
-        return $this->parameter('sortOrder');
+        $value = $this->parameter('updated');
+        return ($value) ? new DateTime($value) : null;
 
     }
 
-    public function subscribed(): bool|null {
+    public function sequence(): int {
         
-        // return value of parameter
-        return $this->parameter('isSubscribed');
+        return (int)$this->parameter('sequence');
 
     }
 
-    public function visible(): bool|null {
+    public function relation(): string|null {
         
-        // return value of parameter
-        return $this->parameter('isVisible');
+        return $this->parameter('relatedTo');
 
     }
 
-    public function default(): bool|null {
+    /* Scheduling Properties */
+
+    public function starts(): DateTimeInterface|null {
         
-        // return value of parameter
-        return $this->parameter('isDefault');
+        $value = $this->parameter('start');
+        return ($value) ? new DateTime($value) : null;
+
+    }
+
+    public function ends(): DateTimeInterface|null {
+        
+        $starts = $this->starts();
+        $duration = $this->duration();
+
+        if ($starts && $duration) {
+            return date_add($starts, $duration);
+        }
+
+        return null;
+
+    }
+
+    public function duration(): DateInterval|null {
+        
+        $value = $this->parameter('duration');
+        return ($value) ? new DateInterval($value) : null;
 
     }
 
     public function timezone(): string|null {
         
-        // return value of parameter
         return $this->parameter('timeZone');
 
     }
 
-    public function sharees(): array|null {
+    public function timeless(): bool {
         
-        // return value of parameter
-        return $this->parameter('shareWith');
+        return $this->parameter('showWithoutTime');
 
     }
 
-    public function rights(): object|null {
+    public function recurrence(): mixed {
         
-        // return value of parameter
-        return $this->parameter('myRights');
+        return $this->parameter('recurrenceRules');
+
+    }
+
+    public function recurrenceExclusions(): mixed {
+        
+        return $this->parameter('excludedRecurrenceRules');
+
+    }
+
+    public function recurrenceOverrides(): mixed {
+        
+        return $this->parameter('recurrenceOverrides');
+
+    }
+
+    public function priority(): int {
+        
+        return $this->parameter('priority') ?? 0;
+
+    }
+
+    public function privacy(): string {
+        
+        return $this->parameter('privacy') ?? 'public';
+
+    }
+
+    public function availability(): string {
+        
+        return $this->parameter('freeBusyStatus') ?? 'busy';
+
+    }
+    
+    public function replies(): mixed {
+        
+        return $this->parameter('replyTo');
+
+    }
+
+    public function sender(): string|null {
+        
+        return $this->parameter('sentBy');
+
+    }
+
+    public function participants(): mixed {
+        
+        return $this->parameter('participants');
+
+    }
+
+    /* What Properties */
+
+    public function label(): string {
+        
+        return (string)$this->parameter('title');
+
+    }
+
+    public function descriptionContents(): string {
+        
+        return (string)$this->parameter('description');
+
+    }
+
+    public function descriptionType(): string {
+        
+        return $this->parameter('descriptionContentType') ?? 'text/plain';
+
+    }
+
+    /* Where Properties */
+
+    public function physicalLocation(): mixed {
+        
+        return $this->parameter('locations');
+
+    }
+
+    public function virtualLocation(): mixed {
+        
+        return $this->parameter('virtualLocations');
+
+    }
+
+    /* Localization Properties */
+    
+    public function locale(): string|null {
+        
+        return $this->parameter('locale');
+
+    }
+
+    public function localizations(): mixed {
+        
+        return $this->parameter('localizations');
+
+    }
+
+    /* Categorization Properties */
+
+    public function color(): string|null {
+        
+        return $this->parameter('color');
+
+    }
+
+    public function categories(): mixed {
+        
+        return $this->parameter('categories');
+
+    }
+
+    public function keywords(): mixed {
+        
+        return $this->parameter('keywords');
 
     }
 
