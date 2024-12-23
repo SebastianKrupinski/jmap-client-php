@@ -29,9 +29,12 @@ use JmapClient\Requests\RequestGet;
 class IdentityGet extends RequestGet
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:submission', 'Identity', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:submission';
+        $class = $resource ?? 'Identity';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 

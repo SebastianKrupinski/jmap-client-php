@@ -30,28 +30,35 @@ use JmapClient\Requests\Mail\MailParameters;
 class MailSet extends RequestSet
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:mail', 'Email', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:mail';
+        $class = $resource ?? 'Email';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 
-    public function create(string $id): MailParameters {
+    public function create(string $id, $object = null): MailParameters {
         
-        // evaluate if create paramater exist and create if needed
-        if (!isset($this->_command['create'][$id])) {
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['create'][$id]) && $object === null) {
             $this->_command['create'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['create'][$id]);
         }
         // return self for function chaining 
         return new MailParameters($this->_command['create'][$id]);
 
     }
 
-    public function update(string $id): MailParameters {
+    public function update(string $id, $object = null): MailParameters {
         
-        // evaluate if create paramater exist and create if needed
-        if (!isset($this->_command['update'][$id])) {
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['update'][$id]) && $object === null) {
             $this->_command['update'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['update'][$id]);
         }
         // return self for function chaining 
         return new MailParameters($this->_command['update'][$id]);

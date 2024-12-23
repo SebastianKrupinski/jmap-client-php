@@ -22,20 +22,29 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Identity;
+namespace JmapClient\Requests\Calendar;
 
-use JmapClient\Requests\RequestChanges;
+use DateTime;
+use DateTimeImmutable;
+use JmapClient\Requests\RequestParameters;
 
-class IdentityChanges extends RequestChanges
+class EventNotificationTriggerAbsoluteParameters extends RequestParameters
 {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+    public function __construct(&$parameters = null) {
 
-        $space = $namespace ?? 'urn:ietf:params:jmap:submission';
-        $class = $resource ?? 'Identity';
+        parent::__construct($parameters);
 
-        parent::__construct($space, $class, $account, $identifier);
+        $this->parameter('@type', 'AbsoluteTrigger');
+
+    }
+
+    public function when(DateTime|DateTimeImmutable $value): self {
         
+        $this->parameter('when', $value->format(self::DATE_FORMAT_UTC));
+        
+        return $this;
+
     }
 
 }

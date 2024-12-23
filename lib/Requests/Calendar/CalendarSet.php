@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestSet;
+use JmapClient\Requests\Calendar\CalendarParameters;
 
 class CalendarSet extends RequestSet
 {
@@ -36,6 +37,32 @@ class CalendarSet extends RequestSet
 
         parent::__construct($space, $class, $account, $identifier);
         
+    }
+
+    public function create(string $id, $object = null): CalendarParameters {
+        
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['create'][$id]) && $object === null) {
+            $this->_command['create'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['create'][$id]);
+        }
+        // return self for function chaining 
+        return new CalendarParameters($this->_command['create'][$id]);
+
+    }
+
+    public function update(string $id, $object = null): CalendarParameters {
+        
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['update'][$id]) && $object === null) {
+            $this->_command['update'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['update'][$id]);
+        }
+        // return self for function chaining 
+        return new CalendarParameters($this->_command['update'][$id]);
+
     }
 
     public function delete(string $id): self {

@@ -24,6 +24,7 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Contacts;
 
+use DateTimeZone;
 use JmapClient\Requests\RequestQuery;
 
 class ContactQuery extends RequestQuery
@@ -52,7 +53,7 @@ class ContactQuery extends RequestQuery
 
     }
 
-    public function timezone(\DateTimeZone $value): self {
+    public function timezone(DateTimeZone $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['timeZone'] = $value->getName();

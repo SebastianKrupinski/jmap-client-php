@@ -29,9 +29,12 @@ use JmapClient\Requests\RequestChanges;
 class MailChanges extends RequestChanges
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:mail', 'Email', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:mail';
+        $class = $resource ?? 'Email';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 

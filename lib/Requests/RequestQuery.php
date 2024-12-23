@@ -38,29 +38,29 @@ class RequestQuery extends Request
     public function filter(): RequestFilter {
         
         // evaluate if filter paramater exist and create if needed
-        if (!isset($this->_requestCommand['filter'])) {
-            $this->_requestCommand['filter'] = new \stdClass();
+        if (!isset($this->_command['filter'])) {
+            $this->_command['filter'] = new \stdClass();
         }
         // return self for function chaining 
-        return new RequestFilter($this->_requestCommand['filter']);
+        return new RequestFilter($this->_command['filter']);
 
     }
 
     public function sort(): RequestSort {
         
         // evaluate if filter paramater exist and create if needed
-        if (!isset($this->_requestCommand['sort'])) {
-            $this->_requestCommand['sort'] = [];
+        if (!isset($this->_command['sort'])) {
+            $this->_command['sort'] = [];
         }
         // return self for function chaining 
-        return new RequestSort($this->_requestCommand['sort']);
+        return new RequestSort($this->_command['sort']);
 
     }
 
     public function startAbsolute(int $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_requestCommand['position'] = $value;
+        $this->_command['position'] = $value;
         // return self for function chaining 
         return $this;
 
@@ -69,7 +69,7 @@ class RequestQuery extends Request
     public function limitAbsolute(int $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_requestCommand['limit'] = $value;
+        $this->_command['limit'] = $value;
         // return self for function chaining 
         return $this;
 
@@ -78,7 +78,7 @@ class RequestQuery extends Request
     public function startRelative(string $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_requestCommand['anchor'] = $value;
+        $this->_command['anchor'] = $value;
         // return self for function chaining 
         return $this;
 
@@ -87,7 +87,7 @@ class RequestQuery extends Request
     public function startRelativeOffset(int $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_requestCommand['anchorOffset'] = $value;
+        $this->_command['anchorOffset'] = $value;
         // return self for function chaining 
         return $this;
 
@@ -96,7 +96,7 @@ class RequestQuery extends Request
     public function limitRelative(int $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_requestCommand['limit'] = $value;
+        $this->_command['limit'] = $value;
         // return self for function chaining 
         return $this;
 
@@ -106,7 +106,7 @@ class RequestQuery extends Request
     public function tally(bool $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_requestCommand['calculateTotal'] = $value;
+        $this->_command['calculateTotal'] = $value;
         // return self for function chaining 
         return $this;
 

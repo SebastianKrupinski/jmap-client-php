@@ -26,6 +26,10 @@ namespace JmapClient\Requests;
 
 class RequestFilter
 {
+
+    public const DATE_FORMAT_LOCAL = Request::DATE_FORMAT_LOCAL;
+    public const DATE_FORMAT_UTC = Request::DATE_FORMAT_UTC;
+
     protected object $_filter;
 
     public function __construct(object &$filter) {

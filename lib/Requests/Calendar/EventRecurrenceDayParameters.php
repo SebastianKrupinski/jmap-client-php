@@ -22,20 +22,35 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Identity;
+namespace JmapClient\Requests\Calendar;
 
-use JmapClient\Requests\RequestChanges;
+use JmapClient\Requests\RequestParameters;
 
-class IdentityChanges extends RequestChanges
+class EventRecurrenceDayParameters extends RequestParameters
 {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+    public function __construct(&$parameters = null) {
 
-        $space = $namespace ?? 'urn:ietf:params:jmap:submission';
-        $class = $resource ?? 'Identity';
+        parent::__construct($parameters);
 
-        parent::__construct($space, $class, $account, $identifier);
+        $this->parameter('@type', 'NDay');
+    
+    }
+
+    public function day(string $value): self {
         
+        $this->parameter('day', $value);
+        
+        return $this;
+
+    }
+
+    public function ordinal(int $value): self {
+        
+        $this->parameter('nthOfPeriod', $value);
+        
+        return $this;
+
     }
 
 }

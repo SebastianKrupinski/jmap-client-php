@@ -22,50 +22,40 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Requests\Calendar;
 
+use DateInterval;
 use JmapClient\Requests\RequestParameters;
 
-class MailboxParameters extends RequestParameters
+class EventNotificationTriggerRelativeParameters extends RequestParameters
 {
+
     public function __construct(&$parameters = null) {
 
         parent::__construct($parameters);
 
+        $this->parameter('@type', 'AbsoluteTrigger');
+
     }
 
-    public function in(string $value): self {
+    public function anchor(string $value): self {
         
-        // creates or updates parameter and assigns value
-        $this->parameter('parentId', $value);
-        // return self for function chaining
+        $this->parameter('relativeTo', $value);
+        
         return $this;
 
     }
 
-    public function label(string $value): self {
+    public function offset(DateInterval $value): self {
         
-        // creates or updates parameter and assigns value
-        $this->parameter('name', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function role(string $value): self {
+        $this->parameter('relativeTo', match (true) {
+            ($value->y > 0) => $value->format("%rP%yY%mM%dDT%hH%iM"),
+            ($value->m > 0) => $value->format("%rP%mM%dDT%hH%iM"),
+            ($value->d > 0) => $value->format("%rP%dDT%hH%iM"),
+            ($value->h > 0) => $value->format("%rPT%hH%iM"),
+            default => $value->format("%rPT%iM")
+        });
         
-        // creates or updates parameter and assigns value
-        $this->parameter('role', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function priority(int $value): self {
-        
-        // creates or updates parameter and assigns value
-        $this->parameter('sortOrder', $value);
-        // return self for function chaining
         return $this;
 
     }

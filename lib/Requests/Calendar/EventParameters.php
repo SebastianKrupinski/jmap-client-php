@@ -24,14 +24,20 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Calendar;
 
-use DateTimeInterface;
+use DateInterval;
+use DateTime;
+use DateTimeImmutable;
+use JmapClient\Requests\Request;
 use JmapClient\Requests\RequestParameters;
 
 class EventParameters extends RequestParameters
 {
-    public function __construct(&$request, $action, $id) {
+    public const DATE_FORMAT_LOCAL = Request::DATE_FORMAT_LOCAL;
+    public const DATE_FORMAT_UTC = Request::DATE_FORMAT_UTC;
 
-        parent::__construct($request, $action, $id);
+    public function __construct(&$parameters = null) {
+
+        parent::__construct($parameters);
 
     }
 
@@ -40,6 +46,8 @@ class EventParameters extends RequestParameters
         return 'application/jscalendar+json;type=event';
 
     }
+
+    /* Metadata Properties */
 
     public function in(string $value): self {
         
@@ -59,6 +67,33 @@ class EventParameters extends RequestParameters
 
     }
 
+    public function method(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('method', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function created(DateTime|DateTimeImmutable $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('created', $value->format(self::DATE_FORMAT_UTC));
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function updated(DateTime|DateTimeImmutable $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('updated', $value->format(self::DATE_FORMAT_UTC));
+        // return self for function chaining
+        return $this;
+
+    }
+
     public function sequence(int $value): self {
         
         // creates or updates parameter and assigns value
@@ -68,7 +103,7 @@ class EventParameters extends RequestParameters
 
     }
 
-    public function related(string $value): self {
+    public function relation(string $value): self {
         
         // creates or updates parameter and assigns value
         $this->parameterStructured('relatedTo', $value, true);
@@ -77,19 +112,36 @@ class EventParameters extends RequestParameters
 
     }
 
-    public function label(string $value): self {
+    /* Scheduling Properties */
+
+    public function timezone(string $value): self {
         
         // creates or updates parameter and assigns value
-        $this->parameter('title', $value);
+        $this->parameter('timeZone', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function description(string $value): self {
+    public function starts(DateTime|DateTimeImmutable $value): self {
         
         // creates or updates parameter and assigns value
-        $this->parameter('description', $value);
+        $this->parameter('start', $value->format(self::DATE_FORMAT_LOCAL));
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function duration(DateInterval $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('duration', match (true) {
+            ($value->y > 0) => $value->format("%rP%yY%mM%dDT%hH%iM"),
+            ($value->m > 0) => $value->format("%rP%mM%dDT%hH%iM"),
+            ($value->d > 0) => $value->format("%rP%dDT%hH%iM"),
+            ($value->h > 0) => $value->format("%rPT%hH%iM"),
+            default => $value->format("%rPT%iM")
+        });
         // return self for function chaining
         return $this;
 
@@ -104,21 +156,165 @@ class EventParameters extends RequestParameters
 
     }
 
-    public function physicalLocations(string $value): self {
+    public function recurrenceInstanceId(string $value): self {
         
         // creates or updates parameter and assigns value
-        $this->parameter('location', $value);
+        $this->parameter('recurrenceId', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function virtualLocations(string $value): self {
+    public function recurrenceInstanceTimeZone(string $value): self {
         
         // creates or updates parameter and assigns value
-        $this->parameter('virtualLocations', $value);
+        $this->parameter('recurrenceIdTimeZone', $value);
         // return self for function chaining
         return $this;
+
+    }
+
+    public function recurrenceRules(int $id = null): EventRecurrenceRuleParameters {
+        
+        // evaluate if parameter exist and create if needed
+        if (!isset($this->_parameters->recurrenceRules)) {
+            $this->_parameters->recurrenceRules = [];
+        }
+        // return self for function chaining 
+        if ($id) {
+            if (!isset($this->_parameters->recurrenceRules[$id])){
+                $this->_parameters->recurrenceRules[$id] = new \stdClass();
+            }
+            return new EventRecurrenceRuleParameters($this->_parameters->recurrenceRules[$id]);
+        } else {
+            $this->_parameters->recurrenceRules[] = new \stdClass();
+            return new EventRecurrenceRuleParameters(
+                $this->_parameters->recurrenceRules[array_key_last($this->_parameters->recurrenceRules)]
+            );
+        }
+        
+    }
+
+    public function recurrenceExclusions(object ...$value): self {
+        
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function recurrenceOverrides(object ...$value): self {
+        
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function priority(int $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('priority', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+    
+    public function privacy(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('privacy', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function availability(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('freeBusyStatus', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function replies(array $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('replyTo', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function sender(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('sentBy', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function participants(string $id): EventParticipantParameters {
+        
+        // evaluate if parameter exist and create if needed
+        if (!isset($this->_parameters->participants?->$id)) {
+            $this->parameterStructured('participants', $id, new \stdClass());
+        }
+        // return self for function chaining 
+        return new EventParticipantParameters($this->_parameters->participants->$id);
+
+    }
+
+    /* What Properties */
+
+    public function label(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('title', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function descriptionContents(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('description', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function descriptionType(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('descriptionContentType', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    /* Where Properties */
+
+    public function physicalLocations(string $id): EventPhysicalLocationParameters {
+
+        // evaluate if parameter exist and create if needed
+        if (!isset($this->_parameters->locations?->$id)) {
+            $this->parameterStructured('locations', $id, new \stdClass());
+        }
+        // return self for function chaining 
+        return new EventPhysicalLocationParameters($this->_parameters->locations->$id);
+
+    }
+
+    public function virtualLocations(string $id): EventVirtualLocationParameters {
+
+        // evaluate if parameter exist and create if needed
+        if (!isset($this->_parameters->locations?->$id)) {
+            $this->parameterStructured('locations', $id, new \stdClass());
+        }
+        // return self for function chaining 
+        return new EventVirtualLocationParameters($this->_parameters->locations->$id);
 
     }
 
@@ -131,6 +327,8 @@ class EventParameters extends RequestParameters
 
     }
 
+    /* Localization Properties */
+
     public function locale(string $value): self {
         
         // creates or updates parameter and assigns value
@@ -140,23 +338,14 @@ class EventParameters extends RequestParameters
 
     }
 
-    public function keywords(string $value): self {
+    public function localizations(object ...$value): self {
         
-        // creates or updates parameter and assigns value
-        $this->parameter('keywords', $value);
         // return self for function chaining
         return $this;
 
     }
 
-    public function categories(string $value): self {
-        
-        // creates or updates parameter and assigns value
-        $this->parameter('categories', $value);
-        // return self for function chaining
-        return $this;
-
-    }
+    /* Categorization Properties */
 
     public function color(string $value): self {
         
@@ -167,5 +356,41 @@ class EventParameters extends RequestParameters
 
     }
 
+    public function categories(string ...$value): self {
+        
+        foreach ($value as $entry) {
+            $collection[$entry] = true;
+        }
+        // creates or updates parameter and assigns value
+        $this->parameter('categories', (object)$collection);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function tags(string ...$value): self {
+        
+        foreach ($value as $entry) {
+            $collection[$entry] = true;
+        }
+        // creates or updates parameter and assigns value
+        $this->parameter('keywords', (object)$collection);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    /* Notification Properties */
+
+    public function notifications(string $id): EventNotificationParameters {
+        
+        // evaluate if parameter exist and create if needed
+        if (!isset($this->_parameters->alerts?->$id)) {
+            $this->parameterStructured('alerts', $id, new \stdClass());
+        }
+        // return self for function chaining 
+        return new EventNotificationParameters($this->_parameters->alerts->$id);
+
+    }
 
 }

@@ -38,7 +38,7 @@ class RequestChanges extends Request
     public function state(string $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_requestCommand['sinceState'] = $value;
+        $this->_command['sinceState'] = $value;
         // return self for function chaining 
         return $this;
 
@@ -47,7 +47,7 @@ class RequestChanges extends Request
     public function limitRelative(int $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_requestCommand['maxChanges'] = $value;
+        $this->_command['maxChanges'] = $value;
         // return self for function chaining 
         return $this;
 

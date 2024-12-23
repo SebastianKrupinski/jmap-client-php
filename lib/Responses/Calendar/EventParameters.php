@@ -26,7 +26,7 @@ namespace JmapClient\Responses\Calendar;
 
 use DateInterval;
 use DateTime;
-use DateTimeInterface;
+use DateTimeImmutable;
 use JmapClient\Responses\ResponseParameters;
 
 class EventParameters extends ResponseParameters
@@ -65,17 +65,17 @@ class EventParameters extends ResponseParameters
 
     }
 
-    public function created(): DateTimeInterface|null {
+    public function created(): DateTimeImmutable|null {
         
         $value = $this->parameter('created');
-        return ($value) ? new DateTime($value) : null;
+        return ($value) ? new DateTimeImmutable($value) : null;
 
     }
 
-    public function updated(): DateTimeInterface|null {
+    public function updated(): DateTimeImmutable|null {
         
         $value = $this->parameter('updated');
-        return ($value) ? new DateTime($value) : null;
+        return ($value) ? new DateTimeImmutable($value) : null;
 
     }
 
@@ -93,20 +93,20 @@ class EventParameters extends ResponseParameters
 
     /* Scheduling Properties */
 
-    public function starts(): DateTimeInterface|null {
+    public function starts(): DateTimeImmutable|null {
         
         $value = $this->parameter('start');
-        return ($value) ? new DateTime($value) : null;
+        return ($value) ? new DateTimeImmutable($value) : null;
 
     }
 
-    public function ends(): DateTimeInterface|null {
+    public function ends(): DateTimeImmutable|null {
         
         $starts = $this->starts();
         $duration = $this->duration();
 
         if ($starts && $duration) {
-            return date_add($starts, $duration);
+            return $starts->add($duration);
         }
 
         return null;
@@ -132,27 +132,45 @@ class EventParameters extends ResponseParameters
 
     }
 
-    public function recurrence(): mixed {
+    
+    public function recurrenceInstanceId(): string|null {
         
-        return $this->parameter('recurrenceRules');
+        return $this->parameter('recurrenceId');
 
     }
 
-    public function recurrenceExclusions(): mixed {
+    public function recurrenceInstanceTimeZone(): string|null {
         
-        return $this->parameter('excludedRecurrenceRules');
+        return $this->parameter('recurrenceIdTimeZone');
 
     }
 
-    public function recurrenceOverrides(): mixed {
+    public function recurrenceRules(): array {
         
-        return $this->parameter('recurrenceOverrides');
+        $collection = $this->parameter('recurrenceRules') ?? [];
+        foreach ($collection as $key => $data) {
+            $collection[$key] = new EventRecurrenceRuleParameters($data);
+        }
+
+        return $collection;
+
+    }
+
+    public function recurrenceExclusions(): array {
+        
+        return $this->parameter('excludedRecurrenceRules') ?? [];
+
+    }
+
+    public function recurrenceOverrides(): array {
+        
+        return $this->parameter('recurrenceOverrides') ?? [];
 
     }
 
     public function priority(): int {
         
-        return $this->parameter('priority') ?? 0;
+        return (int)$this->parameter('priority') ?? 0;
 
     }
 
@@ -168,9 +186,9 @@ class EventParameters extends ResponseParameters
 
     }
     
-    public function replies(): mixed {
+    public function replies(): array {
         
-        return $this->parameter('replyTo');
+        return $this->parameter('replyTo') ?? [];
 
     }
 
@@ -180,9 +198,14 @@ class EventParameters extends ResponseParameters
 
     }
 
-    public function participants(): mixed {
+    public function participants(): array {
         
-        return $this->parameter('participants');
+        $collection = $this->parameter('participants') ?? [];
+        foreach ($collection as $key => $data) {
+            $collection[$key] = new EventParticipantParameters($data);
+        }
+
+        return $collection;
 
     }
 
@@ -208,15 +231,25 @@ class EventParameters extends ResponseParameters
 
     /* Where Properties */
 
-    public function physicalLocation(): mixed {
-        
-        return $this->parameter('locations');
+    public function physicalLocations(): array {
+
+        $collection = $this->parameter('locations') ?? [];
+        foreach ($collection as $key => $data) {
+            $collection[$key] = new EventPhysicalLocationParameters($data);
+        }
+
+        return $collection;
 
     }
 
-    public function virtualLocation(): mixed {
+    public function virtualLocations(): array {
         
-        return $this->parameter('virtualLocations');
+        $collection = $this->parameter('virtualLocations') ?? [];
+        foreach ($collection as $key => $data) {
+            $collection[$key] = new EventVirtualLocationParameters($data);
+        }
+
+        return $collection;
 
     }
 
@@ -228,7 +261,7 @@ class EventParameters extends ResponseParameters
 
     }
 
-    public function localizations(): mixed {
+    public function localizations(): array {
         
         return $this->parameter('localizations');
 
@@ -242,15 +275,28 @@ class EventParameters extends ResponseParameters
 
     }
 
-    public function categories(): mixed {
+    public function categories(): array {
         
-        return $this->parameter('categories');
+        return $this->parameter('categories') ?? [];
 
     }
 
-    public function keywords(): mixed {
+    public function tags(): array {
         
-        return $this->parameter('keywords');
+        return $this->parameter('keywords') ?? [];
+
+    }
+
+    /* Notification Properties */
+
+    public function notifications(): array {
+        
+        $collection = $this->parameter('alerts') ?? [];
+        foreach ($collection as $key => $data) {
+            $collection[$key] = new EventNotificationParameters($data);
+        }
+
+        return $collection;
 
     }
 

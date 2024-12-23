@@ -30,17 +30,22 @@ use JmapClient\Requests\Blob\BlobParameters;
 class BlobSet extends RequestUpload
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:Blob', 'Blob', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:Blob';
+        $class = $resource ?? 'Blob';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 
-    public function create(string $id): BlobParameters {
+    public function create(string $id, $object = null): BlobParameters {
         
-        // evaluate if create paramater exist and create if needed
-        if (!isset($this->_command['create'][$id])) {
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['create'][$id]) && $object === null) {
             $this->_command['create'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['create'][$id]);
         }
         // return self for function chaining 
         return new BlobParameters($this->_command['create'][$id]);

@@ -22,20 +22,44 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Identity;
+namespace JmapClient\Responses\Calendar;
 
-use JmapClient\Requests\RequestChanges;
+use DateInterval;
+use JmapClient\Responses\ResponseParameters;
 
-class IdentityChanges extends RequestChanges
+class EventNotificationTriggerRelativeParameters extends ResponseParameters
 {
+    
+    public function __construct(array $response = []) {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+        parent::__construct($response);
 
-        $space = $namespace ?? 'urn:ietf:params:jmap:submission';
-        $class = $resource ?? 'Identity';
-
-        parent::__construct($space, $class, $account, $identifier);
+    }
+    
+    public function type(): string {
         
+        return 'relative';
+
+    }
+
+    public function anchor(): string {
+
+        return $this->parameter('relativeTo');
+
+    }
+
+    public function offset(): DateInterval {
+
+        $value = $this->parameter('offset');
+        if (strpos($value, '-') === 0) {
+            $value = new DateInterval(ltrim($value, '-'));
+            $value->invert = 1;
+            return $value;
+        }
+        else {
+            return new DateInterval($value);
+        }
+
     }
 
 }

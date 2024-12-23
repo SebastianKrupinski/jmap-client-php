@@ -22,38 +22,40 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Blob;
+namespace JmapClient\Responses\Calendar;
 
-use JmapClient\Requests\RequestGet;
+use JmapClient\Responses\ResponseParameters;
 
-class BlobGet extends RequestGet
+class EventNotificationParameters extends ResponseParameters
 {
+    
+    public function __construct(array $response = []) {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+        parent::__construct($response);
 
-        $space = $namespace ?? 'urn:ietf:params:jmap:Blob';
-        $class = $resource ?? 'Blob';
+    }
 
-        parent::__construct($space, $class, $account, $identifier);
+    public function type(): string|null {
+        
+        return $this->parameter('action');
+
+    }
+
+    public function trigger(): mixed {
+        
+        $trigger = $this->parameter('trigger') ?? [];
+        return match ($trigger['@type']) {
+            'AbsoluteTrigger' => new EventNotificationTriggerAbsoluteParameters($trigger),
+            'OffsetTrigger' => new EventNotificationTriggerRelativeParameters($trigger),
+            'UnknownTrigger' => new EventNotificationTriggerRelativeParameters($trigger),
+        };
         
     }
 
-    public function offset(int $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->_command['offset'] = $value;
-        // return self for function chaining 
-        return $this;
+    public function acknowledged(): string|null {
         
+        return $this->parameter('acknowledged');
+
     }
-
-    public function length(int $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->_command['length'] = $value;
-        // return self for function chaining 
-        return $this;
-        
-    }
-
+    
 }

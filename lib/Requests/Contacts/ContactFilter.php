@@ -24,6 +24,8 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Contacts;
 
+use DateTime;
+use DateTimeImmutable;
 use JmapClient\Requests\RequestFilter;
 
 class ContactFilter extends RequestFilter
@@ -35,10 +37,10 @@ class ContactFilter extends RequestFilter
         
     }
 
-    public function in(string $value): self {
+    public function in(string ...$value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('inCalendars', $value);
+        $this->condition('inAddressBook', $value);
         // return self for function chaining
         return $this;
 
@@ -71,37 +73,37 @@ class ContactFilter extends RequestFilter
 
     }
     
-    public function createdAfter(\DateTime $value): self {
+    public function createdAfter(DateTime|DateTimeImmutable $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('createdAfter', $value->format('Y-m-d\\TH:i:s'));
+        $this->condition('createdAfter', $value->format(self::DATE_FORMAT_UTC));
         // return self for function chaining
         return $this;
 
     }
 
-    public function createdBefore(\DateTime $value): self {
+    public function createdBefore(DateTime|DateTimeImmutable $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('createdBefore', $value->format('Y-m-d\\TH:i:s'));
+        $this->condition('createdBefore', $value->format(self::DATE_FORMAT_UTC));
         // return self for function chaining
         return $this;
 
     }
 
-    public function updatedAfter(\DateTime $value): self {
+    public function updatedAfter(DateTime|DateTimeImmutable $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('updatedAfter', $value->format('Y-m-d\\TH:i:s'));
+        $this->condition('updatedAfter', $value->format(self::DATE_FORMAT_UTC));
         // return self for function chaining
         return $this;
 
     }
 
-    public function updatedBefore(\DateTime $value): self {
+    public function updatedBefore(DateTime|DateTimeImmutable $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('updatedBefore', $value->format('Y-m-d\\TH:i:s'));
+        $this->condition('updatedBefore', $value->format(self::DATE_FORMAT_UTC));
         // return self for function chaining
         return $this;
 

@@ -44,22 +44,26 @@ class RequestSet extends Request
 
     }
 
-    public function create(string $id): RequestParameters {
+    public function create(string $id, RequestParameters $object = null): RequestParameters {
         
-        // evaluate if create paramater exist and create if needed
-        if (!isset($this->_command['create'][$id])) {
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['create'][$id]) && $object === null) {
             $this->_command['create'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['create'][$id]);
         }
         // return self for function chaining 
         return new RequestParameters($this->_command['create'][$id]);
 
     }
 
-    public function update(string $id): RequestParameters {
+    public function update(string $id, RequestParameters $object = null): RequestParameters {
 
-        // evaluate if create paramater exist and create if needed
-        if (!isset($this->_command['update'][$id])) {
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['update'][$id]) && $object === null) {
             $this->_command['update'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['update'][$id]);
         }
         // return self for function chaining 
         return new RequestParameters($this->_command['update'][$id]);

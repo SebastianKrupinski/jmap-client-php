@@ -22,50 +22,85 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestParameters;
 
-class MailboxParameters extends RequestParameters
+class EventParticipantParameters extends RequestParameters
 {
+
     public function __construct(&$parameters = null) {
 
         parent::__construct($parameters);
 
+        $this->parameter('@type', 'Participant');
+
     }
 
-    public function in(string $value): self {
+    public function kind(string $value): self {
         
-        // creates or updates parameter and assigns value
-        $this->parameter('parentId', $value);
-        // return self for function chaining
+        $this->parameter('kind', $value);
+        
         return $this;
 
     }
 
-    public function label(string $value): self {
+    public function name(string $value): self {
         
-        // creates or updates parameter and assigns value
         $this->parameter('name', $value);
-        // return self for function chaining
+
         return $this;
 
     }
 
-    public function role(string $value): self {
+    public function description(string $value): self {
         
-        // creates or updates parameter and assigns value
-        $this->parameter('role', $value);
-        // return self for function chaining
+        $this->parameter('description', $value);
+
         return $this;
 
     }
 
-    public function priority(int $value): self {
+    public function address(string $value): self {
         
-        // creates or updates parameter and assigns value
-        $this->parameter('sortOrder', $value);
-        // return self for function chaining
+        $this->parameter('email', $value);
+
+        return $this;
+
+    }
+
+    public function send(string $protocol, string $value): self {
+        
+        $this->parameterStructured('sendTo', $protocol, $value);
+
+        return $this;
+
+    }
+
+    public function status(string $value): self {
+        
+        $this->parameter('participationStatus', $value);
+
+        return $this;
+
+    }
+
+    public function comment(string $value): self {
+        
+        $this->parameter('participationComment', $value);
+
+        return $this;
+
+    }
+
+    public function roles(string ...$value): self {
+        
+        foreach ($value as $entry) {
+            $collection[$entry] = true;
+        }
+
+        $this->parameter('roles', (object)$collection);
+
         return $this;
 
     }

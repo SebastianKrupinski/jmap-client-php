@@ -24,6 +24,8 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Mail;
 
+use DateTime;
+use DateTimeImmutable;
 use JmapClient\Requests\RequestFilter;
 
 class MailSubmissionFilter extends RequestFilter
@@ -44,19 +46,19 @@ class MailSubmissionFilter extends RequestFilter
 
     }
 
-    public function sendBefore(\DateTime $value): self {
+    public function sendBefore(DateTime|DateTimeImmutable $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('before', $value->format('Y-m-d\\TH:i:s'));
+        $this->condition('before', $value->format(self::DATE_FORMAT_LOCAL));
         // return self for function chaining
         return $this;
 
     }
 
-    public function sendAfter(\DateTime $value): self {
+    public function sendAfter(DateTime|DateTimeImmutable $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('after', $value->format('Y-m-d\\TH:i:s'));
+        $this->condition('after', $value->format(self::DATE_FORMAT_LOCAL));
         // return self for function chaining
         return $this;
 

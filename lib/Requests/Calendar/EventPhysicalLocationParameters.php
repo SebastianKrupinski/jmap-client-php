@@ -22,50 +22,78 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestParameters;
 
-class MailboxParameters extends RequestParameters
+class EventPhysicalLocationParameters extends RequestParameters
 {
+
     public function __construct(&$parameters = null) {
 
         parent::__construct($parameters);
 
-    }
-
-    public function in(string $value): self {
-        
-        // creates or updates parameter and assigns value
-        $this->parameter('parentId', $value);
-        // return self for function chaining
-        return $this;
+        $this->parameter('@type', 'Location');
 
     }
 
     public function label(string $value): self {
         
-        // creates or updates parameter and assigns value
         $this->parameter('name', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
-    public function role(string $value): self {
+    public function description(string $value): self {
         
-        // creates or updates parameter and assigns value
-        $this->parameter('role', $value);
-        // return self for function chaining
+        $this->parameter('description', $value);
+        
         return $this;
 
     }
 
-    public function priority(int $value): self {
+    public function timezone(string $value): self {
         
-        // creates or updates parameter and assigns value
-        $this->parameter('sortOrder', $value);
-        // return self for function chaining
+        $this->parameter('timeZone', $value);
+        
+        return $this;
+
+    }
+
+    public function coordinates(string $value): self {
+        
+        $this->parameter('coordinates', $value);
+        
+        return $this;
+
+    }
+
+    public function attributes(string ...$value): self {
+    
+        foreach ($value as $entry) {
+            $collection[$entry] = true;
+        }
+
+        $this->parameter('locationTypes', (object)$collection);
+
+        return $this;
+
+    }
+
+    public function links(array $value): self {
+        
+        //TODO: add proper links structure
+        //$this->parameter('links', $value);
+        
+        return $this;
+
+    }
+
+    public function relative(string $value): self {
+        
+        $this->parameter('relativeTo', $value);
+        
         return $this;
 
     }

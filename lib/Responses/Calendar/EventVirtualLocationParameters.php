@@ -22,20 +22,41 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Identity;
+namespace JmapClient\Responses\Calendar;
 
-use JmapClient\Requests\RequestChanges;
+use JmapClient\Responses\ResponseParameters;
 
-class IdentityChanges extends RequestChanges
+class EventVirtualLocationParameters extends ResponseParameters
 {
+    
+    public function __construct(array $response = []) {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+        parent::__construct($response);
 
-        $space = $namespace ?? 'urn:ietf:params:jmap:submission';
-        $class = $resource ?? 'Identity';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
     }
 
+    public function label(): string|null {
+        
+        return $this->parameter('name');
+
+    }
+
+    public function description(): string|null {
+        
+        return $this->parameter('description');
+
+    }
+
+    public function location(): string|null {
+        
+        return $this->parameter('uri');
+
+    }
+
+    public function attributes(): array|null {
+        
+        return $this->parameter('features');
+
+    }
+    
 }

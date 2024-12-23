@@ -26,6 +26,9 @@ namespace JmapClient\Requests;
 
 class Request implements \JsonSerializable
 {
+    public const DATE_FORMAT_LOCAL = 'Y-m-d\TH:i:s';
+    public const DATE_FORMAT_UTC = 'Y-m-d\TH:i:s\Z';
+
     protected string $_space = '';
     protected string $_class = '';
     protected string $_method = '';
@@ -49,23 +52,23 @@ class Request implements \JsonSerializable
         
     }
 
-    public function identifier() {
+    public function identifier(): string {
         return $this->_identifier;
     }
 
-    public function namespace() {
+    public function namespace(): string {
         return $this->_space;
     }
 
-    public function class() {
+    public function class(): string {
         return $this->_class;
     }
 
-    public function method() {
+    public function method(): string {
         return $this->_method;
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return $this->_request;
     }
 

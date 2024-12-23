@@ -28,13 +28,13 @@ use JmapClient\Requests\RequestParameters;
 
 class CalendarParameters extends RequestParameters
 {
-    public function __construct(&$request, $action, $id) {
+    public function __construct(&$parameters = null) {
 
-        parent::__construct($request, $action, $id);
+        parent::__construct($parameters);
 
     }
 
-    public function name(string $value): self {
+    public function label(string $value): self {
         
         // creates or updates parameter and assigns value
         $this->parameter('name', $value);

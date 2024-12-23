@@ -30,21 +30,38 @@ use JmapClient\Requests\Identity\IdentityParameters;
 class IdentitySet extends RequestSet
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:submission', 'Identity', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:submission';
+        $class = $resource ?? 'Identity';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 
-    public function create(string $id): IdentityParameters {
+    public function create(string $id, $object = null): IdentityParameters {
         
-        return new IdentityParameters($this->_request, 'create', $id);
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['create'][$id]) && $object === null) {
+            $this->_command['create'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['create'][$id]);
+        }
+        // return self for function chaining 
+        return new IdentityParameters($this->_command['create'][$id]);
 
     }
 
-    public function update(string $id): IdentityParameters {
+    public function update(string $id, $object = null): IdentityParameters {
         
-        return new IdentityParameters($this->_request, 'update', $id);
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['update'][$id]) && $object === null) {
+            $this->_command['update'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['update'][$id]);
+        }
+        // return self for function chaining 
+        return new IdentityParameters($this->_command['update'][$id]);
 
     }
 

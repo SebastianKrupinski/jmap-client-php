@@ -22,41 +22,48 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Blob;
+namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestParameters;
 
-class BlobParameters extends RequestParameters
+class EventNotificationParameters extends RequestParameters
 {
+
     public function __construct(&$parameters = null) {
 
         parent::__construct($parameters);
+
+        $this->parameter('@type', 'Alert');
 
     }
 
     public function type(string $value): self {
         
-        // creates or updates parameter and assigns value
-        $this->parameter('type', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function dataPlain(string $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->parameterStructured('data', 'data:asText', $value);
-        // return self for function chaining
-        return $this;
-
-    }
-
-    public function dataEncoded(string $value): self {
+        $this->parameter('action', $value);
         
-        // creates or updates parameter and assigns value
-        $this->parameterStructured('data', 'data:asBase64', $value);
-        // return self for function chaining
+        return $this;
+
+    }
+
+    public function trigger(string $value): EventNotificationTriggerAbsoluteParameters|EventNotificationTriggerRelativeParameters|EventNotificationTriggerUnknownParameters {
+        
+        // evaluate if parameter exist and create if needed
+        if (!isset($this->_parameters->trigger)) {
+            $this->parameter('trigger', new \stdClass());
+        }
+        // return self for function chaining 
+        return match ($value) {
+            'absolute' => new EventNotificationTriggerAbsoluteParameters($this->_parameters->trigger),
+            'offset' => new EventNotificationTriggerRelativeParameters($this->_parameters->trigger),
+            default => new EventNotificationTriggerUnknownParameters($this->_parameters->trigger),
+        };
+        
+    }
+
+    public function acknowledged(string $value): self {
+        
+        $this->parameter('acknowledged', $value);
+        
         return $this;
 
     }

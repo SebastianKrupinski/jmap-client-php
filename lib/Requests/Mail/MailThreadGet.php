@@ -29,9 +29,12 @@ use JmapClient\Requests\RequestGet;
 class MailThreadGet extends RequestGet
 {
 
-    public function __construct(string $account, string $identifier = '') {
+    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
 
-        parent::__construct('urn:ietf:params:jmap:mail', 'Thread', $account, $identifier);
+        $space = $namespace ?? 'urn:ietf:params:jmap:mail';
+        $class = $resource ?? 'Thread';
+
+        parent::__construct($space, $class, $account, $identifier);
         
     }
 

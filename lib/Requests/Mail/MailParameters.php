@@ -29,7 +29,7 @@ use JmapClient\Requests\Mail\MailPart;
 
 class MailParameters extends RequestParameters
 {
-    public function __construct(&$parameters) {
+    public function __construct(&$parameters = null) {
 
         parent::__construct($parameters);
 
@@ -100,7 +100,7 @@ class MailParameters extends RequestParameters
         $this->parameterStructured('bodyStructure', 'partId', $id);
         $this->parameterStructured('bodyStructure', 'type', $id);
         // creates or updates parameter and assigns value
-        $this->parameterStructured('bodyValues', $id, (object) ['value' => $value, 'isTruncated' => false]);
+        $this->parameterStructured('bodyValues', $id, (object) ['value' => $content, 'isTruncated' => false]);
         // return self for function chaining
         return $this;
 

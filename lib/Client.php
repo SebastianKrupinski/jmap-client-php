@@ -234,7 +234,7 @@ class Client
      * Constructor for the ExchangeWebServices class
      *
      * @param string $host              Service Host (FQDN, IPv4, IPv6)
-     * @param string $authentication    SErvice Authentication
+     * @param $authentication    Service Authentication
      */
     public function __construct(
         $host = '',

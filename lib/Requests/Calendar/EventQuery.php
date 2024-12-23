@@ -24,6 +24,7 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Calendar;
 
+use DateTimeZone;
 use JmapClient\Requests\RequestQuery;
 
 class EventQuery extends RequestQuery
@@ -60,7 +61,7 @@ class EventQuery extends RequestQuery
 
     }
 
-    public function timezone(\DateTimeZone $value): self {
+    public function timezone(DateTimeZone $value): self {
 
         // creates or updates parameter and assigns new value
         $this->_request[1]['timeZone'] = $value->getName();

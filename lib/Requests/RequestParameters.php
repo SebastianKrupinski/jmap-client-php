@@ -24,14 +24,27 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests;
 
+use stdClass;
+
 class RequestParameters
 {
+    public const DATE_FORMAT_LOCAL = Request::DATE_FORMAT_LOCAL;
+    public const DATE_FORMAT_UTC = Request::DATE_FORMAT_UTC;
+    
     protected object $_parameters;
 
-    public function __construct(object &$parameters) {
+    public function __construct(&$parameters = null) {
 
-        $this->_parameters =& $parameters;
+        if ($parameters === null) {
+            $this->_parameters = new stdClass();
+        } else {
+            $this->_parameters =& $parameters;
+        }
+    }
 
+    public function bind(&$anchor): self {
+        $anchor = $this->_parameters;
+        return $this;
     }
 
     public function parameter(string $name, mixed $value): self {
@@ -47,7 +60,7 @@ class RequestParameters
         
         // evaluate if parameter is an object
         if (!is_object($this->_parameters->$name)) {
-            $this->_parameters->$name = new \stdClass();
+            $this->_parameters->$name = new stdClass();
         }
         // creates or updates parameter and assigns value
         $this->_parameters->$name->$label = $value;

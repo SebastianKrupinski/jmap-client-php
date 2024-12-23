@@ -25,12 +25,13 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Identity;
 
 use JmapClient\Requests\RequestParameters;
+use stdClass;
 
 class IdentityParameters extends RequestParameters
 {
-    public function __construct(&$request, $action, $id) {
+    public function __construct(&$parameters = null) {
 
-        parent::__construct($request, $action, $id);
+        parent::__construct($parameters);
 
     }
 
@@ -43,7 +44,7 @@ class IdentityParameters extends RequestParameters
 
     }
 
-    public function replyTo(string $address): self {
+    public function replyTo(string $address, string $name = ''): self {
         
         // creates or updates parameter and assigns value
         $this->parameterCollection('replyTo', (object) ['name' => $name, 'email' => $address]);
@@ -74,13 +75,13 @@ class IdentityParameters extends RequestParameters
 
     public function signaturePlain(string $value): self {
         
-        return $this->contents($value, 'plain');
+        return $this->parameter('textSignature', $value);
 
     }
 
     public function signatureHtml(string $value): self {
         
-        return $this->contents($value, 'html');
+        return $this->parameter('htmlSignature', $value);
 
     }
 
