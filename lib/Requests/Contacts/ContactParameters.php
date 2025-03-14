@@ -22,6 +22,34 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Authentication;
+namespace JmapClient\Requests\Contacts;
 
-interface IAuthentication {}
+use JmapClient\Requests\RequestParameters;
+
+class ContactParameters extends RequestParameters
+{
+    public function __construct(&$parameters = null) {
+
+        parent::__construct($parameters);
+
+    }
+
+    public function in(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameterStructured('addressbookIds', $value, true);
+        // return self for function chaining
+        return $this;
+
+    }
+
+    public function label(string $value): self {
+        
+        // creates or updates parameter and assigns value
+        $this->parameter('name', $value);
+        // return self for function chaining
+        return $this;
+
+    }
+
+}

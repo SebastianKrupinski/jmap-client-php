@@ -1,5 +1,5 @@
 <?php
-//declare(strict_types=1);
+declare(strict_types=1);
 
 /**
 * @copyright Copyright (c) 2023 Sebastian Krupinski <krupinski01@gmail.com>
@@ -28,6 +28,8 @@ class JsonBasic implements IAuthentication
 {
     public function __construct (
         public ?string $Id = null,
-        public ?string $Secret = null
+        public ?string $Secret = null,
+        public ?string $AuthenticateLocation = null,
+        public bool $AuthenticateWithCookie = false,
     ) {}
 }

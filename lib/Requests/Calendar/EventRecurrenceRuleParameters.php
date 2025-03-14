@@ -65,7 +65,7 @@ class EventRecurrenceRuleParameters extends RequestParameters
 
     public function until(DateTime|DateTimeImmutable $value): self {
         
-        $this->parameter('until', $value->format(self::DATE_FORMAT_UTC));
+        $this->parameter('until', $value->format(self::DATE_FORMAT_LOCAL));
         
         return $this;
 

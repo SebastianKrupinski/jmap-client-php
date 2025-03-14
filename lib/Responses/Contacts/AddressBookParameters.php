@@ -56,13 +56,6 @@ class AddressBookParameters extends ResponseParameters
 
     }
 
-    public function color(): string|null {
-        
-        // return value of parameter
-        return $this->parameter('color');
-
-    }
-
     public function priority(): int|null {
         
         // return value of parameter
@@ -77,24 +70,10 @@ class AddressBookParameters extends ResponseParameters
 
     }
 
-    public function visible(): bool|null {
-        
-        // return value of parameter
-        return $this->parameter('isVisible');
-
-    }
-
     public function default(): bool|null {
         
         // return value of parameter
         return $this->parameter('isDefault');
-
-    }
-
-    public function timezone(): string|null {
-        
-        // return value of parameter
-        return $this->parameter('timeZone');
 
     }
 

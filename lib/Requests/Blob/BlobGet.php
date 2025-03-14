@@ -29,7 +29,7 @@ use JmapClient\Requests\RequestGet;
 class BlobGet extends RequestGet
 {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+    public function __construct(string $account, string $identifier = '', ?string $namespace = null, ?string $resource = null) {
 
         $space = $namespace ?? 'urn:ietf:params:jmap:Blob';
         $class = $resource ?? 'Blob';

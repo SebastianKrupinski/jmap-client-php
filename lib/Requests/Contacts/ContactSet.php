@@ -37,6 +37,32 @@ class ContactSet extends RequestSet
         parent::__construct($space, $class, $account, $identifier);
         
     }
+    
+    public function create(string $id, $object = null): ContactParameters {
+        
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['create'][$id]) && $object === null) {
+            $this->_command['create'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['create'][$id]);
+        }
+        // return self for function chaining 
+        return new ContactParameters($this->_command['create'][$id]);
+
+    }
+
+    public function update(string $id, $object = null): ContactParameters {
+        
+        // evaluate if create parameter exist and create if needed
+        if (!isset($this->_command['update'][$id]) && $object === null) {
+            $this->_command['update'][$id] = new \stdClass();
+        } elseif ($object !== null) {
+            $object->bind($this->_command['update'][$id]);
+        }
+        // return self for function chaining 
+        return new ContactParameters($this->_command['update'][$id]);
+
+    }
 
     public function delete(string $id): self {
 

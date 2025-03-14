@@ -24,8 +24,6 @@ declare(strict_types=1);
 */
 namespace JmapClient\Responses;
 
-use JmapClient\Responses\ResponseClasses;
-
 class ResponseBundle
 {
 
@@ -34,14 +32,14 @@ class ResponseBundle
     public function __construct (array $response = []) {
         
         $this->_response = $response;
-
+        
         foreach ($this->_response['methodResponses'] as $key => $entry) {
-            if (isset(ResponseClasses::$Commands[$entry[0]])) {
+            if (array_key_exists($entry[0], ResponseClasses::$Commands)) {
                 $class = ResponseClasses::$Commands[$entry[0]];
                 $this->_response['methodResponses'][$key] = new $class($entry);
             }
         }
-
+        
     }
 
     public function responses(): array {

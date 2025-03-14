@@ -34,7 +34,7 @@ class EventNotificationTriggerRelativeParameters extends RequestParameters
 
         parent::__construct($parameters);
 
-        $this->parameter('@type', 'AbsoluteTrigger');
+        $this->parameter('@type', 'OffsetTrigger');
 
     }
 
@@ -48,7 +48,7 @@ class EventNotificationTriggerRelativeParameters extends RequestParameters
 
     public function offset(DateInterval $value): self {
         
-        $this->parameter('relativeTo', match (true) {
+        $this->parameter('offset', match (true) {
             ($value->y > 0) => $value->format("%rP%yY%mM%dDT%hH%iM"),
             ($value->m > 0) => $value->format("%rP%mM%dDT%hH%iM"),
             ($value->d > 0) => $value->format("%rP%dDT%hH%iM"),

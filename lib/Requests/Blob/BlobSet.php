@@ -30,7 +30,7 @@ use JmapClient\Requests\Blob\BlobParameters;
 class BlobSet extends RequestUpload
 {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+    public function __construct(string $account, string $identifier = '', ?string $namespace = null, ?string $resource = null) {
 
         $space = $namespace ?? 'urn:ietf:params:jmap:Blob';
         $class = $resource ?? 'Blob';

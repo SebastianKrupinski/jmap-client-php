@@ -128,7 +128,7 @@ class EventParameters extends ResponseParameters
 
     public function timeless(): bool {
         
-        return $this->parameter('showWithoutTime');
+        return (bool)$this->parameter('showWithoutTime');
 
     }
 

@@ -30,9 +30,7 @@ class ContactQuery extends ResponseQuery
 {
 
     public function __construct (array $response = []) {
-
         parent::__construct($response);
-
     }
 
 }

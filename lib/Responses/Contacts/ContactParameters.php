@@ -24,6 +24,7 @@ declare(strict_types=1);
 */
 namespace JmapClient\Responses\Contacts;
 
+use DateTimeImmutable;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactParameters extends ResponseParameters
@@ -35,80 +36,65 @@ class ContactParameters extends ResponseParameters
 
     }
 
-    public function id(): string|null {
+    /* Metadata Properties */
+
+    public function in(): array|null {
         
         // return value of parameter
+        $value = $this->parameter('AddressBookIds');
+        if ($value !== null) {
+            return array_keys($value);
+        }
+        $value = $this->parameter('addressbookId');
+        if ($value !== null) {
+            return [$value];
+        }
+
+        return null;
+
+    }
+    
+    public function id(): string|null {
+
         return $this->parameter('id');
 
     }
 
-    public function name(): string|null {
+    public function uid(): string|null {
         
-        // return value of parameter
-        return $this->parameter('name');
+        return $this->parameter('uid');
 
     }
 
-    public function description(): string|null {
-        
-        // return value of parameter
-        return $this->parameter('description');
+    public function type(): string|null {
+
+        return $this->parameter('kind') ?? 'individual';
 
     }
 
-    public function color(): string|null {
+    public function created(): DateTimeImmutable|null {
         
-        // return value of parameter
-        return $this->parameter('color');
+        $value = $this->parameter('created');
+        return ($value) ? new DateTimeImmutable($value) : null;
 
     }
 
-    public function priority(): int|null {
+    public function updated(): DateTimeImmutable|null {
         
-        // return value of parameter
-        return $this->parameter('sortOrder');
+        $value = $this->parameter('updated');
+        return ($value) ? new DateTimeImmutable($value) : null;
 
     }
 
-    public function subscribed(): bool|null {
+    public function version(): int {
         
-        // return value of parameter
-        return $this->parameter('isSubscribed');
+        return (int)$this->parameter('version');
 
     }
 
-    public function visible(): bool|null {
+    public function relation(): string|null {
         
-        // return value of parameter
-        return $this->parameter('isVisible');
-
-    }
-
-    public function default(): bool|null {
-        
-        // return value of parameter
-        return $this->parameter('isDefault');
-
-    }
-
-    public function timezone(): string|null {
-        
-        // return value of parameter
-        return $this->parameter('timeZone');
-
-    }
-
-    public function sharees(): array|null {
-        
-        // return value of parameter
-        return $this->parameter('shareWith');
-
-    }
-
-    public function rights(): object|null {
-        
-        // return value of parameter
-        return $this->parameter('myRights');
+        return $this->parameter('relatedTo');
 
     }
 

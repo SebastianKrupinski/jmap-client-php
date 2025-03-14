@@ -37,7 +37,7 @@ class ResponseParameters
     public function parameter(string $name): mixed {
         
         // return value of parameter
-        return (isset($this->_response[$name]))? $this->_response[$name] : null;
+        return isset($this->_response[$name]) ? $this->_response[$name] : null;
 
     }
 

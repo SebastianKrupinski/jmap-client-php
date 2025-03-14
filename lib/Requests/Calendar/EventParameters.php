@@ -135,13 +135,26 @@ class EventParameters extends RequestParameters
     public function duration(DateInterval $value): self {
         
         // creates or updates parameter and assigns value
-        $this->parameter('duration', match (true) {
-            ($value->y > 0) => $value->format("%rP%yY%mM%dDT%hH%iM"),
-            ($value->m > 0) => $value->format("%rP%mM%dDT%hH%iM"),
-            ($value->d > 0) => $value->format("%rP%dDT%hH%iM"),
-            ($value->h > 0) => $value->format("%rPT%hH%iM"),
-            default => $value->format("%rPT%iM")
-        });
+        $format = '%rP';
+        if ($value->y > 0) {
+            $format .= '%yY';
+        }
+        if ($value->m > 0) {
+            $format .= '%mM';
+        }
+        if ($value->d > 0) {
+            $format .= '%dD';
+        }
+        if ($value->h > 0 || $value->i > 0) {
+            $format .= 'T';
+            if ($value->h > 0) {
+                $format .= '%hH';
+            }
+            if ($value->i > 0) {
+                $format .= '%iM';
+            }
+        }
+        $this->parameter('duration', $value->format($format));
         // return self for function chaining
         return $this;
 

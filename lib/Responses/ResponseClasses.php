@@ -90,6 +90,12 @@ class ResponseClasses
         'ContactCard/changes' => 'JmapClient\Responses\Contacts\ContactChanges',
         'ContactCard/query' => 'JmapClient\Responses\Contacts\ContactQuery',
         'ContactCard/queryChanges' => 'JmapClient\Responses\Contacts\ContactQueryChanges',
+        // Contact Entity
+        'Contact/get' => 'JmapClient\Responses\Contacts\ContactGet',
+        'Contact/set' => 'JmapClient\Responses\Contacts\ContactSet',
+        'Contact/changes' => 'JmapClient\Responses\Contacts\ContactChanges',
+        'Contact/query' => 'JmapClient\Responses\Contacts\ContactQuery',
+        'Contact/queryChanges' => 'JmapClient\Responses\Contacts\ContactQueryChanges',
     ];
 
 }
