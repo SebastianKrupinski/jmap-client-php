@@ -24,7 +24,6 @@ declare(strict_types=1);
 */
 namespace JmapClient\Authentication;
 
-class None implements IAuthentication
-{
+class None implements IAuthentication {
     
 }

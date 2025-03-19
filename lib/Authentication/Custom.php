@@ -24,36 +24,13 @@ declare(strict_types=1);
 */
 namespace JmapClient\Authentication;
 
-class Basic implements IAuthenticationBasic {
+class Custom implements IAuthenticationCustom {
 
     public function __construct (
-        private ?string $Id = null,
-        private ?string $Secret = null,
-        private ?string $Location = null,
+        private $Authenticate = null,
     ) {}
-
-    public function getId(): ?string {
-        return $this->Id;
-    }
-
-    public function setId(?string $value): void {
-        $this->Id = $value;
-    }
-
-    public function getSecret(): ?string {
-        return $this->Secret;
-    }
-
-    public function setSecret(?string $value): void {
-        $this->Secret = $value;
-    }
-
-    public function getLocation(): ?string {
-        return $this->Location;
-    }
-
-    public function setLocation(?string $value): void {
-        $this->Location = $value;
-    }
     
+    public function authenticate(): ?callable {
+        return $this->Authenticate;
+    }
 }

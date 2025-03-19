@@ -24,11 +24,45 @@ declare(strict_types=1);
 */
 namespace JmapClient\Authentication;
 
-class Bearer implements IAuthentication
+class Bearer implements IAuthenticationBearer
 {
     public function __construct (
-        public ?string $Id = null,
-        public ?string $Token = null,
-        int $Expiry = 0
+        private ?string $Id = null,
+        private ?string $Token = null,
+        private int $Expiry = 0,
+        private ?string $Location = null
     ) {}
+
+    public function getId(): ?string {
+        return $this->Id;
+    }
+
+    public function setId(?string $value): void {
+        $this->Id = $value;
+    }
+
+    public function getToken(): ?string {
+        return $this->Token;
+    }
+
+    public function setToken(?string $value): void {
+        $this->Token = $value;
+    }
+
+    public function getExpiry(): ?int {
+        return $this->Expiry;
+    }
+
+    public function setExpiry(?int $value): void {
+        $this->Expiry = $value;
+    }
+    
+    public function getLocation(): ?string {
+        return $this->Location;
+    }
+
+    public function setLocation(?string $value): void {
+        $this->Location = $value;
+    }
+
 }

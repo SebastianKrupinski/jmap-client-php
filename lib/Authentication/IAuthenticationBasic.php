@@ -24,36 +24,18 @@ declare(strict_types=1);
 */
 namespace JmapClient\Authentication;
 
-class Basic implements IAuthenticationBasic {
+interface IAuthenticationBasic extends IAuthentication {
 
-    public function __construct (
-        private ?string $Id = null,
-        private ?string $Secret = null,
-        private ?string $Location = null,
-    ) {}
+    public function getId(): ?string;
 
-    public function getId(): ?string {
-        return $this->Id;
-    }
+    public function setId(?string $value): void;
 
-    public function setId(?string $value): void {
-        $this->Id = $value;
-    }
+    public function getSecret(): ?string;
+    
+    public function setSecret(?string $value): void;
 
-    public function getSecret(): ?string {
-        return $this->Secret;
-    }
+    public function getLocation(): ?string;
 
-    public function setSecret(?string $value): void {
-        $this->Secret = $value;
-    }
-
-    public function getLocation(): ?string {
-        return $this->Location;
-    }
-
-    public function setLocation(?string $value): void {
-        $this->Location = $value;
-    }
+    public function setLocation(string $value): void;
     
 }

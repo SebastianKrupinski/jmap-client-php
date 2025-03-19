@@ -24,36 +24,22 @@ declare(strict_types=1);
 */
 namespace JmapClient\Authentication;
 
-class Basic implements IAuthenticationBasic {
+interface IAuthenticationCookie extends IAuthentication {
 
-    public function __construct (
-        private ?string $Id = null,
-        private ?string $Secret = null,
-        private ?string $Location = null,
-    ) {}
+    public function getCookieAuthenticationLocation(): ?string;
 
-    public function getId(): ?string {
-        return $this->Id;
-    }
+    public function setCookieAuthenticationLocation(string $value): void;
 
-    public function setId(?string $value): void {
-        $this->Id = $value;
-    }
+    public function getCookieStoreId(): mixed;
 
-    public function getSecret(): ?string {
-        return $this->Secret;
-    }
+    public function setCookieStoreId(mixed $value): void;
 
-    public function setSecret(?string $value): void {
-        $this->Secret = $value;
-    }
+    public function getCookieStoreRetrieve(): ?callable;
 
-    public function getLocation(): ?string {
-        return $this->Location;
-    }
+    public function setCookieStoreRetrieve(callable $value): void;
 
-    public function setLocation(?string $value): void {
-        $this->Location = $value;
-    }
-    
+    public function getCookieStoreDeposit(): ?callable;
+
+    public function setCookieStoreDeposit(callable $value): void;
+
 }

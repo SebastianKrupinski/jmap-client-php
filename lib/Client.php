@@ -24,19 +24,16 @@ declare(strict_types=1);
 */
 namespace JmapClient;
 
-use CurlHandle;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Cookie\FileCookieJar;
-use GuzzleHttp\Cookie\SessionCookieJar;
 use InvalidArgumentException;
-use RuntimeException;
 use JmapClient\Authentication\IAuthentication;
 use JmapClient\Authentication\Basic;
 use JmapClient\Authentication\Bearer;
 use JmapClient\Authentication\JsonBasic;
-use JmapClient\Authentication\Cookie;
-use JmapClient\Requests\Request;
+use JmapClient\Authentication\IAuthenticationCookie;
+use JmapClient\Authentication\IAuthenticationCustom;
+use JmapClient\Authentication\IAuthenticationJsonBasic;
 use JmapClient\Requests\RequestBundle;
 use JmapClient\Responses\ResponseBundle;
 use JmapClient\Responses\ResponseClasses;
@@ -89,6 +86,10 @@ class Client {
     // Transport Client
     //protected CurlHandle|null $_client = null;
     protected ?GuzzleHttpClient $_client;
+    // 
+    protected $_transportCookieStoreRetrieve = null;
+    // 
+    protected $_transportCookieStoreDeposit =  null;
     // Retain Last Transport Request Header Flag
     protected bool $_transportRequestHeaderFlag = false;
     // Retain Last Transport Request Body Flag
@@ -183,11 +184,6 @@ class Client {
     public function configureTransportVerification(bool $value): void {
         $this->_transportOptions['curl'][CURLOPT_SSL_VERIFYPEER] = $value ? 1 : 0;
         $this->_transportOptions['curl'][CURLOPT_SSL_VERIFYHOST] = $value ? 2 : 0;
-    }
-
-    public function configureTransportCookieJar(string $value): void {
-        $this->_transportCookieJar = $value;
-        $this->_transportOptions[CURLOPT_COOKIEJAR] = $this->_transportCookieJar;
     }
 
     /**
@@ -399,11 +395,11 @@ class Client {
         }
         // set service basic authentication
         if ($this->_ServiceAuthentication instanceof Basic) {
-            $this->_transportHeaders['Authorization'] = 'Basic ' . base64_encode($this->_ServiceAuthentication->Id . ':' . $this->_ServiceAuthentication->Secret);
+            $this->_transportHeaders['Authorization'] = 'Basic ' . base64_encode($this->_ServiceAuthentication->getId() . ':' . $this->_ServiceAuthentication->getSecret());
         }
         // set service bearer authentication
         if ($this->_ServiceAuthentication instanceof Bearer) {
-            $this->_transportHeaders['Authorization'] = 'Bearer ' . $this->_ServiceAuthentication->Token;
+            $this->_transportHeaders['Authorization'] = 'Bearer ' . $this->_ServiceAuthentication->getToken();
         }
 
     }
@@ -457,7 +453,7 @@ class Client {
         $this->_SessionData = $session = $this->authenticate();
         // service authentication
         if (isset($session['accessToken'])) {
-            $this->setAuthentication(new Bearer($this->_ServiceAuthentication->Id, $session['accessToken'], 0), false);
+            $this->setAuthentication(new Bearer($this->_ServiceAuthentication->getId(), $session['accessToken'], 0), false);
         }
         // service locations
         $this->_ServiceCommandLocation = (isset($session['apiUrl'])) ? $session['apiUrl'] : '';
@@ -473,27 +469,28 @@ class Client {
 
     protected function authenticate(): ?array {
         // perform initial authentication
-        if ($this->_ServiceAuthentication instanceof JsonBasic) {
-            if ($this->_ServiceAuthentication->AuthenticateWithCookie) {
-                $session = $this->authenticateSession();
-            }
-            if ($session === null || $session === []) {
-                $session = $this->authenticateJson();
-            }
-            return $session;
-        } else {
-            return $this->authenticateBasic();
+        if ($this->_ServiceAuthentication instanceof IAuthenticationCustom) {
+            return $this->authenticateCustom();
         }
+        
+        if ($this->_ServiceAuthentication instanceof IAuthenticationJsonBasic) {
+            return $this->authenticateJson();
+        }
+        
+        if ($this->_ServiceAuthentication instanceof IAuthenticationCookie) {
+            return $this->authenticateSession();
+        }
+
+        return $this->authenticateSimple();
     }
 
-    protected function authenticateBasic(): ?array {
+    protected function authenticateSimple(): ?array {
 
         $location = $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
 
         $client = new GuzzleHttpClient([
             'base_uri' => $this->_transportMode . $this->_ServiceHost,
-            'allow_redirects' => true,
-            'cookies' => true
+            'allow_redirects' => true
         ]);
         $headers = $this->_transportHeaders;
         // perform transmit and receive
@@ -507,19 +504,37 @@ class Client {
 
     protected function authenticateJson(): ?array {
 
-        $location = $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
+        $authentication = $this->_ServiceAuthentication;
+        if (!$authentication instanceof IAuthenticationJsonBasic) {
+            return [];
+        }
+        // determine if cookie mode is enabled
+        if ($authentication instanceof IAuthenticationCookie && is_callable($authentication->getCookieStoreRetrieve())) {
+            $session = $this->authenticateSession();
+            if ($session !== []) {
+                return $session;
+            }
+        }
+    
+        if (!empty($authentication->getLocation())) {
+            $location = $this->_transportMode . $this->_ServiceHost . $authentication->getLocation();
+        } else {
+            $location = $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
+        }
 
-        $cookieFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->_ServiceHost . '-' . $this->_ServiceAuthentication->Id . '.jmapc';
+        $clientHeaders = $this->_transportHeaders;
+        $clientOptions = $this->_transportOptions;
+        $clientOptions['allow_redirects'] = true;
 
-        $client = $this->constructClient([
-            'allow_redirects' => true,
-            'cookies' => new FileCookieJar($cookieFile, TRUE)
-        ]);
-        $headers = $this->_transportHeaders;
+        if ($authentication instanceof IAuthenticationCookie) {
+            $clientOptions['cookies'] = new CookieJar();
+        }
+
+        $client = $this->constructClient($clientOptions);
 
         /*===== perform initial transaction =====*/
         $requestData = '{"type":"start"}';
-        $response = $client->request('POST', $location, ['headers' => $headers, 'body' => $requestData]);
+        $response = $client->request('POST', $location, ['headers' => $clientHeaders, 'body' => $requestData]);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         // determine if login id was returned in initial request and fail if not
         if (!isset($responseData['loginId'])) {
@@ -528,8 +543,8 @@ class Client {
 
         /*===== perform username exchange transaction =====*/
         $serviceLoginId = $responseData['loginId'];
-        $requestData = sprintf('{"type":"username","username":"%s","loginId":"%s"}', $this->_ServiceAuthentication->Id, $serviceLoginId);
-        $response = $client->request('POST', $location, ['headers' => $headers, 'body' => $requestData]);
+        $requestData = sprintf('{"type":"username","username":"%s","loginId":"%s"}', $this->_ServiceAuthentication->getId(), $serviceLoginId);
+        $response = $client->request('POST', $location, ['headers' => $clientHeaders, 'body' => $requestData]);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         // determine if login id was returned in initial request and fail if not
         if (!isset($responseData['loginId'])) {
@@ -538,37 +553,50 @@ class Client {
 
         /*===== perform password exchange transaction =====*/
         $serviceLoginId = $responseData['loginId'];
-        $requestData = sprintf('{"type":"password","value":"%s","remember":false,"loginId":"%s"}', $this->_ServiceAuthentication->Secret, $serviceLoginId);
+        $requestData = sprintf('{"type":"password","value":"%s","remember":false,"loginId":"%s"}', $this->_ServiceAuthentication->getSecret(), $serviceLoginId);
         // perform transmit and receive
-        $response = $client->request('POST', $location, ['headers' => $headers, 'body' => $requestData]);
+        $response = $client->request('POST', $location, ['headers' => $clientHeaders, 'body' => $requestData]);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->_client = $client;
+
+        if ($authentication instanceof IAuthenticationCookie && is_callable($authentication->getCookieStoreDeposit())) {
+            $test = $authentication->getCookieStoreDeposit();
+            $test($authentication->getCookieStoreId(), $client->getConfig('cookies')->toArray());
+        }
 
         return $responseData;
     }
 
     protected function authenticateSession(): ?array {
         
-        $cookieFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->_ServiceHost . '-' . $this->_ServiceAuthentication->Id . '.jmapc';
-
-        if (!file_exists($cookieFile)) {
+        $authentication = $this->_ServiceAuthentication;
+        if (!$authentication instanceof IAuthenticationCookie && !is_callable($authentication->getCookieStoreRetrieve())) {
             return [];
         }
+        // retrieve cookie
+        $cookieStore = $authentication->getCookieStoreRetrieve();
+        $cookieData = $cookieStore($authentication->getCookieStoreId());
+        if (empty($cookieData)) {
+            return [];
+        }
+        $cookieJar = new CookieJar(false, $cookieData);
 
         $client = new GuzzleHttpClient([
             'allow_redirects' => true,
-            'cookies' => new FileCookieJar($cookieFile, TRUE)
+            'cookies' => $cookieJar
         ]);
         
+        if (!empty($authentication->getCookieAuthenticationLocation())) {
+            $location = $this->_transportMode . $this->_ServiceHost . $authentication->getCookieAuthenticationLocation();
+        } else {
+            $location = $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
+        }
+
         $headers = $this->_transportHeaders;
         unset($headers['Authentication']);
 
-        $response = $client->request(
-            'GET',
-            $this->_ServiceAuthentication->AuthenticateLocation ?? $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath,
-            ['headers' => $headers]
-        );
+        $response = $client->request('GET', $location, ['headers' => $headers]);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
         $this->_client = $client;
@@ -578,6 +606,20 @@ class Client {
         } else {
             return [];
         }
+    }
+
+    protected function authenticateCustom(): ?array {
+
+        $authentication = $this->_ServiceAuthentication;
+        $authenticate = $authentication->getAuthentication();
+        if (is_callable($authenticate)) {
+            $client = $this->constructClient();
+            $session = $authenticate($client);
+            $this->_client = $client;
+            return $session;
+        }
+        return [];
+
     }
 
     public function perform(RequestBundle|array $commands): ResponseBundle {

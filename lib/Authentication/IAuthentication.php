@@ -24,4 +24,6 @@ declare(strict_types=1);
 */
 namespace JmapClient\Authentication;
 
-interface IAuthentication {}
+interface IAuthentication {
+    
+}

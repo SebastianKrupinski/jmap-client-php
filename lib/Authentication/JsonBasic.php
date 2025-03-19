@@ -24,12 +24,36 @@ declare(strict_types=1);
 */
 namespace JmapClient\Authentication;
 
-class JsonBasic implements IAuthentication
-{
+class JsonBasic implements IAuthenticationJsonBasic {
+    
     public function __construct (
         public ?string $Id = null,
         public ?string $Secret = null,
-        public ?string $AuthenticateLocation = null,
-        public bool $AuthenticateWithCookie = false,
+        public ?string $Location = null,
     ) {}
+
+    public function getId(): ?string {
+        return $this->Id;
+    }
+
+    public function setId(?string $value): void {
+        $this->Id = $value;
+    }
+
+    public function getSecret(): ?string {
+        return $this->Secret;
+    }
+
+    public function setSecret(?string $value): void {
+        $this->Secret = $value;
+    }
+
+    public function getLocation(): ?string {
+        return $this->Location;
+    }
+
+    public function setLocation(?string $value): void {
+        $this->Location = $value;
+    }
+
 }
