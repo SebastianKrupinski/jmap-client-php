@@ -26,14 +26,7 @@ namespace JmapClient\Responses\Contacts;
 
 use JmapClient\Responses\ResponseParameters;
 
-class ContactAliasParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class ContactAliasParameters extends ResponseParameters {
 
     public function type(): string|null {
         

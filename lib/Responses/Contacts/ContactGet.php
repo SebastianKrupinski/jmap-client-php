@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Contacts;
 
 use JmapClient\Responses\ResponseGet;
 
-class ContactGet extends ResponseGet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
-
+class ContactGet extends ResponseGet {
+    
 }

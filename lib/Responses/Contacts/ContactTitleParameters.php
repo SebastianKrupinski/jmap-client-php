@@ -5,14 +5,7 @@ namespace JmapClient\Responses\Contacts;
 
 use JmapClient\Responses\ResponseParameters;
 
-class ContactTitleParameters extends ResponseParameters
-{
-
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class ContactTitleParameters extends ResponseParameters {
 
     public function type(): string|null {
         
@@ -32,11 +25,10 @@ class ContactTitleParameters extends ResponseParameters
 
     }
 
-    public function context(): array|null {
-        
-        $collection = $this->parameter('contexts') ?? [];
-        return array_keys($collection);
+    public function context(): array {
 
+        return array_keys($this->parameter('contexts') ?? []);
+        
     }
 
     public function relation(): string|null {

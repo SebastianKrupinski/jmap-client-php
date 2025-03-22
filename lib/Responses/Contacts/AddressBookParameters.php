@@ -26,67 +26,52 @@ namespace JmapClient\Responses\Contacts;
 
 use JmapClient\Responses\ResponseParameters;
 
-class AddressBookParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class AddressBookParameters extends ResponseParameters {
 
     public function id(): string|null {
-        
-        // return value of parameter
+
         return $this->parameter('id');
 
     }
 
     public function name(): string|null {
         
-        // return value of parameter
         return $this->parameter('name');
 
     }
 
     public function description(): string|null {
         
-        // return value of parameter
         return $this->parameter('description');
 
     }
 
     public function priority(): int|null {
         
-        // return value of parameter
         return $this->parameter('sortOrder');
 
     }
 
     public function subscribed(): bool|null {
         
-        // return value of parameter
         return $this->parameter('isSubscribed');
 
     }
 
     public function default(): bool|null {
         
-        // return value of parameter
         return $this->parameter('isDefault');
 
     }
 
     public function sharees(): array|null {
         
-        // return value of parameter
         return $this->parameter('shareWith');
 
     }
 
     public function rights(): object|null {
         
-        // return value of parameter
         return $this->parameter('myRights');
 
     }

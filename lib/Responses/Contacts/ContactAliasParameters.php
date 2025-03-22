@@ -24,8 +24,32 @@ declare(strict_types=1);
 */
 namespace JmapClient\Responses\Contacts;
 
-use JmapClient\Responses\ResponseSet;
+use JmapClient\Responses\ResponseParameters;
 
-class ContactSet extends ResponseSet {
+class ContactAliasParameters extends ResponseParameters {
+
+    public function type(): string|null {
+        
+        return $this->parameter('@type');
+
+    }
+
+    public function name(): string|null {
+        
+        return $this->parameter('name');
+
+    }
+
+    public function context(): array {
+
+        return array_keys($this->parameter('contexts') ?? []);
+        
+    }
+
+    public function priority(): int|null {
+        
+        return (int)$this->parameter('pref');
+
+    }
 
 }

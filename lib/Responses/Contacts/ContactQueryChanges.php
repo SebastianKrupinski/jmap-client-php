@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Contacts;
 
 use JmapClient\Responses\ResponseQueryChanges;
 
-class ContactQueryChanges extends ResponseQueryChanges
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
-
+class ContactQueryChanges extends ResponseQueryChanges {
+    
 }

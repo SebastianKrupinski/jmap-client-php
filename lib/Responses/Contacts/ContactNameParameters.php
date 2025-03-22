@@ -26,14 +26,7 @@ namespace JmapClient\Responses\Contacts;
 
 use JmapClient\Responses\ResponseParameters;
 
-class ContactNameParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class ContactNameParameters extends ResponseParameters {
 
     public function type(): string|null {
         
@@ -47,7 +40,7 @@ class ContactNameParameters extends ResponseParameters
 
     }
 
-    public function components(): array|null {
+    public function components(): array {
         
         $collection = $this->parameter('components') ?? [];
         foreach ($collection as $key => $data) {

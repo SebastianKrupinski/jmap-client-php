@@ -24,7 +24,6 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Contacts;
 
-use JmapClient\Requests\Calendar\AddressBookParameters;
 use JmapClient\Requests\RequestSet;
 
 class AddressBookSet extends RequestSet

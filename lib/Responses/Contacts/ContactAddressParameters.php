@@ -20,11 +20,11 @@ class ContactAddressParameters extends ResponseParameters {
 
     }
 
-    public function components(): array|null {
-
-        $components = [];
-        foreach ($this->parameter('components') as $component) {
-            $components[] = new ContactComponentParameters($component);
+    public function components(): array {
+        
+        $components = $this->parameter('components') ?? [];
+        foreach ($components as $key => $data) {
+            $components[$key] = new ContactComponentParameters($data);
         }
         return $components;
     }

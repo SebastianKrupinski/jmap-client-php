@@ -27,14 +27,7 @@ namespace JmapClient\Responses\Contacts;
 use DateTimeImmutable;
 use JmapClient\Responses\ResponseParameters;
 
-class ContactParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class ContactParameters extends ResponseParameters {
 
     /* Metadata Properties */
 
