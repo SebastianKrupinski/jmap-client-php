@@ -121,8 +121,8 @@ class Request implements \JsonSerializable
         $this->_request[0] = $this->_class . '/' . $method;
     }
 
-    public function toJson(): string {
-        return json_encode($this->_request, JSON_UNESCAPED_SLASHES);
+    public function toJson(int $flags = 0): string {
+        return json_encode($this->_request, JSON_UNESCAPED_SLASHES | $flags);
     }
 
     public function jsonSerialize(): mixed {

@@ -29,22 +29,15 @@ class ResponseParameters
     protected array $_response;
 
     public function __construct(array $response = []) {
-
         $this->_response = $response;
-
     }
 
     public function parameter(string $name): mixed {
-        
-        // return value of parameter
         return isset($this->_response[$name]) ? $this->_response[$name] : null;
-
     }
 
     public function parametersRaw(): array {
-
         return $this->_response;
-
     }
 
 }

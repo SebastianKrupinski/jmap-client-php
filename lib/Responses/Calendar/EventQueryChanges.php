@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseQueryChanges;
 
-class EventQueryChanges extends ResponseQueryChanges
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class EventQueryChanges extends ResponseQueryChanges {
 
 }

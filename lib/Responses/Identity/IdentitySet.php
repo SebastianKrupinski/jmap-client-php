@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Identity;
 
 use JmapClient\Responses\ResponseSet;
 
-class IdentitySet extends ResponseSet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class IdentitySet extends ResponseSet {
 
 }

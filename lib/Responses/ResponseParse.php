@@ -39,23 +39,23 @@ class ResponseParse extends Response
         // evaluate if class was found
         if ($class !== null) {
             // convert response objects to classes
-            foreach ($this->_response[1]['parsed'] as $key => $entry) {
-                $this->_response[1]['parsed'][$key] = new $class($entry);
+            foreach ($this->_response[self::RESPONSE_OBJECT]['parsed'] as $key => $entry) {
+                $this->_response[self::RESPONSE_OBJECT]['parsed'][$key] = new $class($entry);
             }
         }
 
     }
 
     public function state(): string {
-        return (isset($this->_response[1]['state'])) ? $this->_response[1]['state'] : '';
+        return (isset($this->_response[self::RESPONSE_OBJECT]['state'])) ? $this->_response[self::RESPONSE_OBJECT]['state'] : '';
     }
 
     public function objects(): array {
-        return (isset($this->_response[1]['parsed'])) ? $this->_response[1]['parsed'] : [];
+        return (isset($this->_response[self::RESPONSE_OBJECT]['parsed'])) ? $this->_response[self::RESPONSE_OBJECT]['parsed'] : [];
     }
 
     public function object(int $position): mixed {
-        return (isset($this->_response[1]['parsed'])) ? $this->_response[1]['parsed'][$position] : null;
+        return (isset($this->_response[self::RESPONSE_OBJECT]['parsed'])) ? $this->_response[self::RESPONSE_OBJECT]['parsed'][$position] : null;
     }
 
 }

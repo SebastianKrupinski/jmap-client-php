@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Blob;
 
 use JmapClient\Responses\ResponseGet;
 
-class BlobGet extends ResponseGet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class BlobGet extends ResponseGet {
 
 }

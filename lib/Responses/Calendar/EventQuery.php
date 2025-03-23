@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseQuery;
 
-class EventQuery extends ResponseQuery
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class EventQuery extends ResponseQuery {
 
 }

@@ -24,8 +24,12 @@ declare(strict_types=1);
 */
 namespace JmapClient\Responses;
 
-class Response
-{
+class Response {
+
+    public const RESPONSE_OPERATION = 0;
+    public const RESPONSE_OBJECT = 1;
+    public const RESPONSE_IDENTIFIER = 2;
+
     protected string $_class = '';
     protected string $_method = '';
     protected string $_account = '';
@@ -33,10 +37,9 @@ class Response
     protected array $_response = [];
 
     public function __construct (array $response = []) {
-        $this->_response = $response;
-        [$this->_class, $this->_method] = explode('/', $this->_response[0]);
-        $this->_account = (isset($this->_response[1]['accountId'])) ? $this->_response[1]['accountId'] : '';
-        $this->_identifier = (isset($this->_response[2])) ? $this->_response[2] : '';
+        if (!empty($response)) {
+            $this->fromData($response);
+        }
     }
 
     public function identifier(): string {
@@ -53,6 +56,17 @@ class Response
 
     public function account(): string {
         return $this->_account;
+    }
+
+    public function fromData(array $response): void {
+        $this->_response = $response;
+        [$this->_class, $this->_method] = explode('/', $this->_response[self::RESPONSE_OPERATION]);
+        $this->_account = (isset($this->_response[self::RESPONSE_OBJECT]['accountId'])) ? $this->_response[self::RESPONSE_OBJECT]['accountId'] : '';
+        $this->_identifier = (isset($this->_response[self::RESPONSE_IDENTIFIER])) ? $this->_response[self::RESPONSE_IDENTIFIER] : '';
+    }
+
+    public function fromJson(string $json, int $options = 0): void {
+        $this->fromData(json_decode($json, true, 512, JSON_THROW_ON_ERROR | $options));
     }
 
 }

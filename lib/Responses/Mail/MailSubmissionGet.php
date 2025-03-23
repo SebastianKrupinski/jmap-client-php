@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseGet;
 
-class MailSubmissionGet extends ResponseGet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class MailSubmissionGet extends ResponseGet {
 
 }

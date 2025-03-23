@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Tasks;
 
 use JmapClient\Responses\ResponseSet;
 
-class TaskListSet extends ResponseSet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class TaskListSet extends ResponseSet {
 
 }

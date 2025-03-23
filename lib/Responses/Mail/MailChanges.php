@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseChanges;
 
-class MailChanges extends ResponseChanges
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class MailChanges extends ResponseChanges {
 
 }

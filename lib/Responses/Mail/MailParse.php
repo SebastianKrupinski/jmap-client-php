@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseParse;
 
-class MailParse extends ResponseParse
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class MailParse extends ResponseParse {
 
 }

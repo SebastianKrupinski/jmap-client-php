@@ -26,21 +26,14 @@ namespace JmapClient\Responses;
 
 use JmapClient\Responses\Response;
 
-class ResponseQuery extends Response
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class ResponseQuery extends Response {
 
     public function state(): string {
-        return (isset($this->_response[1]['queryState'])) ? $this->_response[1]['queryState'] : '';
+        return (isset($this->_response[self::RESPONSE_OBJECT]['queryState'])) ? $this->_response[self::RESPONSE_OBJECT]['queryState'] : '';
     }
 
     public function list(): array {
-        return (isset($this->_response[1]['ids'])) ? $this->_response[1]['ids'] : [];
+        return (isset($this->_response[self::RESPONSE_OBJECT]['ids'])) ? $this->_response[self::RESPONSE_OBJECT]['ids'] : [];
     }
 
 }

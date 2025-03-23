@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Identity;
 
 use JmapClient\Responses\ResponseChanges;
 
-class IdentityChanges extends ResponseChanges
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class IdentityChanges extends ResponseChanges {
 
 }

@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseGet;
 
-class TaskGet extends ResponseGet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class TaskGet extends ResponseGet {
 
 }

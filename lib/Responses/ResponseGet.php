@@ -39,23 +39,23 @@ class ResponseGet extends Response
         // evaluate if class was found
         if ($class !== null) {
             // convert response objects to classes
-            foreach ($this->_response[1]['list'] as $key => $entry) {
-                $this->_response[1]['list'][$key] = new $class($entry);
+            foreach ($this->_response[self::RESPONSE_OBJECT]['list'] as $key => $entry) {
+                $this->_response[self::RESPONSE_OBJECT]['list'][$key] = new $class($entry);
             }
         }
 
     }
 
     public function state(): string {
-        return (isset($this->_response[1]['state'])) ? $this->_response[1]['state'] : '';
+        return (isset($this->_response[self::RESPONSE_OBJECT]['state'])) ? $this->_response[self::RESPONSE_OBJECT]['state'] : '';
     }
 
     public function objects(): array {
-        return (isset($this->_response[1]['list'])) ? $this->_response[1]['list'] : [];
+        return (isset($this->_response[self::RESPONSE_OBJECT]['list'])) ? $this->_response[self::RESPONSE_OBJECT]['list'] : [];
     }
 
     public function object(int $position): mixed {
-        return (isset($this->_response[1]['list'])) ? $this->_response[1]['list'][$position] : null;
+        return (isset($this->_response[self::RESPONSE_OBJECT]['list'])) ? $this->_response[self::RESPONSE_OBJECT]['list'][$position] : null;
     }
 
 }

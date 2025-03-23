@@ -26,33 +26,26 @@ namespace JmapClient\Responses;
 
 use JmapClient\Responses\Response;
 
-class ResponseQueryChanges extends Response
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class ResponseQueryChanges extends Response {
 
     public function stateOld(): string {
-        return (isset($this->_response[1]['oldQueryState'])) ? $this->_response[1]['oldQueryState'] : '';
+        return (isset($this->_response[self::RESPONSE_OBJECT]['oldQueryState'])) ? $this->_response[self::RESPONSE_OBJECT]['oldQueryState'] : '';
     }
 
     public function stateNew(): string {
-        return (isset($this->_response[1]['newQueryState'])) ? $this->_response[1]['newQueryState'] : '';
+        return (isset($this->_response[self::RESPONSE_OBJECT]['newQueryState'])) ? $this->_response[self::RESPONSE_OBJECT]['newQueryState'] : '';
     }
 
     public function created(): array {
-        return (isset($this->_response[1]['created'])) ? $this->_response[1]['created'] : [];
+        return (isset($this->_response[self::RESPONSE_OBJECT]['created'])) ? $this->_response[self::RESPONSE_OBJECT]['created'] : [];
     }
 
     public function updated(): array {
-        return (isset($this->_response[1]['updated'])) ? $this->_response[1]['updated'] : [];
+        return (isset($this->_response[self::RESPONSE_OBJECT]['updated'])) ? $this->_response[self::RESPONSE_OBJECT]['updated'] : [];
     }
 
     public function deleted(): array {
-        return (isset($this->_response[1]['removed'])) ? $this->_response[1]['removed'] : [];
+        return (isset($this->_response[self::RESPONSE_OBJECT]['removed'])) ? $this->_response[self::RESPONSE_OBJECT]['removed'] : [];
     }
 
 }

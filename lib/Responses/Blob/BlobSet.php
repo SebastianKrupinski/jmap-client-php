@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Blob;
 
 use JmapClient\Responses\ResponseSet;
 
-class BlobSet extends ResponseSet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class BlobSet extends ResponseSet {
 
 }

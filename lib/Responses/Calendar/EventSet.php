@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseSet;
 
-class EventSet extends ResponseSet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class EventSet extends ResponseSet {
 
 }

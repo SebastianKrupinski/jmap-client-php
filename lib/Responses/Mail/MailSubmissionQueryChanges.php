@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseQueryChanges;
 
-class MailSubmissionQueryChanges extends ResponseQueryChanges
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class MailSubmissionQueryChanges extends ResponseQueryChanges {
 
 }

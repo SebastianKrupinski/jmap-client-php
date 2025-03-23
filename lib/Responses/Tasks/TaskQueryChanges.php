@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Tasks;
 
 use JmapClient\Responses\ResponseQueryChanges;
 
-class TaskQueryChanges extends ResponseQueryChanges
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class TaskQueryChanges extends ResponseQueryChanges {
 
 }

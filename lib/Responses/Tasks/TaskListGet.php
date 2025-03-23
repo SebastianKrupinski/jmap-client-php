@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Tasks;
 
 use JmapClient\Responses\ResponseGet;
 
-class TaskListGet extends ResponseGet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class TaskListGet extends ResponseGet {
 
 }

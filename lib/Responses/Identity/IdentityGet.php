@@ -26,13 +26,6 @@ namespace JmapClient\Responses\Identity;
 
 use JmapClient\Responses\ResponseGet;
 
-class IdentityGet extends ResponseGet
-{
-
-    public function __construct (array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class IdentityGet extends ResponseGet {
 
 }
