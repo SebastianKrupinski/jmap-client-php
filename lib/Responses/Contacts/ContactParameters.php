@@ -32,124 +32,89 @@ class ContactParameters extends ResponseParameters {
     /* Metadata Properties */
 
     public function in(): array|null {
-        
         $value = $this->parameter('addressbookIds');
         if ($value !== null) {
             return array_keys($value);
         }
-
         return null;
-
     }
     
     public function id(): string|null {
-
         return $this->parameter('id');
-
     }
 
     public function uid(): string|null {
-        
         return $this->parameter('uid');
-
     }
 
     public function type(): string|null {
-        
         return $this->parameter('@type');
-
     }
 
     public function version(): string|null {
-        
         return $this->parameter('version');
-
     }
 
     public function created(): DateTimeImmutable|null {
-        
         $value = $this->parameter('created');
         return ($value) ? new DateTimeImmutable($value) : null;
-
     }
 
     public function updated(): DateTimeImmutable|null {
-        
         $value = $this->parameter('updated');
         return ($value) ? new DateTimeImmutable($value) : null;
-
     }
 
     public function source(): string|null {
-        
         return $this->parameter('prodId');
-
     }
 
     public function kind(): string|null {
-
         return $this->parameter('kind') ?? 'individual';
-
     }
 
     public function language(): string|null {
-        
         return $this->parameter('language');
-
     }
 
     public function members(): array|null {
-        
         return $this->parameter('members');
-
     }
 
     public function relation(): string|null {
-        
         return $this->parameter('relatedTo');
-
     }
 
     /** Name Properties */
 
     public function name(): ContactNameParameters|null {
-        
         $value = $this->parameter('name');
         if ($value !== null) {
             return new ContactNameParameters($value);
         }
         return null;
-
     }
 
     public function aliases(): array|null {
-        
         $collection = $this->parameter('nicknames') ?? [];
         foreach ($collection as $key => $data) {
             $collection[$key] = new ContactAliasParameters($data);
         }
-
         return $collection;
-
     }
 
     public function speakToAs(): string|null {
-        
         return $this->parameter('speakToAs');
-
     }
 
     /** Personal Properties */
     
     public function anniversaries(): array|null {
-        
         $collection = $this->parameter('anniversaries') ?? [];
         foreach ($collection as $key => $data) {
             $collection[$key] = new ContactAnniversaryParameters($data);
         }
-
         return $collection;
-
     }
 
     /** Organization Properties */

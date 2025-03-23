@@ -26,48 +26,26 @@ namespace JmapClient\Responses\Blob;
 
 use JmapClient\Responses\ResponseParameters;
 
-class BlobParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class BlobParameters extends ResponseParameters {
 
     public function id(): string|null {
-        
-        // return value of parameter
         return $this->parameter('id');
-
     }
 
     public function type(): string|null {
-        
-        // return value of parameter
         return $this->parameter('type');
-
     }
 
     public function size(): int|null {
-        
-        // return value of parameter
         return $this->parameter('size');
-
     }
 
     public function dataPlain(): string|null {
-        
-        // return value of parameter
         return $this->parameter('data:asText');
-
     }
 
     public function dataEncoded(): string|null {
-        
-        // return value of parameter
         return $this->parameter('data:asBase64');
-
     }
 
 }

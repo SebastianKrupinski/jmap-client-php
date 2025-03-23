@@ -30,19 +30,15 @@ use JmapClient\Responses\ResponseParameters;
 class ContactDateStampParameters extends ResponseParameters {
 
     public function type(): string|null {
-        
         return $this->parameter('@type');
-
     }
 
     public function value(): DateTimeImmutable|null {
-        
         $date = $this->parameter('value');
         if ($date === null) {
             return new DateTimeImmutable($date);
         }
         return null;
-
     }
 
 }

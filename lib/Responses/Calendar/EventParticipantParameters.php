@@ -26,55 +26,34 @@ namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseParameters;
 
-class EventParticipantParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class EventParticipantParameters extends ResponseParameters {
 
     public function kind(): string|null {
-        
         return $this->parameter('kind');
-
     }
 
     public function name(): string|null {
-        
         return $this->parameter('name');
-
     }
 
     public function description(): string|null {
-        
         return $this->parameter('description');
-
     }
 
     public function address(): string|null {
-        
         return $this->parameter('email');
-
     }
 
     public function status(): string|null {
-        
         return $this->parameter('participationStatus');
-
     }
 
     public function comment(): string|null {
-        
         return $this->parameter('participationComment');
-
     }
 
     public function roles(): array {
-        
         return $this->parameter('roles') ?? [];
-
     }
 
 }

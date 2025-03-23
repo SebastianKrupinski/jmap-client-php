@@ -26,90 +26,40 @@ namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseParameters;
 
-class MailboxParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class MailboxParameters extends ResponseParameters {
 
     public function in(): string|null {
-        
-        // return value of parameter
         return $this->parameter('parentId');
-
     }
-    
     public function id(): string|null {
-        
-        // return value of parameter
         return $this->parameter('id');
-
     }
-
     public function name(): string|null {
-        
-        // return value of parameter
         return $this->parameter('name');
-
     }
-
     public function role(): string|null {
-        
-        // return value of parameter
         return $this->parameter('role');
-
     }
-
     public function priority(): int|null {
-        
-        // return value of parameter
         return $this->parameter('sortOrder');
-
     }
-
     public function rights(): object|null {
-        
-        // return value of parameter
         return $this->parameter('myRights');
-
     }
-
     public function subscribed(): bool|null {
-        
-        // return value of parameter
         return $this->parameter('isSubscribed');
-
     }
-
     public function objectsTotal(): int|null {
-        
-        // return value of parameter
         return $this->parameter('totalEmails');
-
     }
-
     public function objectsUnseen(): int|null {
-        
-        // return value of parameter
         return $this->parameter('unreadEmails');
-
     }
-
     public function threadsTotal(): int|null {
-        
-        // return value of parameter
         return $this->parameter('totalThreads');
-
     }
-
     public function threadsUnseen(): int|null {
-        
-        // return value of parameter
         return $this->parameter('unreadThreads');
-
     }
 
 }

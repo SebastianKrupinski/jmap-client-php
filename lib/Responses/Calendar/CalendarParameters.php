@@ -26,90 +26,50 @@ namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseParameters;
 
-class CalendarParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class CalendarParameters extends ResponseParameters {
 
     public function id(): string|null {
-        
-        // return value of parameter
         return $this->parameter('id');
-
     }
 
     public function label(): string|null {
-        
-        // return value of parameter
         return $this->parameter('name');
-
     }
 
     public function description(): string|null {
-        
-        // return value of parameter
         return $this->parameter('description');
-
     }
 
     public function color(): string|null {
-        
-        // return value of parameter
         return $this->parameter('color');
-
     }
 
     public function priority(): int|null {
-        
-        // return value of parameter
         return $this->parameter('sortOrder');
-
     }
 
     public function subscribed(): bool|null {
-        
-        // return value of parameter
         return $this->parameter('isSubscribed');
-
     }
 
     public function visible(): bool|null {
-        
-        // return value of parameter
         return $this->parameter('isVisible');
-
     }
 
     public function default(): bool|null {
-        
-        // return value of parameter
         return $this->parameter('isDefault');
-
     }
 
     public function timezone(): string|null {
-        
-        // return value of parameter
         return $this->parameter('timeZone');
-
     }
 
     public function sharees(): array|null {
-        
-        // return value of parameter
         return $this->parameter('shareWith');
-
     }
 
     public function rights(): object|null {
-        
-        // return value of parameter
         return $this->parameter('myRights');
-
     }
 
 }

@@ -26,75 +26,42 @@ namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseParameters;
 
-class MailIdentityParameters extends ResponseParameters
-{
+class MailIdentityParameters extends ResponseParameters {
     
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
-
     public function id(): string|null {
-        
-        // return value of parameter
         return $this->parameter('id');
-
     }
 
     public function name(): string|null {
-        
-        // return value of parameter
         return $this->parameter('name');
-
     }
 
     public function address(): string|null {
-        
-        // return value of parameter
         return $this->parameter('email');
-
     }
 
     public function reply(): array|null {
-        
-        // return value of parameter
         return $this->parameter('replyTo');
-
     }
 
     public function bcc(): array|null {
-        
-        // return value of parameter
         return $this->parameter('bcc');
-
     }
 
     public function signature(): string|null {
-        
-        // return value of parameter
         return !empty($this->parameter('htmlSignature')) ? : $this->parameter('textSignature');
-
     }
 
     public function signatureHtml(): string|null {
-        
-        // return value of parameter
         return $this->parameter('htmlSignature');
-
     }
 
     public function signatureText(): string|null {
-        
-        // return value of parameter
         return $this->parameter('textSignature');
-
     }
 
     public function deletable(): bool {
-        
-        // return value of parameter
         return $this->parameter('mayDelete');
-
     }
+
 }

@@ -29,15 +29,11 @@ use JmapClient\Responses\ResponseParameters;
 class ContactComponentParameters extends ResponseParameters {
 
     public function kind(): string|null {
-        
         return $this->parameter('kind');
-
     }
 
     public function value(): string|null {
-        
         return $this->parameter('value');
-
     }
 
 }

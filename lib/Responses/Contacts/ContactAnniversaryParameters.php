@@ -29,13 +29,10 @@ use JmapClient\Responses\ResponseParameters;
 class ContactAnniversaryParameters extends ResponseParameters {
 
     public function type(): string|null {
-        
         return $this->parameter('@type');
-
     }
 
     public function date(): ContactDateStampParameters|ContactDatePartialParameters|null {
-        
         $date = $this->parameter('date');
         if ($date === null) {
             return $date;

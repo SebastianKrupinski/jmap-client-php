@@ -27,26 +27,15 @@ namespace JmapClient\Responses\Calendar;
 use DateTimeImmutable;
 use JmapClient\Responses\ResponseParameters;
 
-class EventNotificationTriggerAbsoluteParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class EventNotificationTriggerAbsoluteParameters extends ResponseParameters {
 
     public function type(): string {
-        
         return 'absolute';
-
     }
 
     public function when(): DateTimeImmutable|null {
-        
         $value = $this->parameter('when');
         return ($value) ? new DateTimeImmutable($value) : null;
-
     }
 
 }

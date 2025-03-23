@@ -27,25 +27,14 @@ namespace JmapClient\Responses\Calendar;
 use DateInterval;
 use JmapClient\Responses\ResponseParameters;
 
-class EventNotificationTriggerRelativeParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class EventNotificationTriggerRelativeParameters extends ResponseParameters {
     
     public function type(): string {
-        
         return 'relative';
-
     }
 
     public function anchor(): string {
-
         return $this->parameter('relativeTo');
-
     }
 
     public function offset(): DateInterval {

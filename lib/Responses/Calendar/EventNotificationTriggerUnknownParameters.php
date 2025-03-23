@@ -26,20 +26,10 @@ namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseParameters;
 
-class EventNotificationTriggerUnknownParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
-
+class EventNotificationTriggerUnknownParameters extends ResponseParameters {
     
     public function type(): string {
-        
         return 'unknown';
-
     }
 
 }

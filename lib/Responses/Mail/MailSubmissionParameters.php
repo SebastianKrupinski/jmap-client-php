@@ -26,41 +26,22 @@ namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseParameters;
 
-class MailSubmissionParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class MailSubmissionParameters extends ResponseParameters {
 
     public function id(): string|null {
-        
-        // return value of parameter
         return $this->parameter('id');
-
     }
 
     public function identity(): string|null {
-        
-        // return value of parameter
         return $this->parameter('identityId');
-
     }
 
     public function message(): string|null {
-        
-        // return value of parameter
         return $this->parameter('emailId');
-
     }
 
     public function thread(): string|null {
-        
-        // return value of parameter
         return $this->parameter('threadId');
-
     }
-
+    
 }

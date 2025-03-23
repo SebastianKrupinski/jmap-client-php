@@ -26,55 +26,34 @@ namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseParameters;
 
-class EventPhysicalLocationParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class EventPhysicalLocationParameters extends ResponseParameters {
 
     public function label(): string|null {
-        
         return $this->parameter('name');
-
     }
 
     public function description(): string|null {
-        
         return $this->parameter('description');
-
     }
 
     public function timezone(): string|null {
-        
         return $this->parameter('timeZone');
-
     }
 
     public function coordinates(): string|null {
-        
         return $this->parameter('coordinates');
-
     }
     
     public function attributes(): array {
-        
         return $this->parameter('locationTypes');
-
     }
 
     public function links(): array {
-        
         return $this->parameter('links');
-
     }
 
     public function relative(): string|null {
-        
         return $this->parameter('relativeTo');
-
     }
 
 }

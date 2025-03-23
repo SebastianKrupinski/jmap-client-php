@@ -29,33 +29,23 @@ use JmapClient\Responses\ResponseParameters;
 class ContactDatePartialParameters extends ResponseParameters {
 
     public function type(): string|null {
-        
         return $this->parameter('@type');
-
     }
 
     public function year(): int|null {
-        
         return $this->parameter('year');
-
     }
 
     public function month(): int|null {
-        
         return $this->parameter('month');
-
     }
 
     public function day(): int|null {
-        
         return $this->parameter('day');
-
     }
 
     public function scale(): string|null {
-        
         return $this->parameter('calendarScale');
-
     }
 
 }

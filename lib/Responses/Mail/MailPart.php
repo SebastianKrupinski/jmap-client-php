@@ -41,80 +41,47 @@ class MailPart
     }
 
     public function id(): string|null {
-        
-        // return value of parameter
         return $this->_part['partId'];
-
     }
 
     public function blob(): string|null {
-        
-        // return value of parameter
         return $this->_part['blobId'];
-
     }
 
     public function disposition(): string|null {
-        
-        // return value of parameter
         return $this->_part['disposition'];
-
     }
     
     public function type(): string|null {
-        
-        // return value of parameter
         return $this->_part['type'];
-
     }
 
     public function charset(): string|null {
-        
-        // return value of parameter
         return $this->_part['charset'];
-
     }
 
     public function name(): string|null {
-        
-        // return value of parameter
         return $this->_part['name'];
-
     }
 
     public function location(): string|null {
-        
-        // return value of parameter
         return $this->_part['location'];
-
     }
 
     public function cid(): string|null {
-        
-        // return value of parameter
         return $this->_part['cid'];
-
     }
 
     public function size(): int|null {
-        
-        // return value of parameter
         return $this->_part['size'];
-
     }
 
     public function imageSize(): int|null {
-        
-        // return value of parameter
         return $this->_part['imageSize'];
-
     }
 
     public function parts(): array|null {
-        
-        // return value of parameter
         return $this->_subparts;
-
     }
 
 }

@@ -26,36 +26,23 @@ namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseParameters;
 
-class EventNotificationParameters extends ResponseParameters
-{
-    
-    public function __construct(array $response = []) {
-
-        parent::__construct($response);
-
-    }
+class EventNotificationParameters extends ResponseParameters {
 
     public function type(): string|null {
-        
         return $this->parameter('action');
-
     }
 
     public function trigger(): mixed {
-        
         $trigger = $this->parameter('trigger') ?? [];
         return match ($trigger['@type']) {
             'AbsoluteTrigger' => new EventNotificationTriggerAbsoluteParameters($trigger),
             'OffsetTrigger' => new EventNotificationTriggerRelativeParameters($trigger),
             'UnknownTrigger' => new EventNotificationTriggerRelativeParameters($trigger),
         };
-        
     }
 
     public function acknowledged(): string|null {
-        
         return $this->parameter('acknowledged');
-
     }
     
 }
