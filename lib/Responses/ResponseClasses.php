@@ -28,8 +28,8 @@ class ResponseClasses
 {
     static array $Parameters = [
         'Blob' => 'JmapClient\Responses\Blob\BlobParameters',
-        'Identity' => 'JmapClient\Responses\Identity\IdentityParameters',
         'Mailbox' => 'JmapClient\Responses\Mail\MailboxParameters',
+        'Identity' => 'JmapClient\Responses\Identity\MailIdentityParameters',
         'Email' => 'JmapClient\Responses\Mail\MailParameters',
         'EmailSubmission' => 'JmapClient\Responses\Mail\MailSubmissionParameters',
         'Calendar' => 'JmapClient\Responses\Calendar\CalendarParameters',
@@ -45,9 +45,9 @@ class ResponseClasses
         'Blob/get' => 'JmapClient\Responses\Blob\BlobGet',
         'Blob/upload' => 'JmapClient\Responses\Blob\BlobSet',
         // Mail Identities
-        'Identity/get' => 'JmapClient\Responses\Identity\IdentityGet',
-        'Identity/set' => 'JmapClient\Responses\Identity\IdentitySet',
-        'Identity/changes' => 'JmapClient\Responses\Identity\IdentityChanges',
+        'Identity/get' => 'JmapClient\Responses\Mail\MailIdentityGet',
+        'Identity/set' => 'JmapClient\Responses\Mail\MailIdentitySet',
+        'Identity/changes' => 'JmapClient\Responses\Mail\MailIdentityChanges',
         // Mail Collections
         'Mailbox/get' => 'JmapClient\Responses\Mail\MailboxGet',
         'Mailbox/set' => 'JmapClient\Responses\Mail\MailboxSet',

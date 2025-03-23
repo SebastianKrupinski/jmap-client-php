@@ -22,18 +22,17 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Identity;
+namespace JmapClient\Requests\Mail;
 
 use JmapClient\Requests\RequestSet;
-use JmapClient\Requests\Identity\IdentityParameters;
 
-class IdentitySet extends RequestSet {
+class MailIdentitySet extends RequestSet {
 
     protected string $_space = 'urn:ietf:params:jmap:submission';
     protected string $_class = 'Identity';
 
 
-    public function create(string $id, $object = null): IdentityParameters {
+    public function create(string $id, $object = null): MailIdentityParameters {
         
         // evaluate if create parameter exist and create if needed
         if (!isset($this->_command['create'][$id]) && $object === null) {
@@ -42,11 +41,11 @@ class IdentitySet extends RequestSet {
             $object->bind($this->_command['create'][$id]);
         }
         // return self for function chaining 
-        return new IdentityParameters($this->_command['create'][$id]);
+        return new MailIdentityParameters($this->_command['create'][$id]);
 
     }
 
-    public function update(string $id, $object = null): IdentityParameters {
+    public function update(string $id, $object = null): MailIdentityParameters {
         
         // evaluate if create parameter exist and create if needed
         if (!isset($this->_command['update'][$id]) && $object === null) {
@@ -55,7 +54,7 @@ class IdentitySet extends RequestSet {
             $object->bind($this->_command['update'][$id]);
         }
         // return self for function chaining 
-        return new IdentityParameters($this->_command['update'][$id]);
+        return new MailIdentityParameters($this->_command['update'][$id]);
 
     }
 

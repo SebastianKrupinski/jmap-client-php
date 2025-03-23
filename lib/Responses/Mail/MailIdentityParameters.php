@@ -22,11 +22,11 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Responses\Identity;
+namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseParameters;
 
-class IdentityParameters extends ResponseParameters
+class MailIdentityParameters extends ResponseParameters
 {
     
     public function __construct(array $response = []) {

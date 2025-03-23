@@ -22,10 +22,10 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Responses\Identity;
+namespace JmapClient\Responses\Mail;
 
-use JmapClient\Responses\ResponseChanges;
+use JmapClient\Responses\ResponseGet;
 
-class IdentityChanges extends ResponseChanges {
+class MailIdentityGet extends ResponseGet {
 
 }

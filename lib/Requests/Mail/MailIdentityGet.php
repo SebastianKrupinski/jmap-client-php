@@ -22,11 +22,11 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Identity;
+namespace JmapClient\Requests\Mail;
 
-use JmapClient\Requests\RequestChanges;
+use JmapClient\Requests\RequestGet;
 
-class IdentityChanges extends RequestChanges {
+class MailIdentityGet extends RequestGet {
 
     protected string $_space = 'urn:ietf:params:jmap:submission';
     protected string $_class = 'Identity';
