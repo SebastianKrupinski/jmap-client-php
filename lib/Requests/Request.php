@@ -35,7 +35,7 @@ class Request implements \JsonSerializable
     protected string $_account;
     protected string $_identifier;
     protected array $_command;
-    protected array $_request = [];
+    protected array $_request = ['/', [], ''];
 
     public function __construct (?string $account = null, ?string $identifier = null, ?string $space = null, ?string $class = null, ?string $method = null) {
 
@@ -44,8 +44,6 @@ class Request implements \JsonSerializable
         }
         if ($identifier !== null) {
             $this->_identifier = $identifier;
-        } else {
-            $this->_identifier = uniqid();
         }
         if ($space !== null) {
             $this->_space = $space;
@@ -56,6 +54,21 @@ class Request implements \JsonSerializable
         if ($method !== null) {
             $this->_method = $method;
         }
+        if ($this->_account === null) {
+            $this->_account = 'default';
+        }
+        if (!isset($this->_identifier)) {
+            $this->_identifier = uniqid();
+        }
+        if (!isset($this->_space)) {
+            $this->_space = 'core';
+        }
+        if (!isset($this->_class)) {
+            $this->_class = 'Core';
+        }
+        if (!isset($this->_method)) {
+            $this->_method = 'echo';
+        }
         $this->_request[0] = $this->_class . '/' . $this->_method;
         $this->_request[1] = ['accountId' => $this->_account];
         $this->_request[2] = $this->_identifier;
@@ -64,20 +77,52 @@ class Request implements \JsonSerializable
         
     }
 
-    public function identifier(): string {
+    public function getIdentifier(): string {
         return $this->_identifier;
     }
 
-    public function namespace(): string {
+    public function setIdentifier(string $identifier): void {
+        $this->_identifier = $identifier;
+        $this->_request[2] = $identifier;
+    }
+
+    public function getAccount(): string {
+        return $this->_account;
+    }
+
+    public function setAccount(string $account): void {
+        $this->_account = $account;
+        $this->_command['accountId'] = $account;
+    }
+
+    public function getNamespace(): string {
         return $this->_space;
     }
 
-    public function class(): string {
+    public function setNamespace(string $space): void {
+        $this->_space = $space;
+    }
+
+    public function getClass(): string {
         return $this->_class;
     }
 
-    public function method(): string {
+    public function setClass(string $class): void {
+        $this->_class = $class;
+        $this->_request[0] = $class . '/' . $this->_method;
+    }
+
+    public function getMethod(): string {
         return $this->_method;
+    }
+
+    public function setMethod(string $method): void {
+        $this->_method = $method;
+        $this->_request[0] = $this->_class . '/' . $method;
+    }
+
+    public function toJson(): string {
+        return json_encode($this->_request, JSON_UNESCAPED_SLASHES);
     }
 
     public function jsonSerialize(): mixed {

@@ -633,7 +633,7 @@ class Client {
             $request  = new RequestBundle();
             // append commands to bundle
             foreach ($commands as $entry) {
-                $request->appendRequest($entry->namespace(), $entry);
+                $request->appendRequest($entry->getNamespace(), $entry);
             }
         }
         

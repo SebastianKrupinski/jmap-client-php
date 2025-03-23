@@ -43,8 +43,8 @@ class RequestGet extends Request {
 
         // creates or updates parameter and assigns new value
         $this->_command['#ids'] = new \stdClass();
-        $this->_command['#ids']->resultOf = $request->identifier();
-        $this->_command['#ids']->name = $request->class() . '/' . $request->method();
+        $this->_command['#ids']->resultOf = $request->getIdentifier();
+        $this->_command['#ids']->name = $request->getClass() . '/' . $request->getMethod();
         $this->_command['#ids']->path = $selector;
         // return self for function chaining
         return $this;
