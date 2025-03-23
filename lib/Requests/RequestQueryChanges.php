@@ -26,15 +26,10 @@ namespace JmapClient\Requests;
 
 use JmapClient\Requests\Request;
 
-class RequestQueryChanges extends Request
-{
+class RequestQueryChanges extends Request {
 
-    public function __construct(string $space, string $class, string $account, string $identifier = '') {
-
-        parent::__construct($space, $class, 'queryChanges', $account, $identifier);
-        
-    }
-
+    protected string $_method = 'queryChanges';
+    
     public function filter(): RequestFilter {
         
         // evaluate if filter parameter exist and create if needed

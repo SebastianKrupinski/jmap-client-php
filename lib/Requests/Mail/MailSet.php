@@ -27,17 +27,10 @@ namespace JmapClient\Requests\Mail;
 use JmapClient\Requests\RequestSet;
 use JmapClient\Requests\Mail\MailParameters;
 
-class MailSet extends RequestSet
-{
+class MailSet extends RequestSet {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:mail';
-        $class = $resource ?? 'Email';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
+    protected string $_space = 'urn:ietf:params:jmap:mail';
+    protected string $_class = 'Email';
 
     public function create(string $id, $object = null): MailParameters {
         

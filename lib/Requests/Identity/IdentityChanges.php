@@ -26,16 +26,9 @@ namespace JmapClient\Requests\Identity;
 
 use JmapClient\Requests\RequestChanges;
 
-class IdentityChanges extends RequestChanges
-{
+class IdentityChanges extends RequestChanges {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:submission';
-        $class = $resource ?? 'Identity';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
+    protected string $_space = 'urn:ietf:params:jmap:submission';
+    protected string $_class = 'Identity';
 
 }

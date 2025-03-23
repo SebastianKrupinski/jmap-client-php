@@ -26,14 +26,9 @@ namespace JmapClient\Requests;
 
 use JmapClient\Requests\Request;
 
-class RequestGet extends Request
-{
+class RequestGet extends Request {
 
-    public function __construct(string $space, string $class, string $account, string $identifier = '') {
-
-        parent::__construct($space, $class, 'get', $account, $identifier);
-        
-    }
+    protected string $_method = 'get';
 
     public function target(string ...$id): self {
 

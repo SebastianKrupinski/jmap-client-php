@@ -26,14 +26,7 @@ namespace JmapClient\Requests\Mail;
 
 use JmapClient\Requests\RequestSort;
 
-class MailboxSort extends RequestSort
-{
-    
-    public function __construct(array &$sort) {
-
-        parent::__construct($sort);
-        
-    }
+class MailboxSort extends RequestSort {
     
     public function name(bool $value = false): self {
 

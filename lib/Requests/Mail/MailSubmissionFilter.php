@@ -28,14 +28,7 @@ use DateTime;
 use DateTimeImmutable;
 use JmapClient\Requests\RequestFilter;
 
-class MailSubmissionFilter extends RequestFilter
-{
-
-    public function __construct(&$filter) {
-
-        parent::__construct($filter);
-        
-    }
+class MailSubmissionFilter extends RequestFilter {
 
     public function undoStatus(string $value): self {
 

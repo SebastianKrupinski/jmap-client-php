@@ -26,14 +26,9 @@ namespace JmapClient\Requests;
 
 use JmapClient\Requests\Request;
 
-class RequestSet extends Request
-{
+class RequestSet extends Request {
 
-    public function __construct(string $space, string $class, string $account, string $identifier = '') {
-
-        parent::__construct($space, $class, 'set', $account, $identifier);
-        
-    }
+    protected string $_method = 'set';
 
     public function state(string $state): self {
 

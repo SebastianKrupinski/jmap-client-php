@@ -26,14 +26,7 @@ namespace JmapClient\Requests\Tasks;
 
 use JmapClient\Requests\RequestSort;
 
-class TaskSort extends RequestSort
-{
-    
-    public function __construct(&$request) {
-
-        parent::__construct($request);
-        
-    }
+class TaskSort extends RequestSort {
     
     public function created(bool $value = false): self {
 

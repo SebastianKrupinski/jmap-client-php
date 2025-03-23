@@ -29,21 +29,33 @@ class Request implements \JsonSerializable
     public const DATE_FORMAT_LOCAL = 'Y-m-d\TH:i:s';
     public const DATE_FORMAT_UTC = 'Y-m-d\TH:i:s\Z';
 
-    protected string $_space = '';
-    protected string $_class = '';
-    protected string $_method = '';
-    protected string $_account = '';
-    protected string $_identifier = '';
+    protected string $_space;
+    protected string $_class;
+    protected string $_method;
+    protected string $_account;
+    protected string $_identifier;
     protected array $_command;
     protected array $_request = [];
 
-    public function __construct (string $space, string $class, string $method, string $account, string $identifier = '') {
+    public function __construct (?string $account = null, ?string $identifier = null, ?string $space = null, ?string $class = null, ?string $method = null) {
 
-        $this->_space = $space;
-        $this->_class = $class;
-        $this->_method = $method;
-        $this->_account = $account;
-        $this->_identifier = (!empty($identifier)) ? $identifier : uniqid();
+        if ($account !== null) {
+            $this->_account = $account;
+        }
+        if ($identifier !== null) {
+            $this->_identifier = $identifier;
+        } else {
+            $this->_identifier = uniqid();
+        }
+        if ($space !== null) {
+            $this->_space = $space;
+        }
+        if ($class !== null) {
+            $this->_class = $class;
+        }
+        if ($method !== null) {
+            $this->_method = $method;
+        }
         $this->_request[0] = $this->_class . '/' . $this->_method;
         $this->_request[1] = ['accountId' => $this->_account];
         $this->_request[2] = $this->_identifier;

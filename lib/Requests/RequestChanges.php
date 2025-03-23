@@ -26,14 +26,9 @@ namespace JmapClient\Requests;
 
 use JmapClient\Requests\Request;
 
-class RequestChanges extends Request
-{
-
-    public function __construct(string $space, string $class, string $account, string $identifier = '') {
-
-        parent::__construct($space, $class, 'changes', $account, $identifier);
-        
-    }
+class RequestChanges extends Request {
+    
+    protected string $_method = 'changes';
 
     public function state(string $value): self {
 

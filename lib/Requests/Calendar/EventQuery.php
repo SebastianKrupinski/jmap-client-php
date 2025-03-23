@@ -27,17 +27,10 @@ namespace JmapClient\Requests\Calendar;
 use DateTimeZone;
 use JmapClient\Requests\RequestQuery;
 
-class EventQuery extends RequestQuery
-{
+class EventQuery extends RequestQuery {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:calendars';
-        $class = $resource ?? 'CalendarEvent';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
+    protected string $_space = 'urn:ietf:params:jmap:calendars';
+    protected string $_class = 'CalendarEvent';
 
     public function filter(): EventFilter {
         

@@ -26,17 +26,10 @@ namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestSet;
 
-class AddressBookSet extends RequestSet
-{
+class AddressBookSet extends RequestSet {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:contacts';
-        $class = $resource ?? 'AddressBook';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
+    protected string $_space = 'urn:ietf:params:jmap:contacts';
+    protected string $_class = 'AddressBook';
 
     public function create(string $id, $object = null): AddressBookParameters {
         

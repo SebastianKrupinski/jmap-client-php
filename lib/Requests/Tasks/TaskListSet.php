@@ -26,17 +26,10 @@ namespace JmapClient\Requests\Tasks;
 
 use JmapClient\Requests\RequestSet;
 
-class TaskListSet extends RequestSet
-{
+class TaskListSet extends RequestSet {
 
-    public function __construct(string $account, string $identifier = '', ?string $namespace = null, ?string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:tasks';
-        $class = $resource ?? 'TaskList';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
+    protected string $_space = 'urn:ietf:params:jmap:tasks';
+    protected string $_class = 'TaskList';
 
     public function create(string $id, $object = null): TaskListParameters {
         

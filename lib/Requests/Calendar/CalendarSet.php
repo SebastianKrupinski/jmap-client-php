@@ -27,17 +27,10 @@ namespace JmapClient\Requests\Calendar;
 use JmapClient\Requests\RequestSet;
 use JmapClient\Requests\Calendar\CalendarParameters;
 
-class CalendarSet extends RequestSet
-{
+class CalendarSet extends RequestSet {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:calendars';
-        $class = $resource ?? 'Calendar';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
+    protected string $_space = 'urn:ietf:params:jmap:calendars';
+    protected string $_class = 'Calendar';
 
     public function create(string $id, $object = null): CalendarParameters {
         

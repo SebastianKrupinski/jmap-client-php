@@ -26,16 +26,9 @@ namespace JmapClient\Requests\Tasks;
 
 use JmapClient\Requests\RequestGet;
 
-class TaskGet extends RequestGet
-{
+class TaskGet extends RequestGet {
 
-    public function __construct(string $account, string $identifier = '', ?string $namespace = null, ?string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:tasks';
-        $class = $resource ?? 'Task';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
+    protected string $_space = 'urn:ietf:params:jmap:tasks';
+    protected string $_class = 'Task';
     
 }

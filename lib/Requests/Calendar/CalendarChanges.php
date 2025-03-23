@@ -26,16 +26,9 @@ namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestChanges;
 
-class CalendarChanges extends RequestChanges
-{
+class CalendarChanges extends RequestChanges {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:calendars';
-        $class = $resource ?? 'Calendar';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
-
+    protected string $_space = 'urn:ietf:params:jmap:calendars';
+    protected string $_class = 'Calendar';
+    
 }

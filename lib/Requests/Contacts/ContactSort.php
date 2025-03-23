@@ -26,15 +26,8 @@ namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestSort;
 
-class ContactSort extends RequestSort
-{
-    
-    public function __construct(&$request) {
+class ContactSort extends RequestSort {
 
-        parent::__construct($request);
-        
-    }
-    
     public function created(bool $value = false): self {
 
         // creates or updates parameter and assigns value

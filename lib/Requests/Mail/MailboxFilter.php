@@ -26,14 +26,7 @@ namespace JmapClient\Requests\Mail;
 
 use JmapClient\Requests\RequestFilter;
 
-class MailboxFilter extends RequestFilter
-{
-
-    public function __construct(object &$filter) {
-
-        parent::__construct($filter);
-        
-    }
+class MailboxFilter extends RequestFilter {
 
     public function in(string $value): self {
 

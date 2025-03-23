@@ -26,17 +26,10 @@ namespace JmapClient\Requests\Blob;
 
 use JmapClient\Requests\RequestGet;
 
-class BlobGet extends RequestGet
-{
+class BlobGet extends RequestGet {
 
-    public function __construct(string $account, string $identifier = '', ?string $namespace = null, ?string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:Blob';
-        $class = $resource ?? 'Blob';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
+    protected string $_space = 'urn:ietf:params:jmap:Blob';
+    protected string $_class = 'Blob';
 
     public function offset(int $value): self {
 

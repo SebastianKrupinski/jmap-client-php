@@ -28,15 +28,8 @@ use DateTime;
 use DateTimeImmutable;
 use JmapClient\Requests\RequestFilter;
 
-class MailFilter extends RequestFilter
-{
-
-    public function __construct(&$filter) {
-
-        parent::__construct($filter);
-        
-    }
-
+class MailFilter extends RequestFilter {
+    
     public function in(string ...$value): self {
 
         // creates or updates parameter and assigns value

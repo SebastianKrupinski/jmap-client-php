@@ -27,17 +27,11 @@ namespace JmapClient\Requests\Identity;
 use JmapClient\Requests\RequestSet;
 use JmapClient\Requests\Identity\IdentityParameters;
 
-class IdentitySet extends RequestSet
-{
+class IdentitySet extends RequestSet {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
+    protected string $_space = 'urn:ietf:params:jmap:submission';
+    protected string $_class = 'Identity';
 
-        $space = $namespace ?? 'urn:ietf:params:jmap:submission';
-        $class = $resource ?? 'Identity';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
 
     public function create(string $id, $object = null): IdentityParameters {
         

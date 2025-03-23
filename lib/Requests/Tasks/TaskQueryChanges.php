@@ -26,17 +26,11 @@ namespace JmapClient\Requests\Tasks;
 
 use JmapClient\Requests\RequestQueryChanges;
 
-class TaskQueryChanges extends RequestQueryChanges
-{
+class TaskQueryChanges extends RequestQueryChanges {
 
-    public function __construct(string $account, string $identifier = '', ?string $namespace = null, ?string $resource = null) {
+    protected string $_space = 'urn:ietf:params:jmap:tasks';
+    protected string $_class = 'Task';
 
-        $space = $namespace ?? 'urn:ietf:params:jmap:tasks';
-        $class = $resource ?? 'Task';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
 
     public function filter(): TaskFilter {
         

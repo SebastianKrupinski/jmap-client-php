@@ -26,17 +26,10 @@ namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestQueryChanges;
 
-class ContactQueryChanges extends RequestQueryChanges
-{
+class ContactQueryChanges extends RequestQueryChanges {
 
-    public function __construct(string $account, string $identifier = '', string $namespace = null, string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:contacts';
-        $class = $resource ?? 'ContactCard';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
+    protected string $_space = 'urn:ietf:params:jmap:contacts';
+    protected string $_class = 'ContactCard';
 
     public function filter(): ContactFilter {
         

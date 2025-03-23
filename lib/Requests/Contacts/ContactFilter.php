@@ -28,14 +28,7 @@ use DateTime;
 use DateTimeImmutable;
 use JmapClient\Requests\RequestFilter;
 
-class ContactFilter extends RequestFilter
-{
-
-    public function __construct(&$request) {
-
-        parent::__construct($request);
-        
-    }
+class ContactFilter extends RequestFilter {
 
     public function in(string ...$value): self {
 

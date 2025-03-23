@@ -26,14 +26,7 @@ namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestSort;
 
-class EventSort extends RequestSort
-{
-    
-    public function __construct(&$request) {
-
-        parent::__construct($request);
-        
-    }
+class EventSort extends RequestSort {
     
     public function created(bool $value = false): self {
 

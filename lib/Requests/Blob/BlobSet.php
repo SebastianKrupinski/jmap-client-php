@@ -27,18 +27,11 @@ namespace JmapClient\Requests\Blob;
 use JmapClient\Requests\RequestUpload;
 use JmapClient\Requests\Blob\BlobParameters;
 
-class BlobSet extends RequestUpload
-{
+class BlobSet extends RequestUpload {
 
-    public function __construct(string $account, string $identifier = '', ?string $namespace = null, ?string $resource = null) {
-
-        $space = $namespace ?? 'urn:ietf:params:jmap:Blob';
-        $class = $resource ?? 'Blob';
-
-        parent::__construct($space, $class, $account, $identifier);
-        
-    }
-
+    protected string $_space = 'urn:ietf:params:jmap:Blob';
+    protected string $_class = 'Blob';
+    
     public function create(string $id, $object = null): BlobParameters {
         
         // evaluate if create parameter exist and create if needed

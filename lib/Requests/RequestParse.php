@@ -26,14 +26,9 @@ namespace JmapClient\Requests;
 
 use JmapClient\Requests\Request;
 
-class RequestParse extends Request
-{
+class RequestParse extends Request {
 
-    public function __construct(string $space, string $class, string $account, string $identifier = '') {
-
-        parent::__construct($space, $class, 'parse', $account, $identifier);
-        
-    }
+    protected string $_method = 'parse';
 
     public function target(string ...$id): self {
 

@@ -26,16 +26,11 @@ namespace JmapClient\Requests;
 
 use JmapClient\Requests\Request;
 
-class RequestUpload extends Request
-{
+class RequestUpload extends Request {
 
-    public function __construct(string $space, string $class, string $account, string $identifier = '') {
-
-        parent::__construct($space, $class, 'upload', $account, $identifier);
-        
-    }
-
-    public function create(string $id, RequestParameters $object = null): RequestParameters {
+    protected string $_method = 'upload';
+    
+    public function create(string $id, ?RequestParameters $object = null): RequestParameters {
         
         // evaluate if create parameter exist and create if needed
         if (!isset($this->_command['create'][$id]) && $object === null) {
