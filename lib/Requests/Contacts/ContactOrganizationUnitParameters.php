@@ -26,35 +26,26 @@ namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestParameters;
 
-class ContactOrganizationUnitParameters extends RequestParameters
-{
+class ContactOrganizationUnitParameters extends RequestParameters {
+
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'OrgUnit');
-
     }
 
     public function type(string $value): static {
-
         $this->parameter('@type', $value);
         return $this;
-
     }
 
     public function name(string $value): static {
-
         $this->parameter('name', $value);
         return $this;
-
     }
 
     public function sorting(string $value): static {
-
         $this->parameter('sortAs', $value);
         return $this;
-
     }
 
 }

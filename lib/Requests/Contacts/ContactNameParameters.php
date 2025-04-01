@@ -26,37 +26,27 @@ namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestParameters;
 
-class ContactNameParameters extends RequestParameters
-{
+class ContactNameParameters extends RequestParameters {
+
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'Name');
-
     }
 
     public function type(string $value): static {
-
         $this->parameter('@type', $value);
         return $this;
-
     }
 
     public function full(string $value): static {
-
         $this->parameter('full', $value);
         return $this;
-
     }
 
     public function components(?int $index = null): ContactComponentParameters {
-
-        // evaluate if parameter exist and create if needed
         if (!isset($this->_parameters->components)) {
             $this->parameter('components', []);
         }
-        // return self for function chaining 
         if ($index) {
             if (!isset($this->_parameters->components[$index])){
                 $this->_parameters->components[$index] = new \stdClass();
@@ -72,28 +62,20 @@ class ContactNameParameters extends RequestParameters
     }
 
     public function separator(string $value): static {
-
         $this->parameter('defaultSeparator', $value);
         return $this;
-
     }
 
     public function ordered(bool $value): static {
-
         $this->parameter('isOrdered', $value);
         return $this;
-
     }
 
     public function sorting(string $component, string $value): static {
-
         if (!isset($this->_parameters->sortAs?->$component)) {
             $this->parameterStructured('sortAs', $component, $value);
         }
         return $this;
-
     }
-
-    
 
 }

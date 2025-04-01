@@ -33,16 +33,13 @@ class BlobSet extends RequestUpload {
     protected string $_class = 'Blob';
     
     public function create(string $id, $object = null): BlobParameters {
-        
         // evaluate if create parameter exist and create if needed
         if (!isset($this->_command['create'][$id]) && $object === null) {
             $this->_command['create'][$id] = new \stdClass();
         } elseif ($object !== null) {
             $object->bind($this->_command['create'][$id]);
         }
-        // return self for function chaining 
         return new BlobParameters($this->_command['create'][$id]);
-
     }
 
 }

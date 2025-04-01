@@ -26,48 +26,25 @@ namespace JmapClient\Requests\Mail;
 
 use JmapClient\Requests\RequestParameters;
 
-class MailboxParameters extends RequestParameters
-{
-    public function __construct(&$parameters = null) {
-
-        parent::__construct($parameters);
-
-    }
+class MailboxParameters extends RequestParameters {
 
     public function in(string $value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('parentId', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function label(string $value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('name', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function role(string $value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('role', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function priority(int $value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('sortOrder', $value);
-        // return self for function chaining
         return $this;
-
     }
-
 }

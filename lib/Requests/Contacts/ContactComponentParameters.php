@@ -26,26 +26,16 @@ namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestParameters;
 
-class ContactComponentParameters extends RequestParameters
-{
-    public function __construct(&$parameters = null) {
-
-        parent::__construct($parameters);
-
-    }
+class ContactComponentParameters extends RequestParameters {
 
     public function kind(string $value): static {
-
         $this->parameter('kind', $value);
         return $this;
-
     }
 
     public function value(string $value): static {
-
         $this->parameter('value', $value);
         return $this;
-
     }
 
 }

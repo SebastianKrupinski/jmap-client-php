@@ -26,46 +26,37 @@ namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestParameters;
 
-class EventNotificationParameters extends RequestParameters
-{
+class EventNotificationParameters extends RequestParameters {
 
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'Alert');
-
     }
 
-    public function type(string $value): self {
-        
-        $this->parameter('action', $value);
-        
+    public function type(string $value): static {
+        $this->parameter('@type', $value);
         return $this;
+    }
 
+    public function action(string $value): self {
+        $this->parameter('action', $value);
+        return $this;
     }
 
     public function trigger(string $value): EventNotificationTriggerAbsoluteParameters|EventNotificationTriggerRelativeParameters|EventNotificationTriggerUnknownParameters {
-        
-        // evaluate if parameter exist and create if needed
         if (!isset($this->_parameters->trigger)) {
             $this->parameter('trigger', new \stdClass());
         }
-        // return self for function chaining 
         return match ($value) {
             'absolute' => new EventNotificationTriggerAbsoluteParameters($this->_parameters->trigger),
             'offset' => new EventNotificationTriggerRelativeParameters($this->_parameters->trigger),
             default => new EventNotificationTriggerUnknownParameters($this->_parameters->trigger),
         };
-        
     }
 
     public function acknowledged(string $value): self {
-        
         $this->parameter('acknowledged', $value);
-        
         return $this;
-
     }
 
 }

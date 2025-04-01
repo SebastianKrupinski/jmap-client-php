@@ -24,13 +24,11 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Contacts;
 
-class ContactCryptoParameters extends ContactResourceParameters
-{
+class ContactCryptoParameters extends ContactResourceParameters {
+
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'CryptoKey');
-
     }
+    
 }

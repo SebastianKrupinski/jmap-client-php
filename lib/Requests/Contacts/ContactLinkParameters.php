@@ -24,13 +24,11 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Contacts;
 
-class ContactLinkParameters extends ContactResourceParameters
-{
+class ContactLinkParameters extends ContactResourceParameters {
+
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'Link');
-
     }
+    
 }

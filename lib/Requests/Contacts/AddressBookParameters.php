@@ -26,66 +26,36 @@ namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestParameters;
 
-class AddressBookParameters extends RequestParameters
-{
-    public function __construct(&$parameters = null) {
-
-        parent::__construct($parameters);
-
-    }
+class AddressBookParameters extends RequestParameters {
 
     public function label(string $value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('name', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function description(string $value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('description', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function priority(int $value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('sortOrder', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function subscribed(bool $value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('isSubscribed', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function default(bool $value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('isDefault', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function sharees(string ...$value): self {
-        
-        // creates or updates parameter and assigns value
         $this->parameter('shareWith', $value);
-        // return self for function chaining
         return $this;
-
     }
 
 }

@@ -29,6 +29,10 @@ use JmapClient\Responses\ResponseParameters;
 class EventNotificationParameters extends ResponseParameters {
 
     public function type(): string|null {
+        return $this->parameter('@type');
+    }
+
+    public function action(): string|null {
         return $this->parameter('action');
     }
 

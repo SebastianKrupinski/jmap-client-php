@@ -26,51 +26,39 @@ namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestParameters;
 
-class EventVirtualLocationParameters extends RequestParameters
-{
+class EventVirtualLocationParameters extends RequestParameters {
 
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'VirtualLocation');
+    }
 
+    public function type(string $value): static {
+        $this->parameter('@type', $value);
+        return $this;
     }
 
     public function label(string $value): self {
-        
         $this->parameter('name', $value);
-        
         return $this;
-
     }
 
     public function description(string $value): self {
-        
         $this->parameter('description', $value);
-        
         return $this;
-
     }
 
     public function location(string $value): self {
-        
         $this->parameter('uri', $value);
-        
         return $this;
-
     }
 
     public function attributes(string ...$value): self {
-        
         foreach ($value as $entry) {
             $collection[$entry] = true;
         }
-
         $this->parameter('features', (object)$collection);
-
         return $this;
-
     }
 
 }

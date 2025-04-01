@@ -27,28 +27,21 @@ namespace JmapClient\Requests\Contacts;
 use DateTimeInterface;
 use JmapClient\Requests\RequestParameters;
 
-class ContactDateStampParameters extends RequestParameters
-{
+class ContactDateStampParameters extends RequestParameters {
+    
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'Timestamp');
-
     }
 
     public function type(string $value): static {
-
         $this->parameter('@type', $value);
         return $this;
-
     }
 
     public function value(DateTimeInterface $value): static {
-
         $this->parameter('utc', $value->format(static::DATE_FORMAT_UTC));
         return $this;
-
     }
 
 }

@@ -27,27 +27,24 @@ namespace JmapClient\Requests\Calendar;
 use DateInterval;
 use JmapClient\Requests\RequestParameters;
 
-class EventNotificationTriggerRelativeParameters extends RequestParameters
-{
+class EventNotificationTriggerRelativeParameters extends RequestParameters {
 
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'OffsetTrigger');
+    }
 
+    public function type(string $value): static {
+        $this->parameter('@type', $value);
+        return $this;
     }
 
     public function anchor(string $value): self {
-        
         $this->parameter('relativeTo', $value);
-        
         return $this;
-
     }
 
     public function offset(DateInterval $value): self {
-        
         $this->parameter('offset', match (true) {
             ($value->y > 0) => $value->format("%rP%yY%mM%dDT%hH%iM"),
             ($value->m > 0) => $value->format("%rP%mM%dDT%hH%iM"),
@@ -55,9 +52,7 @@ class EventNotificationTriggerRelativeParameters extends RequestParameters
             ($value->h > 0) => $value->format("%rPT%hH%iM"),
             default => $value->format("%rPT%iM")
         });
-        
         return $this;
-
     }
 
 }

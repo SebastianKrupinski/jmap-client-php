@@ -26,47 +26,34 @@ namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestParameters;
 
-class ContactAliasParameters extends RequestParameters
-{
+class ContactAliasParameters extends RequestParameters {
     
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'Nickname');
-
     }
 
     public function type(string $value): static {
-
         $this->parameter('@type', $value);
         return $this;
-
     }
 
     public function name(string $value): static {
-
         $this->parameter('name', $value);
         return $this;
-
     }
 
     public function context(string ...$value): static {
-        
         foreach ($value as $entry) {
             $collection[$entry] = true;
         }
-
         $this->parameter('contexts', (object)$collection);
         return $this;
-
     }
 
     public function priority(int $value): static {
-
         $this->parameter('pref', $value);
         return $this;
-
     }
 
 }

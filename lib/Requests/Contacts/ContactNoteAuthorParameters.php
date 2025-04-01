@@ -26,28 +26,21 @@ namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestParameters;
 
-class ContactNoteAuthorParameters extends RequestParameters
-{
+class ContactNoteAuthorParameters extends RequestParameters {
+
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'Author');
-
     }
 
     public function type(string $value): static {
-
         $this->parameter('@type', $value);
         return $this;
-
     }
 
     public function name(string $value): static {
-
         $this->parameter('name', $value);
         return $this;
-
     }
 
 }

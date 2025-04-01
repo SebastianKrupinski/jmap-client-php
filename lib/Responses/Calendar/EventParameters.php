@@ -112,7 +112,6 @@ class EventParameters extends ResponseParameters {
         foreach ($collection as $key => $data) {
             $collection[$key] = new EventRecurrenceRuleParameters($data);
         }
-
         return $collection;
     }
 
@@ -121,7 +120,11 @@ class EventParameters extends ResponseParameters {
     }
 
     public function recurrenceOverrides(): array {
-        return $this->parameter('recurrenceOverrides') ?? [];
+        $collection = $this->parameter('recurrenceOverrides') ?? [];
+        foreach ($collection as $key => $data) {
+            $collection[$key] = new EventParameters($data);
+        }
+        return $collection;
     }
 
     public function priority(): int {

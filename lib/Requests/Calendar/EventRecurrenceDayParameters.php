@@ -26,31 +26,26 @@ namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestParameters;
 
-class EventRecurrenceDayParameters extends RequestParameters
-{
+class EventRecurrenceDayParameters extends RequestParameters {
 
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'NDay');
-    
+    }
+
+    public function type(string $value): static {
+        $this->parameter('@type', $value);
+        return $this;
     }
 
     public function day(string $value): self {
-        
         $this->parameter('day', $value);
-        
         return $this;
-
     }
 
     public function ordinal(int $value): self {
-        
         $this->parameter('nthOfPeriod', $value);
-        
         return $this;
-
     }
 
 }

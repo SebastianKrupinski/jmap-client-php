@@ -32,21 +32,13 @@ class BlobGet extends RequestGet {
     protected string $_class = 'Blob';
 
     public function offset(int $value): self {
-
-        // creates or updates parameter and assigns value
         $this->_command['offset'] = $value;
-        // return self for function chaining 
         return $this;
-        
     }
 
     public function length(int $value): self {
-
-        // creates or updates parameter and assigns value
         $this->_command['length'] = $value;
-        // return self for function chaining 
         return $this;
-        
     }
 
 }

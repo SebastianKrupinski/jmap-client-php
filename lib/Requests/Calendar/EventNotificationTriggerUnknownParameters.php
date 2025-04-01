@@ -26,15 +26,16 @@ namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestParameters;
 
-class EventNotificationTriggerUnknownParameters extends RequestParameters
-{
+class EventNotificationTriggerUnknownParameters extends RequestParameters {
 
     public function __construct(&$parameters = null) {
-
         parent::__construct($parameters);
-
         $this->parameter('@type', 'UnknownTrigger');
-
     }
-
+    
+    public function type(string $value): static {
+        $this->parameter('@type', $value);
+        return $this;
+    }
+    
 }
