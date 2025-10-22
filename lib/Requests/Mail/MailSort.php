@@ -29,57 +29,38 @@ use JmapClient\Requests\RequestSort;
 class MailSort extends RequestSort {
 
     public function received(bool $value = false): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('receivedAt', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function sent(bool $value = false): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('sentAt', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function from(bool $value = false): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('from', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function to(bool $value = false): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('to', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function subject(bool $value = false): self {
-
-        // creates or updates parameter and assigns value
-        $this->condition('to', $value);
-        // return self for function chaining
+        $this->condition('subject', $value);
         return $this;
-
     }
 
     public function size(bool $value = false): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('size', $value);
-        // return self for function chaining
         return $this;
+    }
 
+    public function keyword(bool $value = false): self {
+        $this->condition('hasKeyword', $value);
+        return $this;
     }
 
 }

@@ -34,9 +34,14 @@ use JmapClient\Authentication\JsonBasic;
 use JmapClient\Authentication\IAuthenticationCookie;
 use JmapClient\Authentication\IAuthenticationCustom;
 use JmapClient\Authentication\IAuthenticationJsonBasic;
+use JmapClient\Authentication\None;
 use JmapClient\Requests\RequestBundle;
 use JmapClient\Responses\ResponseBundle;
 use JmapClient\Responses\ResponseClasses;
+use JmapClient\Session\Account;
+use JmapClient\Session\AccountCollection;
+use JmapClient\Session\CapabilityCollection;
+use JmapClient\Session\Session;
 
 /**
  * JMAP Client
@@ -74,6 +79,7 @@ class Client {
         'verify' => false,
         'allow_redirects' => false,
         'cookies' => false,
+        'json' => true,
         'decode_content' => false,
         'proxy' => [],
         'curl' => [
@@ -132,8 +138,8 @@ class Client {
     protected IAuthentication $_ServiceAuthentication;
     // Session Connected Status
     protected bool $_SessionConnected = false;
-    // Session meta data
-    protected array $_SessionData = [];
+    // Session data
+    protected ?Session $_SessionData = null;
     
     /**
      * Constructor for the ExchangeWebServices class
@@ -143,7 +149,7 @@ class Client {
      */
     public function __construct(
         string $host = '',
-        $authentication = null
+        ?IAuthentication $authentication = null
     ) {
 
         $this->_ServiceResponseTypes = new ResponseClasses;
@@ -165,7 +171,6 @@ class Client {
 
         $options = array_replace($options, $overrides);
 
-        // initialize client
         return new GuzzleHttpClient($options);
     }
 
@@ -174,7 +179,11 @@ class Client {
     }
     
     public function configureTransportMode(string $value): void {
-        $this->_transportMode = $value;
+        $this->_transportMode = match ($value) {
+            'http' => self::TRANSPORT_MODE_STANDARD,
+            'https' => self::TRANSPORT_MODE_SECURE,
+            default => throw new InvalidArgumentException('Invalid transport mode'),
+        };
     }
 
     public function configureTransportOptions(array $options): void {
@@ -226,6 +235,81 @@ class Client {
      */
     public function retainTransportResponseBody(bool $value): void {
         $this->_transportResponseBodyFlag = $value;
+    }
+
+    /**
+     * Retains transport request or response data based on configured flags
+     * 
+     * @param string $source The source type: 'request' or 'response'
+     * @param string $data The data to retain
+     * 
+     * @return void
+     */
+    private function retainTransportBody(string $source, string $data): void {
+        
+        // skip retention for resources
+        if (is_resource($data)) {
+            return;
+        }
+        // retain request body
+        if ($source === 'request' && $this->_transportRequestBodyFlag) {
+            $this->_transportRequestBodyData = $data;
+        }
+        // retain response body
+        if ($source === 'response' && $this->_transportResponseBodyFlag) {
+            $this->_transportResponseBodyData = $data;
+        }
+
+    }
+
+    /**
+     * Retains request headers to be sent
+     * 
+     * @param array $headers The request headers
+     * 
+     * @return void
+     */
+    private function retainRequestHeaders(array $headers): void {
+        
+        // skip retention if not enabled
+        if (!$this->_transportRequestHeaderFlag) {
+            return;
+        }
+
+        // format headers for storage
+        $headerLines = [];
+        foreach ($headers as $name => $value) {
+            $headerLines[] = $name . ': ' . $value;
+        }
+
+        // store formatted headers
+        $this->_transportRequestHeaderData = implode(PHP_EOL, $headerLines);
+
+    }
+
+    /**
+     * Retains response headers from a response object
+     * 
+     * @param mixed $response The Guzzle response object
+     * 
+     * @return void
+     */
+    private function retainResponseHeaders($response): void {
+        
+        // skip retention if not enabled
+        if (!$this->_transportResponseHeaderFlag) {
+            return;
+        }
+
+        // format headers from response
+        $headerLines = [];
+        foreach ($response->getHeaders() as $name => $values) {
+            $headerLines[] = $name . ': ' . implode(', ', $values);
+        }
+
+        // store formatted headers
+        $this->_transportResponseHeaderData = implode(PHP_EOL, $headerLines);
+
     }
 
     /**
@@ -385,7 +469,7 @@ class Client {
         if ($reset) {
             $this->_client = null;
         }
-        // set service json basic authentication
+        // set service no authentication
         if ($this->_ServiceAuthentication instanceof None) {
             unset($this->_transportHeaders['Authorization']);
         }
@@ -415,16 +499,11 @@ class Client {
         $this->_transportResponseHeaderData = '';
         $this->_transportResponseBodyData = '';
 
-        // evaluate, if we are retaining request body
-        if ($this->_transportRequestBodyFlag) { $this->_transportRequestBodyData = $message; }
-        // evaluate, if logging is enabled and write request to log
-        if ($this->_transportLogState) { 
-            file_put_contents(
-                $this->_transportLogLocation, 
-                PHP_EOL . '{"date": "' . date("Y-m-d H:i:s.").gettimeofday()["usec"] . '", "request":' . $message . '}', 
-                FILE_APPEND
-            );
-        }
+        // retain request headers or body
+        $this->retainRequestHeaders($this->_transportHeaders);
+        $this->retainTransportBody('request', $message);
+        // log request
+        $this->logTransport('request', $message);
 
         // execute request
         $response = $this->_client->request('POST', $uri, ['headers' => $this->_transportHeaders, 'body' => $message]);
@@ -432,38 +511,35 @@ class Client {
 
         // retain response code
         $this->_transportResponseCode = $response->getStatusCode();
-        // evaluate, if we are retaining response body
-        if ($this->_transportResponseBodyFlag) { $this->_transportResponseBodyData = $message; }
-        // evaluate, if logging is enabled and write response body to log
-        if ($this->_transportLogState) { 
-            file_put_contents(
-                $this->_transportLogLocation,
-                PHP_EOL . '{"date": "' . date("Y-m-d H:i:s.").gettimeofday()["usec"] . '", "request":' . $message . '}',  
-                FILE_APPEND
-            ); 
-        }
+        // retain response headers or body
+        $this->retainResponseHeaders($response);
+        $this->retainTransportBody('response', $message);
+        // log response
+        $this->logTransport('response', $message);
 
         // return response
         return $message;
 
     }
 
-    public function connect(): array {
+    public function connect(): Session {
         // authenticate and retrieve json session
-        $this->_SessionData = $session = $this->authenticate();
-        // service authentication
-        if (isset($session['accessToken'])) {
-            $this->setAuthentication(new Bearer($this->_ServiceAuthentication->getId(), $session['accessToken'], 0), false);
+        $sessionData = $this->authenticate();
+        // create session object
+        $this->_SessionData = new Session($sessionData);
+        // service authentication - update token if provided
+        if (isset($sessionData['accessToken'])) {
+            $this->setAuthentication(new Bearer('jmap-client', $sessionData['accessToken'], 0), false);
         }
-        // service locations
-        $this->_ServiceCommandLocation = (isset($session['apiUrl'])) ? $session['apiUrl'] : '';
-        $this->_ServiceDownloadLocation = (isset($session['downloadUrl'])) ? $session['downloadUrl'] : '';
-        $this->_ServiceUploadLocation = (isset($session['uploadUrl'])) ? $session['uploadUrl'] : '';
-        $this->_ServiceEventLocation = (isset($session['eventSourceUrl'])) ? $session['eventSourceUrl'] : '';
+        // extract required locations
+        $this->_ServiceCommandLocation = $this->_SessionData->commandUrl();
+        $this->_ServiceDownloadLocation = $this->_SessionData->downloadUrl();
+        $this->_ServiceUploadLocation = $this->_SessionData->uploadUrl();
+        $this->_ServiceEventLocation = $this->_SessionData->eventUrl();
         // session connected
         $this->_SessionConnected = true;
-        // return response body
-        return $session;
+        // return session object
+        return $this->_SessionData;
 
     }
 
@@ -504,10 +580,10 @@ class Client {
 
     protected function authenticateJson(): ?array {
 
-        $authentication = $this->_ServiceAuthentication;
-        if (!$authentication instanceof IAuthenticationJsonBasic) {
+        if (!$this->_ServiceAuthentication instanceof IAuthenticationJsonBasic) {
             return [];
         }
+        $authentication = $this->_ServiceAuthentication;
         // determine if cookie mode is enabled
         if ($authentication instanceof IAuthenticationCookie && is_callable($authentication->getCookieStoreRetrieve())) {
             $session = $this->authenticateSession();
@@ -569,12 +645,16 @@ class Client {
     }
 
     protected function authenticateSession(): ?array {
-        
-        $authentication = $this->_ServiceAuthentication;
-        if (!$authentication instanceof IAuthenticationCookie && !is_callable($authentication->getCookieStoreRetrieve())) {
+
+        // evaluate and validate authentication type
+        if (!$this->_ServiceAuthentication instanceof IAuthenticationCookie) {
             return [];
         }
-        // retrieve cookie
+        if (!is_callable($this->_ServiceAuthentication->getCookieStoreRetrieve())) {
+            return [];
+        }
+        $authentication = $this->_ServiceAuthentication;
+
         $cookieStore = $authentication->getCookieStoreRetrieve();
         $cookieData = $cookieStore($authentication->getCookieStoreId());
         if (empty($cookieData)) {
@@ -606,19 +686,24 @@ class Client {
         } else {
             return [];
         }
+
     }
 
     protected function authenticateCustom(): ?array {
 
-        $authentication = $this->_ServiceAuthentication;
-        $authenticate = $authentication->getAuthentication();
-        if (is_callable($authenticate)) {
-            $client = $this->constructClient();
-            $session = $authenticate($client);
-            $this->_client = $client;
-            return $session;
+        // evaluate and validate authentication type
+        if (!$this->_ServiceAuthentication instanceof IAuthenticationCustom) {
+            return [];
         }
-        return [];
+        if (!is_callable($this->_ServiceAuthentication->authenticate())) {
+            return [];
+        }
+        $authenticate = $this->_ServiceAuthentication->authenticate();
+        
+        $client = $this->constructClient();
+        $session = $authenticate($client);
+        $this->_client = $client;
+        return $session;
 
     }
 
@@ -654,108 +739,117 @@ class Client {
 
     public function download(string $account, string $identifier, &$data, string $type = 'application/octet-stream', string $name = 'file.bin'): void {
 
+        // evaluate if http client is initialized
+        if (!isset($this->_client)) {
+            $this->_client = $this->constructClient();
+        }
+
+        // validate data
+        if (is_resource($data) && get_resource_type($data) !== 'stream') {
+            throw new InvalidArgumentException('Invalid resource passed');
+        }
+
         // replace command options
         $location = $this->_ServiceDownloadLocation;
         $location = str_replace("{accountId}", $account, $location);
         $location = str_replace("{blobId}", $identifier, $location);
         $location = str_replace("{type}", $type, $location);
         $location = str_replace("{name}", $name, $location);
-        // clone default headers
+
+        // modify specific headers
         $transportHeaders = $this->_transportHeaders;
-        // remove some headers
         unset(
             $transportHeaders['Content-Type'],
-            $transportHeaders['Accept'],
+            $transportHeaders['Accept']
         );
-        // set specific headers
-        $transportHeaders['Connection'] = 'Connection: Close';
-        // clone default options
-        $transportOptions = $this->_transportOptions;
-        // remove some options
-        unset(
-            $transportOptions[CURLOPT_POST],
-            $transportOptions[CURLOPT_CUSTOMREQUEST],
-            $transportOptions[CURLOPT_RETURNTRANSFER]
-        );
-        // set specific options
-        $transportOptions[CURLOPT_HTTPHEADER] = array_values($transportHeaders);
-        $transportOptions[CURLOPT_HTTPGET];
-        $transportOptions[CURLOPT_URL] = $location;
-        // determine data destiantion and set recieving options
+
+        // retain request headers or body
+        $this->retainRequestHeaders($transportHeaders);
+        $this->retainTransportBody('request', $location);
+        // log request
+        $this->logTransport('request', $location);
+
+        // determine data destination and set receiving options
         if (is_resource($data)) {
-            if (get_resource_type($data) !== 'stream') {
-                throw new InvalidArgumentException('Invalid resource passed');
-            }
-            $transportOptions[CURLOPT_FILE] = $data;
-            $transportOptions[CURLOPT_HEADER] = 0;
+            // execute request and write to resource stream
+            $response = $this->_client->request('GET', $location, ['headers' => $transportHeaders, 'sink' => $data]);
         } else {
-            $transportOptions[CURLOPT_RETURNTRANSFER] = true;
+            // execute request and capture response body
+            $response = $this->_client->request('GET', $location, ['headers' => $transportHeaders]);
+            $data = $response->getBody()->getContents();
         }
-        // initilize client
-        $client = curl_init();
-        // set request options
-        curl_setopt_array($client, $transportOptions);
-        // execute request for different methods
-        if (is_resource($data)) {
-            curl_exec($client);
-        } else {
-            $response = curl_exec($client);
-            // extract header size
-            $header_size = curl_getinfo($client, CURLINFO_HEADER_SIZE);
-            // extract data
-            $data = substr($response, $header_size);
-        }
-        // close client
-        curl_close($client);
+
+        // retain response code
+        $this->_transportResponseCode = $response->getStatusCode();
+        // retain response headers or body 
+        $this->retainResponseHeaders($response);
+        $this->retainTransportBody('response', (is_resource($data) ? 'resource stream' : $data));
+        // log response
+        $this->logTransport('response', (is_resource($data) ? 'resource stream' : $data));
 
     }
 
     public function upload(string $account, string $type, &$data): string {
     
+        // evaluate if http client is initialized
+        if (!isset($this->_client)) {
+            $this->_client = $this->constructClient();
+        }
+
+        // validate data
+        if (is_resource($data) && get_resource_type($data) !== 'stream') {
+            throw new InvalidArgumentException('Invalid resource passed');
+        }
+
         // replace command options
         $location = str_replace("{accountId}", $account, $this->_ServiceUploadLocation);
-        // clone default headers
+
+        // modify specific headers
         $transportHeaders = $this->_transportHeaders;
-        // remove some headers
-        unset(
-            $transportHeaders['Accept'],
-        );
-        // set specific headers
-        $transportHeaders['Connection'] = 'Connection: Close';
-        $transportHeaders['Content-Type'] = 'Content-Type: ' . $type;
-        // clone default transport options
-        $transportOptions = $this->_transportOptions;
-        // remove some transport options
-        unset(
-            $transportOptions[CURLOPT_CUSTOMREQUEST],
-        );
-        // set specific options
-        $transportOptions[CURLOPT_HTTPHEADER] = array_values($transportHeaders);
-        $transportOptions[CURLOPT_URL] = $location;
-        $transportOptions[CURLOPT_POST] = true;
-        // determine data source and set sending options
-        if (is_resource($data)) {
-            if (get_resource_type($data) !== 'stream') {
-                throw new InvalidArgumentException('Invalid resource passed');
-            }
-            $transportOptions[CURLOPT_INFILESIZE] = $size;
-            $transportOptions[CURLOPT_INFILE] = $data; // ($in=fopen($tmpFile, 'r'))
-        }
-        else {
-            $transportOptions[CURLOPT_POSTFIELDS] = $data;
-        }
-        // initialize client
-        $client = curl_init();
-        // set request options
-        curl_setopt_array($client, $transportOptions);
+        $transportHeaders['Content-Type'] = $type;
+
+        // retain request headers or body
+        $this->retainRequestHeaders($transportHeaders);
+        $this->retainTransportBody('request', (is_resource($data) ? 'resource stream' : $data));
+        // log request
+        $this->logTransport('request', $location);
+
         // execute request
-        $response = curl_exec($client);
-        // extract header size
-        $header_size = curl_getinfo($client, CURLINFO_HEADER_SIZE);
-        // close client
-        curl_close($client);
-        // return response
-        return substr($response, $header_size);
+        $response = $this->_client->request('POST', $location, ['headers' => $transportHeaders, 'body' => $data]);
+        $responseBody = $response->getBody()->getContents();
+
+        // retain response code
+        $this->_transportResponseCode = $response->getStatusCode();
+        // retain response headers or body
+        $this->retainResponseHeaders($response);
+        $this->retainTransportBody('response', $responseBody);
+        // log response
+        $this->logTransport('response', $responseBody);
+
+        return $responseBody;
+
+    }
+
+    /**
+     * Logs transport activity to the configured log file
+     * 
+     * @param string $type The type of log entry (request, response, download, upload, etc)
+     * @param string $message The message to log
+     * 
+     * @return void
+     */
+    private function logTransport(string $type, string $message): void {
+        
+        // evaluate if logging is enabled
+        if (!$this->_transportLogState) {
+            return;
+        }
+
+        // format log entry with timestamp
+        $logEntry = PHP_EOL . '{"date": "' . date("Y-m-d H:i:s.") . gettimeofday()["usec"] . '", "' . $type . '":' . $message . '}';
+
+        // write to log file
+        file_put_contents($this->_transportLogLocation, $logEntry, FILE_APPEND);
 
     }
 
@@ -765,7 +859,7 @@ class Client {
 
     }
 
-    public function sessionData(): array {
+    public function sessionData(): ?Session {
     
         return $this->_SessionData;
 
@@ -773,44 +867,52 @@ class Client {
 
     public function sessionCapable(string $value, bool $standard = true): bool {
 
+        if (!$this->_SessionData) {
+            return false;
+        }
         if ($standard === false) {
-            return isset($this->_SessionData['capabilities'][$value]) ? true : false;
+            return $this->_SessionData->capable($value);
         } else {
-            return isset($this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value]) ? true : false;
+            return $this->_SessionData->capable('urn:ietf:params:jmap:' . $value);
         }
 
     }
 
-    public function sessionCapabilities(?string $value = null, bool $standard = true): array {
+    public function sessionCapabilities(?string $value = null, bool $standard = true): CapabilityCollection|null {
     
+        if (!$this->_SessionData) {
+            return null;
+        }
         if ($standard === true && !empty($value)) {
-            return isset($this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value]) ?
-                   $this->_SessionData['capabilities']['urn:ietf:params:jmap:' . $value] : [];
+            return $this->_SessionData->capability('urn:ietf:params:jmap:' . $value);
         } elseif ($standard === false && !empty($value)) {
-            return isset($this->_SessionData['capabilities'][$value]) ?
-                   $this->_SessionData['capabilities'][$value] : [];
+            return $this->_SessionData->capability($value);
         } else {
-            return $this->_SessionData['capabilities'];
+            return $this->_SessionData->capabilities();
         }
 
     }
 
-    public function sessionAccounts(): array {
+    public function sessionAccounts(): AccountCollection|null {
     
-        return $this->_SessionData['accounts'];
+        if (!$this->_SessionData) {
+            return null;
+        }
+        return $this->_SessionData->accounts();
 
     }
 
-    public function sessionAccountDefault(?string $value = null, bool $standard = true): string | null {
+    public function sessionAccountDefault(?string $value = null, bool $standard = true): Account|null {
 
+        if (!$this->_SessionData) {
+            return null;
+        }
         if ($standard === true && !empty($value)) {
-            return isset($this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:' . $value]) ?
-                   $this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:' . $value] : null;
+            return $this->_SessionData->primaryAccount('urn:ietf:params:jmap:' . $value);
         } elseif ($standard === false && !empty($value)) {
-            return isset($this->_SessionData['primaryAccounts'][$value]) ?
-                   $this->_SessionData['primaryAccounts'][$value] : null;
+            return $this->_SessionData->primaryAccount($value);
         } else {
-            return $this->_SessionData['primaryAccounts']['urn:ietf:params:jmap:core'];
+            return $this->_SessionData->primaryAccount('urn:ietf:params:jmap:core');
         }
 
     }

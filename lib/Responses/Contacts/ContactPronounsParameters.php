@@ -26,38 +26,41 @@ namespace JmapClient\Responses\Contacts;
 
 use JmapClient\Responses\ResponseParameters;
 
-class AddressBookParameters extends ResponseParameters {
+class ContactPronounsParameters extends ResponseParameters {
 
-    public function id(): string|null {
-        return $this->parameter('id');
+    public function type(): string|null {
+        return $this->parameter('@type');
     }
 
-    public function label(): string|null {
-        return $this->parameter('name');
+    /**
+     * Get the pronouns string
+     * Examples: "she/her", "they/them", "xe/xir"
+     * 
+     * @return string|null
+     */
+    public function pronouns(): string|null {
+        return $this->parameter('pronouns');
     }
 
-    public function description(): string|null {
-        return $this->parameter('description');
+    /**
+     * Get the contexts for these pronouns
+     * Returns array keys from contexts where value is true
+     * e.g., ['work' => true, 'private' => true]
+     * 
+     * @return array|null
+     */
+    public function contexts(): array|null {
+        $value = $this->parameter('contexts');
+        return $value ? array_keys((array)$value) : null;
     }
 
-    public function priority(): int|null {
-        return $this->parameter('sortOrder');
-    }
-
-    public function subscribed(): bool|null {
-        return $this->parameter('isSubscribed');
-    }
-
-    public function default(): bool|null {
-        return $this->parameter('isDefault');
-    }
-
-    public function sharees(): array|null {
-        return $this->parameter('shareWith');
-    }
-
-    public function rights(): object|null {
-        return $this->parameter('myRights');
+    /**
+     * Get the preference for these pronouns (1-100, lower is more preferred)
+     * 
+     * @return int|null
+     */
+    public function preference(): int|null {
+        return $this->parameter('pref');
     }
 
 }

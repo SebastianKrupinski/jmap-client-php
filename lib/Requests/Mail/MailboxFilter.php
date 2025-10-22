@@ -29,48 +29,28 @@ use JmapClient\Requests\RequestFilter;
 class MailboxFilter extends RequestFilter {
 
     public function in(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('parentId', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function name(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('name', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function role(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('role', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function hasRoles(bool $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('hasAnyRole', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function isSubscribed(bool $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('isSubscribed', $value);
-        // return self for function chaining
         return $this;
-
     }
 
 }

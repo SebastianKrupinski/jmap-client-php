@@ -30,40 +30,41 @@ class AddressBookSet extends RequestSet {
 
     protected string $_space = 'urn:ietf:params:jmap:contacts';
     protected string $_class = 'AddressBook';
+    protected string $_parametersClass = AddressBookParameters::class;
 
+    /**
+     * Create an address book
+     * 
+     * @param string $id Address book identifier
+     * @param AddressBookParameters|null $object Address book parameters object
+     * 
+     * @return AddressBookParameters The address book parameters for method chaining
+     */
     public function create(string $id, $object = null): AddressBookParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
-        }
-        // return self for function chaining 
-        return new AddressBookParameters($this->_command['create'][$id]);
-
+        return parent::create($id, $object);
     }
 
+    /**
+     * Update an address book
+     * 
+     * @param string $id Address book identifier
+     * @param AddressBookParameters|null $object Address book parameters object
+     * 
+     * @return AddressBookParameters The address book parameters for method chaining
+     */
     public function update(string $id, $object = null): AddressBookParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['update'][$id]);
-        }
-        // return self for function chaining 
-        return new AddressBookParameters($this->_command['update'][$id]);
-
+        return parent::update($id, $object);
     }
 
+    /**
+     * Delete an address book
+     * 
+     * @param string $id Address book identifier
+     * 
+     * @return self
+     */
     public function delete(string $id): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['destroy'][] = $id;
-        // return self for function chaining 
-        return $this;
-        
+        return parent::delete($id);
     }
 
 }

@@ -30,46 +30,54 @@ class TaskListSet extends RequestSet {
 
     protected string $_space = 'urn:ietf:params:jmap:tasks';
     protected string $_class = 'TaskList';
+    protected string $_parametersClass = TaskListParameters::class;
 
+    /**
+     * Create a task list
+     * 
+     * @param string $id Task list identifier
+     * @param TaskListParameters|null $object Task list parameters object
+     * 
+     * @return TaskListParameters The task list parameters for method chaining
+     */
     public function create(string $id, $object = null): TaskListParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
-        }
-        // return self for function chaining 
-        return new TaskListParameters($this->_command['create'][$id]);
-
+        return parent::create($id, $object);
     }
 
+    /**
+     * Update a task list
+     * 
+     * @param string $id Task list identifier
+     * @param TaskListParameters|null $object Task list parameters object
+     * 
+     * @return TaskListParameters The task list parameters for method chaining
+     */
     public function update(string $id, $object = null): TaskListParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['update'][$id]);
-        }
-        // return self for function chaining 
-        return new TaskListParameters($this->_command['update'][$id]);
-
+        return parent::update($id, $object);
     }
 
+    /**
+     * Delete a task list
+     * 
+     * @param string $id Task list identifier
+     * 
+     * @return self
+     */
     public function delete(string $id): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['destroy'][] = $id;
-        // return self for function chaining 
-        return $this;
-        
+        return parent::delete($id);
     }
 
+    /**
+     * Set whether to remove events when deleting the task list
+     * 
+     * @param bool $value Whether to remove events on destruction
+     * 
+     * @return self
+     */
     public function deleteContents(bool $value): self {
 
         // creates or updates parameter and assigns value
-        $this->_request[1]['onDestroyRemoveEvents'] = $value;
+        $this->_command['onDestroyRemoveEvents'] = $value;
         // return self for function chaining 
         return $this;
         

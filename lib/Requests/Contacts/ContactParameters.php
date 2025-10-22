@@ -89,9 +89,18 @@ class ContactParameters extends RequestParameters {
         return $this;
     }
 
-    public function relation(): static {
-        // TODO: Implement relation() method.
-        return $this;
+    /**
+     * Add a related contact for this contact
+     * The uid parameter is the unique identifier of the related contact
+     * 
+     * @param string $uid
+     * @return ContactRelationParameters
+     */
+    public function relations(string $uid): ContactRelationParameters {
+        if (!isset($this->_parameters->relatedTo?->$uid)) {
+            $this->parameterStructured('relatedTo', $uid, new \stdClass());
+        }
+        return new ContactRelationParameters($this->_parameters->relatedTo->$uid);
     }
 
     /** Name Properties */
@@ -110,9 +119,17 @@ class ContactParameters extends RequestParameters {
         return new ContactAliasParameters($this->_parameters->nicknames->$id);
     }
 
-    public function speakToAs(): static {
-        // TODO: Implement speakToAs() method.
-        return $this;
+    /**
+     * Get the SpeakToAs information for this contact
+     * Includes grammatical gender and pronouns
+     * 
+     * @return ContactSpeakToAsParameters
+     */
+    public function speakToAs(): ContactSpeakToAsParameters {
+        if (!isset($this->_parameters->speakToAs)) {
+            $this->parameter('speakToAs', new \stdClass());
+        }
+        return new ContactSpeakToAsParameters($this->_parameters->speakToAs);
     }
 
     /** Personal Properties */

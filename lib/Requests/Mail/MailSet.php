@@ -31,40 +31,41 @@ class MailSet extends RequestSet {
 
     protected string $_space = 'urn:ietf:params:jmap:mail';
     protected string $_class = 'Email';
+    protected string $_parametersClass = MailParameters::class;
 
+    /**
+     * Create an email
+     * 
+     * @param string $id Email identifier
+     * @param MailParameters|null $object Email parameters object
+     * 
+     * @return MailParameters The email parameters for method chaining
+     */
     public function create(string $id, $object = null): MailParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
-        }
-        // return self for function chaining 
-        return new MailParameters($this->_command['create'][$id]);
-
+        return parent::create($id, $object);
     }
 
+    /**
+     * Update an email
+     * 
+     * @param string $id Email identifier
+     * @param MailParameters|null $object Email parameters object
+     * 
+     * @return MailParameters The email parameters for method chaining
+     */
     public function update(string $id, $object = null): MailParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['update'][$id]);
-        }
-        // return self for function chaining 
-        return new MailParameters($this->_command['update'][$id]);
-
+        return parent::update($id, $object);
     }
 
+    /**
+     * Delete an email
+     * 
+     * @param string $id Email identifier
+     * 
+     * @return self
+     */
     public function delete(string $id): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_command['destroy'][] = $id;
-        // return self for function chaining 
-        return $this;
-        
+        return parent::delete($id);
     }
 
 }

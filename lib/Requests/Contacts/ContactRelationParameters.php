@@ -22,42 +22,37 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Requests\Contacts;
 
 use JmapClient\Requests\RequestParameters;
 
-class MailboxParameters extends RequestParameters {
-
-    public const PARAMETER_LIST = ['parentId', 'name', 'role', 'sortOrder', 'isSubscribed'];
-
-    public function parametersRaw(array $value): self {
-        $this->_parameters = (object) array_intersect_key($value, array_flip(self::PARAMETER_LIST));
-        return $this;
-    }
-
-    public function in(string|null $value): self {
-        $this->parameter('parentId', $value);
-        return $this;
-    }
-
-    public function label(string $value): self {
-        $this->parameter('name', $value);
-        return $this;
-    }
-
-    public function role(string|null $value): self {
-        $this->parameter('role', $value);
-        return $this;
-    }
-
-    public function priority(int $value): self {
-        $this->parameter('sortOrder', $value);
-        return $this;
-    }
-
-    public function subscribed(bool $value): self {
-        $this->parameter('isSubscribed', $value);
-        return $this;
-    }
+class ContactRelationParameters extends RequestParameters {
     
+    public function __construct(&$parameters = null) {
+        parent::__construct($parameters);
+        $this->parameter('@type', 'Relation');
+    }
+
+    public function type(string $value): static {
+        $this->parameter('@type', $value);
+        return $this;
+    }
+
+    /**
+     * Set the relationship types for this related contact
+     * Standard values: acquaintance, agent, child, co-resident, co-worker, colleague, contact, crush, 
+     * date, emergency, friend, kin, me, met, muse, neighbor, parent, sibling, spouse, sweetheart
+     * 
+     * @param string ...$values
+     * @return static
+     */
+    public function relations(string ...$values): static {
+        $collection = [];
+        foreach ($values as $value) {
+            $collection[$value] = true;
+        }
+        $this->parameter('relation', (object)$collection);
+        return $this;
+    }
+
 }

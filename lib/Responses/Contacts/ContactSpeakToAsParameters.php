@@ -26,38 +26,34 @@ namespace JmapClient\Responses\Contacts;
 
 use JmapClient\Responses\ResponseParameters;
 
-class AddressBookParameters extends ResponseParameters {
+class ContactSpeakToAsParameters extends ResponseParameters {
 
-    public function id(): string|null {
-        return $this->parameter('id');
+    public function type(): string|null {
+        return $this->parameter('@type');
     }
 
-    public function label(): string|null {
-        return $this->parameter('name');
+    /**
+     * Get the grammatical gender for addressing the contact
+     * Values: animate, common, feminine, inanimate, masculine, neuter
+     * 
+     * @return string|null
+     */
+    public function grammaticalGender(): string|null {
+        return $this->parameter('grammaticalGender');
     }
 
-    public function description(): string|null {
-        return $this->parameter('description');
-    }
-
-    public function priority(): int|null {
-        return $this->parameter('sortOrder');
-    }
-
-    public function subscribed(): bool|null {
-        return $this->parameter('isSubscribed');
-    }
-
-    public function default(): bool|null {
-        return $this->parameter('isDefault');
-    }
-
-    public function sharees(): array|null {
-        return $this->parameter('shareWith');
-    }
-
-    public function rights(): object|null {
-        return $this->parameter('myRights');
+    /**
+     * Get the pronouns for this contact
+     * Returns an array of ContactPronounsParameters indexed by ID
+     * 
+     * @return array|null
+     */
+    public function pronouns(): array|null {
+        $collection = $this->parameter('pronouns') ?? [];
+        foreach ($collection as $key => $data) {
+            $collection[$key] = new ContactPronounsParameters($data);
+        }
+        return $collection;
     }
 
 }

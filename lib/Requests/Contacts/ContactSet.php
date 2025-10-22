@@ -24,46 +24,48 @@ declare(strict_types=1);
 */
 namespace JmapClient\Requests\Contacts;
 
+use JmapClient\Requests\RequestParameters;
 use JmapClient\Requests\RequestSet;
 
 class ContactSet extends RequestSet {
 
     protected string $_space = 'urn:ietf:params:jmap:contacts';
     protected string $_class = 'ContactCard';
+    protected string $_parametersClass = ContactParameters::class;
     
+    /**
+     * Create a contact
+     * 
+     * @param string $id Contact identifier
+     * @param ContactParameters|null $object Contact parameters object
+     * 
+     * @return ContactParameters The contact parameters for method chaining
+     */
     public function create(string $id, $object = null): ContactParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
-        }
-        // return self for function chaining 
-        return new ContactParameters($this->_command['create'][$id]);
-
+        return parent::create($id, $object);
     }
 
+    /**
+     * Update a contact
+     * 
+     * @param string $id Contact identifier
+     * @param ContactParameters|null $object Contact parameters object
+     * 
+     * @return ContactParameters The contact parameters for method chaining
+     */
     public function update(string $id, $object = null): ContactParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['update'][$id]);
-        }
-        // return self for function chaining 
-        return new ContactParameters($this->_command['update'][$id]);
-
+        return parent::update($id, $object);
     }
 
+    /**
+     * Delete a contact
+     * 
+     * @param string $id Contact identifier
+     * 
+     * @return self
+     */
     public function delete(string $id): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['destroy'][] = $id;
-        // return self for function chaining 
-        return $this;
-        
+        return parent::delete($id);
     }
 
 }

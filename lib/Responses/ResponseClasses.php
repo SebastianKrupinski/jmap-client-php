@@ -27,9 +27,10 @@ namespace JmapClient\Responses;
 class ResponseClasses
 {
     static array $Parameters = [
+        'PushSubscription' => 'JmapClient\Responses\Core\SubscriptionParameters',
         'Blob' => 'JmapClient\Responses\Blob\BlobParameters',
         'Mailbox' => 'JmapClient\Responses\Mail\MailboxParameters',
-        'Identity' => 'JmapClient\Responses\Identity\MailIdentityParameters',
+        'Identity' => 'JmapClient\Responses\Mail\MailIdentityParameters',
         'Email' => 'JmapClient\Responses\Mail\MailParameters',
         'EmailSubmission' => 'JmapClient\Responses\Mail\MailSubmissionParameters',
         'Calendar' => 'JmapClient\Responses\Calendar\CalendarParameters',
@@ -41,6 +42,9 @@ class ResponseClasses
     static array $Commands = [
         // errors
         'error' => 'JmapClient\Responses\ResponseException',
+        // Core
+        'PushSubscription/get' => 'JmapClient\Responses\Core\SubscriptionGet',
+        'PushSubscription/set' => 'JmapClient\Responses\Core\SubscriptionSet',
         // Blob
         'Blob/get' => 'JmapClient\Responses\Blob\BlobGet',
         'Blob/upload' => 'JmapClient\Responses\Blob\BlobSet',

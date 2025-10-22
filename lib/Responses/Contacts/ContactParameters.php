@@ -80,9 +80,13 @@ class ContactParameters extends ResponseParameters {
     public function members(): array|null {
         return $this->parameter('members');
     }
-
-    public function relation(): string|null {
-        return $this->parameter('relatedTo');
+    
+    public function relations(): array|null {
+        $collection = $this->parameter('relatedTo') ?? [];
+        foreach ($collection as $key => $data) {
+            $collection[$key] = new ContactRelationParameters($data);
+        }
+        return $collection;
     }
 
     /** Name Properties */
@@ -103,8 +107,18 @@ class ContactParameters extends ResponseParameters {
         return $collection;
     }
 
-    public function speakToAs(): string|null {
-        return $this->parameter('speakToAs');
+    /**
+     * Get the SpeakToAs information for addressing this contact
+     * Includes grammatical gender and pronouns
+     * 
+     * @return ContactSpeakToAsParameters|null
+     */
+    public function speakToAs(): ContactSpeakToAsParameters|null {
+        $value = $this->parameter('speakToAs');
+        if ($value !== null) {
+            return new ContactSpeakToAsParameters($value);
+        }
+        return null;
     }
 
     /** Personal Properties */

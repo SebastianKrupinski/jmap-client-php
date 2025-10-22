@@ -31,15 +31,18 @@ class BlobSet extends RequestUpload {
 
     protected string $_space = 'urn:ietf:params:jmap:Blob';
     protected string $_class = 'Blob';
-    
+    protected string $_parametersClass = BlobParameters::class;
+
+    /**
+     * Create a blob
+     * 
+     * @param string $id Blob identifier
+     * @param BlobParameters|null $object Blob parameters object
+     * 
+     * @return BlobParameters The blob parameters for method chaining
+     */
     public function create(string $id, $object = null): BlobParameters {
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
-        }
-        return new BlobParameters($this->_command['create'][$id]);
+        return parent::create($id, $object);
     }
 
 }

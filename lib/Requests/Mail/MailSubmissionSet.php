@@ -31,40 +31,41 @@ class MailSubmissionSet extends RequestSet {
 
     protected string $_space = 'urn:ietf:params:jmap:submission';
     protected string $_class = 'EmailSubmission';
-    
+    protected string $_parametersClass = MailSubmissionParameters::class;
+
+    /**
+     * Create a mail submission
+     * 
+     * @param string $id Submission identifier
+     * @param MailSubmissionParameters|null $object Submission parameters object
+     * 
+     * @return MailSubmissionParameters The submission parameters for method chaining
+     */
     public function create(string $id, $object = null): MailSubmissionParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
-        }
-        // return self for function chaining 
-        return new MailSubmissionParameters($this->_command['create'][$id]);
-
+        return parent::create($id, $object);
     }
 
+    /**
+     * Update a mail submission
+     * 
+     * @param string $id Submission identifier
+     * @param MailSubmissionParameters|null $object Submission parameters object
+     * 
+     * @return MailSubmissionParameters The submission parameters for method chaining
+     */
     public function update(string $id, $object = null): MailSubmissionParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['update'][$id]);
-        }
-        // return self for function chaining 
-        return new MailSubmissionParameters($this->_command['update'][$id]);
-
+        return parent::update($id, $object);
     }
 
+    /**
+     * Delete a mail submission
+     * 
+     * @param string $id Submission identifier
+     * 
+     * @return self
+     */
     public function delete(string $id): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_command['destroy'][] = $id;
-        // return self for function chaining 
-        return $this;
-        
+        return parent::delete($id);
     }
 
 }

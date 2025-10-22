@@ -31,80 +31,45 @@ class RequestQuery extends Request {
     protected string $_method = 'query';
     
     public function filter(): RequestFilter {
-        
-        // evaluate if filter paramater exist and create if needed
         if (!isset($this->_command['filter'])) {
             $this->_command['filter'] = new \stdClass();
         }
-        // return self for function chaining 
         return new RequestFilter($this->_command['filter']);
-
     }
 
     public function sort(): RequestSort {
-        
-        // evaluate if filter paramater exist and create if needed
         if (!isset($this->_command['sort'])) {
             $this->_command['sort'] = [];
         }
-        // return self for function chaining 
         return new RequestSort($this->_command['sort']);
-
     }
 
-    public function startAbsolute(int $value): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_command['position'] = $value;
-        // return self for function chaining 
+    public function limitAbsolute(?int $position = null, ?int $count = null): self {
+        if ($position !== null) {
+            $this->_command['position'] = $position;
+        }
+        if ($count !== null) {
+            $this->_command['limit'] = $count;
+        }
         return $this;
+    }
 
+    public function limitRelative(?int $anchor = null, ?int $count = null, ?int $offset = null): self {
+        if ($anchor !== null) {
+            $this->_command['anchor'] = $anchor;
+        }
+        if ($count !== null) {
+            $this->_command['limit'] = $count;
+        }
+        if ($offset !== null) {
+            $this->_command['anchorOffset'] = $offset;
+        }
+        return $this;
     }
     
-    public function limitAbsolute(int $value): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_command['limit'] = $value;
-        // return self for function chaining 
-        return $this;
-
-    }
-
-    public function startRelative(string $value): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_command['anchor'] = $value;
-        // return self for function chaining 
-        return $this;
-
-    }
-
-    public function startRelativeOffset(int $value): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_command['anchorOffset'] = $value;
-        // return self for function chaining 
-        return $this;
-
-    }
-
-    public function limitRelative(int $value): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_command['limit'] = $value;
-        // return self for function chaining 
-        return $this;
-
-    }
-    
-
     public function tally(bool $value): self {
-
-        // creates or updates parameter and assigns new value
         $this->_command['calculateTotal'] = $value;
-        // return self for function chaining 
         return $this;
-
     }
 
 }

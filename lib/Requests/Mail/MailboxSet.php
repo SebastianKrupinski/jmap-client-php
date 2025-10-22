@@ -31,42 +31,50 @@ class MailboxSet extends RequestSet {
 
     protected string $_space = 'urn:ietf:params:jmap:mail';
     protected string $_class = 'Mailbox';
+    protected string $_parametersClass = MailboxParameters::class;
 
+    /**
+     * Create a mailbox
+     * 
+     * @param string $id Mailbox identifier
+     * @param MailboxParameters|null $object Mailbox parameters object
+     * 
+     * @return MailboxParameters The mailbox parameters for method chaining
+     */
     public function create(string $id, $object = null): MailboxParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
-        }
-        // return self for function chaining 
-        return new MailboxParameters($this->_command['create'][$id]);
-
+        return parent::create($id, $object);
     }
 
+    /**
+     * Update a mailbox
+     * 
+     * @param string $id Mailbox identifier
+     * @param MailboxParameters|null $object Mailbox parameters object
+     * 
+     * @return MailboxParameters The mailbox parameters for method chaining
+     */
     public function update(string $id, $object = null): MailboxParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['update'][$id]);
-        }
-        // return self for function chaining 
-        return new MailboxParameters($this->_command['update'][$id]);
-
+        return parent::update($id, $object);
     }
 
+    /**
+     * Delete a mailbox
+     * 
+     * @param string $id Mailbox identifier
+     * 
+     * @return self
+     */
     public function delete(string $id): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_command['destroy'][] = $id;
-        // return self for function chaining 
-        return $this;
-        
+        return parent::delete($id);
     }
 
+    /**
+     * Set whether to remove emails when deleting the mailbox
+     * 
+     * @param bool $value Whether to remove emails on destruction
+     * 
+     * @return self
+     */
     public function destroyContents(bool $value): self {
 
         // creates or updates parameter and assigns value

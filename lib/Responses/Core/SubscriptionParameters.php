@@ -22,20 +22,34 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Responses\Core;
 
-use JmapClient\Requests\RequestSort;
+use JmapClient\Responses\ResponseParameters;
 
-class MailboxSort extends RequestSort {
-    
-    public function name(bool $value = false): self {
-        $this->condition('name', $value);
-        return $this;
+class SubscriptionParameters extends ResponseParameters {
+
+    public function id(): string|null {
+        return $this->parameter('id');
     }
 
-    public function order(bool $value = false): self {
-        $this->condition('sortOrder', $value);
-        return $this;
+    public function device(): string|null {
+        return $this->parameter('deviceClientId');
+    }
+
+    public function url(): string|null {
+        return $this->parameter('url');
+    }
+
+    public function expiration(): string|null {
+        return $this->parameter('expires');
+    }
+
+    public function verification(): string|null {
+        return $this->parameter('verificationCode');
+    }
+
+    public function keys(): string|null {
+        return $this->parameter('keys');
     }
 
 }

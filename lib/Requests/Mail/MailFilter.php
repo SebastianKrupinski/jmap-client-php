@@ -30,139 +30,84 @@ use JmapClient\Requests\RequestFilter;
 
 class MailFilter extends RequestFilter {
     
-    public function in(string ...$value): self {
-
-        // creates or updates parameter and assigns value
+    public function in(string $value): self {
         $this->condition('inMailbox', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function inOmit(array $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('inMailboxOtherThan', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function text(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('text', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function from(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('from', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function to(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('to', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function cc(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('cc', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function bcc(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('bcc', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function subject(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('subject', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function body(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('body', $value);
-        // return self for function chaining
         return $this;
+    }
 
+    public function hasAttachment(bool $value): self {
+        $this->condition('hasAttachment', $value);
+        return $this;
     }
 
     public function keywordPresent(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('before', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function keywordAbsent(string $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('after', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function receivedBefore(DateTime|DateTimeImmutable $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->condition('before', $value->format(self::DATE_FORMAT_LOCAL));
-        // return self for function chaining
+        $this->condition('before', $value->format(self::DATE_FORMAT_UTC));
         return $this;
-
     }
 
     public function receivedAfter(DateTime|DateTimeImmutable $value): self {
-
-        // creates or updates parameter and assigns value
-        $this->condition('after', $value->format(self::DATE_FORMAT_LOCAL));
-        // return self for function chaining
+        $this->condition('after', $value->format(self::DATE_FORMAT_UTC));
         return $this;
-
     }
 
     public function sizeMin(int $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('minSize', $value);
-        // return self for function chaining
         return $this;
-
     }
 
     public function sizeMax(int $value): self {
-
-        // creates or updates parameter and assigns value
         $this->condition('maxSize', $value);
-        // return self for function chaining
         return $this;
-
     }
 
 }

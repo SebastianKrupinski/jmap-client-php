@@ -31,46 +31,54 @@ class CalendarSet extends RequestSet {
 
     protected string $_space = 'urn:ietf:params:jmap:calendars';
     protected string $_class = 'Calendar';
+    protected string $_parametersClass = CalendarParameters::class;
 
+    /**
+     * Create a calendar
+     * 
+     * @param string $id Calendar identifier
+     * @param CalendarParameters|null $object Calendar parameters object
+     * 
+     * @return CalendarParameters The calendar parameters for method chaining
+     */
     public function create(string $id, $object = null): CalendarParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
-        }
-        // return self for function chaining 
-        return new CalendarParameters($this->_command['create'][$id]);
-
+        return parent::create($id, $object);
     }
 
+    /**
+     * Update a calendar
+     * 
+     * @param string $id Calendar identifier
+     * @param CalendarParameters|null $object Calendar parameters object
+     * 
+     * @return CalendarParameters The calendar parameters for method chaining
+     */
     public function update(string $id, $object = null): CalendarParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['update'][$id]);
-        }
-        // return self for function chaining 
-        return new CalendarParameters($this->_command['update'][$id]);
-
+        return parent::update($id, $object);
     }
 
+    /**
+     * Delete a calendar
+     * 
+     * @param string $id Calendar identifier
+     * 
+     * @return self
+     */
     public function delete(string $id): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['destroy'][] = $id;
-        // return self for function chaining 
-        return $this;
-        
+        return parent::delete($id);
     }
 
+    /**
+     * Set whether to remove events when deleting the calendar
+     * 
+     * @param bool $value Whether to remove events on destruction
+     * 
+     * @return self
+     */
     public function deleteContents(bool $value): self {
 
         // creates or updates parameter and assigns value
-        $this->_request[1]['onDestroyRemoveEvents'] = $value;
+        $this->_command['onDestroyRemoveEvents'] = $value;
         // return self for function chaining 
         return $this;
         

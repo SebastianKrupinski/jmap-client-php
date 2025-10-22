@@ -30,7 +30,7 @@ use JmapClient\Requests\RequestFilter;
 
 class ContactFilter extends RequestFilter {
 
-    public function in(string ...$value): self {
+    public function in(string $value): self {
 
         // creates or updates parameter and assigns value
         $this->condition('inAddressBook', $value);

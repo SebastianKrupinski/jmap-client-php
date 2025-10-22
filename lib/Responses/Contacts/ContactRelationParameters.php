@@ -22,20 +22,26 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Responses\Contacts;
 
-use JmapClient\Requests\RequestSort;
+use JmapClient\Responses\ResponseParameters;
 
-class MailboxSort extends RequestSort {
-    
-    public function name(bool $value = false): self {
-        $this->condition('name', $value);
-        return $this;
+class ContactRelationParameters extends ResponseParameters {
+
+    public function type(): string|null {
+        return $this->parameter('@type');
     }
 
-    public function order(bool $value = false): self {
-        $this->condition('sortOrder', $value);
-        return $this;
+    /**
+     * Get the relationship types for this related contact
+     * Returns an associative array where keys are relation types and values are true
+     * e.g., ['friend' => true, 'colleague' => true]
+     * 
+     * @return array|null
+     */
+    public function relations(): array|null {
+        $value = $this->parameter('relation');
+        return $value ? array_keys((array)$value) : null;
     }
 
 }

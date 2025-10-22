@@ -22,20 +22,21 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Responses\Calendar;
 
-use JmapClient\Requests\RequestSort;
+use DateTimeImmutable;
 
-class MailboxSort extends RequestSort {
+class EventMutationParameters extends EventCommonParameters {
     
-    public function name(bool $value = false): self {
-        $this->condition('name', $value);
-        return $this;
+    /* Scheduling Properties */
+
+    public function mutationId(): DateTimeImmutable|null {
+        $value = $this->parameter('recurrenceId');
+        return ($value) ? new DateTimeImmutable($value) : null;
     }
 
-    public function order(bool $value = false): self {
-        $this->condition('sortOrder', $value);
-        return $this;
+    public function mutationTimeZone(): string|null {
+        return $this->parameter('recurrenceIdTimeZone');
     }
 
 }

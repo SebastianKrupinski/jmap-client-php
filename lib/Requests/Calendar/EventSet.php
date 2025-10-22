@@ -31,40 +31,41 @@ class EventSet extends RequestSet {
 
     protected string $_space = 'urn:ietf:params:jmap:calendars';
     protected string $_class = 'CalendarEvent';
+    protected string $_parametersClass = EventParameters::class;
 
+    /**
+     * Create an event
+     * 
+     * @param string $id Event identifier
+     * @param EventParameters|null $object Event parameters object
+     * 
+     * @return EventParameters The event parameters for method chaining
+     */
     public function create(string $id, $object = null): EventParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
-        }
-        // return self for function chaining 
-        return new EventParameters($this->_command['create'][$id]);
-
+        return parent::create($id, $object);
     }
 
+    /**
+     * Update an event
+     * 
+     * @param string $id Event identifier
+     * @param EventParameters|null $object Event parameters object
+     * 
+     * @return EventParameters The event parameters for method chaining
+     */
     public function update(string $id, $object = null): EventParameters {
-        
-        // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
-        } elseif ($object !== null) {
-            $object->bind($this->_command['update'][$id]);
-        }
-        // return self for function chaining 
-        return new EventParameters($this->_command['update'][$id]);
-
+        return parent::update($id, $object);
     }
 
+    /**
+     * Delete an event
+     * 
+     * @param string $id Event identifier
+     * 
+     * @return self
+     */
     public function delete(string $id): self {
-
-        // creates or updates parameter and assigns new value
-        $this->_request[1]['destroy'][] = $id;
-        // return self for function chaining 
-        return $this;
-        
+        return parent::delete($id);
     }
 
 }

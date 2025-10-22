@@ -26,14 +26,15 @@ namespace JmapClient\Requests\Calendar;
 
 use DateTime;
 use DateTimeImmutable;
+use DateTimeInterface;
 use JmapClient\Requests\RequestFilter;
 
 class EventFilter extends RequestFilter {
 
-    public function in(string ...$value): self {
+    public function in(string $value): self {
 
         // creates or updates parameter and assigns value
-        $this->condition('inCalendars', $value);
+        $this->condition('inCalendar', $value);
         // return self for function chaining
         return $this;
 
@@ -48,7 +49,7 @@ class EventFilter extends RequestFilter {
 
     }
     
-    public function after(DateTime|DateTimeImmutable $value): self {
+    public function after(DateTimeInterface $value): self {
 
         // creates or updates parameter and assigns value
         $this->condition('after', $value->format(self::DATE_FORMAT_LOCAL));
@@ -57,7 +58,7 @@ class EventFilter extends RequestFilter {
 
     }
 
-    public function before(DateTime|DateTimeImmutable $value): self {
+    public function before(DateTimeInterface $value): self {
 
         // creates or updates parameter and assigns value
         $this->condition('before', $value->format(self::DATE_FORMAT_LOCAL));

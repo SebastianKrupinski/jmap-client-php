@@ -22,20 +22,13 @@ declare(strict_types=1);
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-namespace JmapClient\Requests\Mail;
+namespace JmapClient\Requests\Core;
 
-use JmapClient\Requests\RequestSort;
+use JmapClient\Requests\RequestGet;
 
-class MailboxSort extends RequestSort {
-    
-    public function name(bool $value = false): self {
-        $this->condition('name', $value);
-        return $this;
-    }
+class SubscriptionGet extends RequestGet {
 
-    public function order(bool $value = false): self {
-        $this->condition('sortOrder', $value);
-        return $this;
-    }
+    protected string $_space = 'urn:ietf:params:jmap:core';
+    protected string $_class = 'PushSubscription';
 
 }
