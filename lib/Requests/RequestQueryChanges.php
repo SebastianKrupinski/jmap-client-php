@@ -12,6 +12,8 @@ use JmapClient\Requests\Request;
 class RequestQueryChanges extends Request {
 
     protected string $_method = 'queryChanges';
+    protected string $_filterClass = RequestFilter::class;
+    protected string $_sortClass = RequestSort::class;
     
     public function filter(): RequestFilter {
         
@@ -20,7 +22,7 @@ class RequestQueryChanges extends Request {
             $this->_command['filter'] = new \stdClass();
         }
         // return self for function chaining 
-        return new RequestFilter($this->_command['filter']);
+        return new $this->_filterClass($this->_command['filter']);
 
     }
 
@@ -31,7 +33,7 @@ class RequestQueryChanges extends Request {
             $this->_command['sort'] = [];
         }
         // return self for function chaining 
-        return new RequestSort($this->_command['sort']);
+        return new $this->_sortClass($this->_command['sort']);
 
     }
 

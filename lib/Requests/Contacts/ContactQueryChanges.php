@@ -13,27 +13,15 @@ class ContactQueryChanges extends RequestQueryChanges {
 
     protected string $_space = 'urn:ietf:params:jmap:contacts';
     protected string $_class = 'ContactCard';
+    protected string $_filterClass = ContactFilter::class;
+    protected string $_sortClass = ContactSort::class;
 
     public function filter(): ContactFilter {
-        
-        // evaluate if filter parameter exist and create if needed
-        if (!isset($this->_command['filter'])) {
-            $this->_command['filter'] = new \stdClass();
-        }
-        // return self for function chaining 
-        return new ContactFilter($this->_command['filter']);
-
+        return parent::filter();
     }
 
     public function sort(): ContactSort {
-
-        // evaluate if sort parameter exist and create if needed
-        if (!isset($this->_command['sort'])) {
-            $this->_command['sort'] = [];
-        }
-        // return self for function chaining 
-        return new ContactSort($this->_command['sort']);
-
+        return parent::sort();
     }
 
 }

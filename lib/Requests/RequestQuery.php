@@ -12,19 +12,21 @@ use JmapClient\Requests\Request;
 class RequestQuery extends Request {
 
     protected string $_method = 'query';
+    protected string $_filterClass = RequestFilter::class;
+    protected string $_sortClass = RequestSort::class;
     
     public function filter(): RequestFilter {
         if (!isset($this->_command['filter'])) {
             $this->_command['filter'] = new \stdClass();
         }
-        return new RequestFilter($this->_command['filter']);
+        return new $this->_filterClass($this->_command['filter']);
     }
 
     public function sort(): RequestSort {
         if (!isset($this->_command['sort'])) {
             $this->_command['sort'] = [];
         }
-        return new RequestSort($this->_command['sort']);
+        return new $this->_sortClass($this->_command['sort']);
     }
 
     public function limitAbsolute(?int $position = null, ?int $count = null): self {

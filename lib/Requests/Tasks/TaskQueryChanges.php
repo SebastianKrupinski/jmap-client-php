@@ -13,28 +13,15 @@ class TaskQueryChanges extends RequestQueryChanges {
 
     protected string $_space = 'urn:ietf:params:jmap:tasks';
     protected string $_class = 'Task';
-
+    protected string $_filterClass = TaskFilter::class;
+    protected string $_sortClass = TaskSort::class;
 
     public function filter(): TaskFilter {
-        
-        // evaluate if filter parameter exist and create if needed
-        if (!isset($this->_command['filter'])) {
-            $this->_command['filter'] = new \stdClass();
-        }
-        // return self for function chaining 
-        return new TaskFilter($this->_command['filter']);
-
+        return parent::filter();
     }
 
     public function sort(): TaskSort {
-
-        // evaluate if sort parameter exist and create if needed
-        if (!isset($this->_command['sort'])) {
-            $this->_command['sort'] = [];
-        }
-        // return self for function chaining 
-        return new TaskSort($this->_command['sort']);
-
+        return parent::sort();
     }
 
 }

@@ -14,33 +14,21 @@ class EventQuery extends RequestQuery {
 
     protected string $_space = 'urn:ietf:params:jmap:calendars';
     protected string $_class = 'CalendarEvent';
+    protected string $_filterClass = EventFilter::class;
+    protected string $_sortClass = EventSort::class;
 
     public function filter(): EventFilter {
-        
-        // evaluate if filter parameter exist and create if needed
-        if (!isset($this->_command['filter'])) {
-            $this->_command['filter'] = new \stdClass();
-        }
-        // return self for function chaining 
-        return new EventFilter($this->_command['filter']);
-
+        return parent::filter();
     }
 
     public function sort(): EventSort {
-
-        // evaluate if sort parameter exist and create if needed
-        if (!isset($this->_command['sort'])) {
-            $this->_command['sort'] = [];
-        }
-        // return self for function chaining 
-        return new EventSort($this->_command['sort']);
-
+        return parent::sort();
     }
 
     public function timezone(DateTimeZone $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['timeZone'] = $value->getName();
+        $this->_command['timeZone'] = $value->getName();
         // return self for function chaining 
         return $this;
         

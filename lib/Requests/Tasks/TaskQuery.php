@@ -14,34 +14,21 @@ class TaskQuery extends RequestQuery {
 
     protected string $_space = 'urn:ietf:params:jmap:tasks';
     protected string $_class = 'Task';
-
+    protected string $_filterClass = TaskFilter::class;
+    protected string $_sortClass = TaskSort::class;
 
     public function filter(): TaskFilter {
-        
-        // evaluate if filter parameter exist and create if needed
-        if (!isset($this->_command['filter'])) {
-            $this->_command['filter'] = new \stdClass();
-        }
-        // return self for function chaining 
-        return new TaskFilter($this->_command['filter']);
-
+        return parent::filter();
     }
 
     public function sort(): TaskSort {
-
-        // evaluate if sort parameter exist and create if needed
-        if (!isset($this->_command['sort'])) {
-            $this->_command['sort'] = [];
-        }
-        // return self for function chaining 
-        return new TaskSort($this->_command['sort']);
-
+        return parent::sort();
     }
 
     public function timezone(DateTimeZone $value): self {
 
         // creates or updates parameter and assigns new value
-        $this->_request[1]['timeZone'] = $value->getName();
+        $this->_command['timeZone'] = $value->getName();
         // return self for function chaining 
         return $this;
         
