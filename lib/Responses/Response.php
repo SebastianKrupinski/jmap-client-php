@@ -20,9 +20,11 @@ class Response {
     protected array $_response = [];
 
     public function __construct (array $response = []) {
+
         if (!empty($response)) {
             $this->fromData($response);
         }
+
     }
 
     public function identifier(): string {
@@ -42,10 +44,12 @@ class Response {
     }
 
     public function fromData(array $response): void {
+        
         $this->_response = $response;
         [$this->_class, $this->_method] = explode('/', $this->_response[self::RESPONSE_OPERATION]);
         $this->_account = (isset($this->_response[self::RESPONSE_OBJECT]['accountId'])) ? $this->_response[self::RESPONSE_OBJECT]['accountId'] : '';
         $this->_identifier = (isset($this->_response[self::RESPONSE_IDENTIFIER])) ? $this->_response[self::RESPONSE_IDENTIFIER] : '';
+    
     }
 
     public function fromJson(string $json, int $options = 0): void {

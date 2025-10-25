@@ -9,6 +9,10 @@ namespace JmapClient\Requests;
 
 class Request implements \JsonSerializable
 {
+    public const REQUEST_OPERATION = 0;
+    public const REQUEST_COMMAND = 1;
+    public const REQUEST_IDENTIFIER = 2;
+
     public const DATE_FORMAT_LOCAL = 'Y-m-d\TH:i:s';
     public const DATE_FORMAT_UTC = 'Y-m-d\TH:i:s\Z';
 
@@ -17,6 +21,7 @@ class Request implements \JsonSerializable
     protected string $_method;
     protected string $_account;
     protected string $_identifier;
+    protected string $_operation;
     protected array $_command;
     protected array $_request = ['/', [], ''];
 
@@ -52,11 +57,11 @@ class Request implements \JsonSerializable
         if (!isset($this->_method)) {
             $this->_method = 'echo';
         }
-        $this->_request[0] = $this->_class . '/' . $this->_method;
-        $this->_request[1] = ['accountId' => $this->_account];
-        $this->_request[2] = $this->_identifier;
+        $this->_request[self::REQUEST_OPERATION] = $this->_class . '/' . $this->_method;
+        $this->_request[self::REQUEST_COMMAND] = ['accountId' => $this->_account];
+        $this->_request[self::REQUEST_IDENTIFIER] = $this->_identifier;
 
-        $this->_command =& $this->_request[1];
+        $this->_command =& $this->_request[self::REQUEST_COMMAND];
         
     }
 
@@ -67,7 +72,7 @@ class Request implements \JsonSerializable
     public function setIdentifier(string $identifier): void {
         
         $this->_identifier = $identifier;
-        $this->_request[2] = $identifier;
+        $this->_request[self::REQUEST_IDENTIFIER] = $identifier;
     
     }
 
@@ -97,7 +102,7 @@ class Request implements \JsonSerializable
     public function setClass(string $class): void {
 
         $this->_class = $class;
-        $this->_request[0] = $class . '/' . $this->_method;
+        $this->_request[self::REQUEST_OPERATION] = $class . '/' . $this->_method;
 
     }
 
@@ -108,7 +113,7 @@ class Request implements \JsonSerializable
     public function setMethod(string $method): void {
 
         $this->_method = $method;
-        $this->_request[0] = $this->_class . '/' . $method;
+        $this->_request[self::REQUEST_OPERATION] = $this->_class . '/' . $method;
         
     }
 
