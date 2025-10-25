@@ -15,18 +15,16 @@ class RequestParse extends Request {
 
     public function target(string ...$id): self {
 
-        // creates or updates parameter and assigns new value
         $this->_command['blobIds'] = $id;
-        // return self for function chaining 
+        
         return $this;
 
     }
 
-    public function property(string ...$id): self {
+    public function property(string ...$name): self {
 
-        // creates or updates parameter and assigns new value
-        $this->_command['properties'] = $id;
-        // return self for function chaining 
+        $this->_command['properties'] = $name;
+
         return $this;
 
     }

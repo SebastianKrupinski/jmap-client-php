@@ -60,9 +60,9 @@ class CalendarSet extends RequestSet {
      */
     public function deleteContents(bool $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->_command['onDestroyRemoveEvents'] = $value;
-        // return self for function chaining 
+
         return $this;
         
     }

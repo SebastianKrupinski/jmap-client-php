@@ -27,9 +27,9 @@ class ContactQuery extends RequestQuery {
 
     public function timezone(DateTimeZone $value): self {
 
-        // creates or updates parameter and assigns new value
+
         $this->_command['timeZone'] = $value->getName();
-        // return self for function chaining 
+
         return $this;
         
     }

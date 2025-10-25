@@ -21,7 +21,7 @@ class RequestUpload extends Request {
         } elseif ($object !== null) {
             $object->bind($this->_command['create'][$id]);
         }
-        // return self for function chaining 
+
         return new RequestParameters($this->_command['create'][$id]);
 
     }

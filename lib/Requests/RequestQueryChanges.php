@@ -21,7 +21,7 @@ class RequestQueryChanges extends Request {
         if (!isset($this->_command['filter'])) {
             $this->_command['filter'] = new \stdClass();
         }
-        // return self for function chaining 
+
         return new $this->_filterClass($this->_command['filter']);
 
     }
@@ -32,43 +32,40 @@ class RequestQueryChanges extends Request {
         if (!isset($this->_command['sort'])) {
             $this->_command['sort'] = [];
         }
-        // return self for function chaining 
+
         return new $this->_sortClass($this->_command['sort']);
 
     }
 
     public function state(string $value): self {
 
-        // creates or updates parameter and assigns new value
         $this->_command['sinceQueryState'] = $value;
-        // return self for function chaining 
+
         return $this;
 
     }
 
     public function limitRelative(int $value): self {
 
-        // creates or updates parameter and assigns new value
         $this->_command['maxChanges'] = $value;
-        // return self for function chaining 
+        
         return $this;
 
     }
 
     public function limitAbsolute(string $value): self {
 
-        // creates or updates parameter and assigns new value
         $this->_command['upToId'] = $value;
-        // return self for function chaining 
+        
         return $this;
 
     }
 
     public function tally(bool $value): self {
 
-        // creates or updates parameter and assigns new value
+
         $this->_command['calculateTotal'] = $value;
-        // return self for function chaining 
+
         return $this;
 
     }

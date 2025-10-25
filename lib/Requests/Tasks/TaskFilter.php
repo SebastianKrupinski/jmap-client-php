@@ -15,36 +15,36 @@ class TaskFilter extends RequestFilter {
     
     public function in(string ...$value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('inTaskList', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function uid(string $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('uid', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
     
     public function after(DateTime|DateTimeImmutable $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('after', $value->format(self::DATE_FORMAT_LOCAL));
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function before(DateTime|DateTimeImmutable $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('before', $value->format(self::DATE_FORMAT_LOCAL));
-        // return self for function chaining
+        
         return $this;
 
     }

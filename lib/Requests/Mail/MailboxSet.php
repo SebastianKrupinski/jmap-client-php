@@ -60,9 +60,9 @@ class MailboxSet extends RequestSet {
      */
     public function destroyContents(bool $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->_command['onDestroyRemoveEmails'] = $value;
-        // return self for function chaining 
+
         return $this;
         
     }

@@ -21,79 +21,79 @@ class MailPart extends RequestParameters
 
     public function id(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->_parameters->partId = $value;
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function blob(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->_parameters->blobId = $value;
-        // return self for function chaining
+        
         return $this;
     
     }
 
     public function type(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->_parameters->type = $value;
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function disposition(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->_parameters->disposition = $value;
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function name(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->_parameters->name = $value;
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function charset(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->_parameters->charset = $value;
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function language(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->_parameters->language = $value;
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function location(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->_parameters->location = $value;
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function addPart(): MailPart {
         
-        // creates or updates parameter and assigns value
+        
         if (!isset($this->_parameters->subParts)) {
             $this->_parameters->subParts = [];
         }
@@ -108,7 +108,7 @@ class MailPart extends RequestParameters
 
     public function subParts(): MailPart {
         
-        // creates or updates parameter and assigns value
+        
         if (!isset($this->_parameters->subParts)) {
             $this->_parameters->subParts = [];
         }

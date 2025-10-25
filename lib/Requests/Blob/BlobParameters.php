@@ -19,27 +19,27 @@ class BlobParameters extends RequestParameters
 
     public function type(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('type', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function dataPlain(string $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('data', 'data:asText', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function dataEncoded(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('data', 'data:asBase64', $value);
-        // return self for function chaining
+        
         return $this;
 
     }

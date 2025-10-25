@@ -16,16 +16,13 @@ class RequestFilter
     protected object $_filter;
 
     public function __construct(object &$filter) {
-
         $this->_filter = &$filter;
-
     }
 
     public function condition(string $property, mixed $value): self {
 
-        // creates or updates parameter and assigns value
         $this->_filter->$property = $value;
-        // return self for function chaining
+        
         return $this;
 
     }

@@ -19,81 +19,81 @@ class TaskListParameters extends RequestParameters
 
     public function label(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('name', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function description(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('description', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function color(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('color', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function priority(int $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('sortOrder', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function subscribed(bool $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('isSubscribed', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function visible(bool $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('isVisible', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function default(bool $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('isDefault', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function timezone(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('timeZone', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function sharees(string ...$value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('shareWith', $value);
-        // return self for function chaining
+        
         return $this;
 
     }

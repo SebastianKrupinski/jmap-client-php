@@ -13,27 +13,27 @@ class MailSubmissionSort extends RequestSort {
     
     public function sent(bool $value = false): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('sentAt', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function messageId(bool $value = false): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('emailId', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function threadId(bool $value = false): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('threadId', $value);
-        // return self for function chaining
+        
         return $this;
 
     }

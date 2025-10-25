@@ -65,8 +65,10 @@ class Request implements \JsonSerializable
     }
 
     public function setIdentifier(string $identifier): void {
+        
         $this->_identifier = $identifier;
         $this->_request[2] = $identifier;
+    
     }
 
     public function getAccount(): string {
@@ -74,8 +76,10 @@ class Request implements \JsonSerializable
     }
 
     public function setAccount(string $account): void {
+    
         $this->_account = $account;
         $this->_command['accountId'] = $account;
+    
     }
 
     public function getNamespace(): string {
@@ -91,8 +95,10 @@ class Request implements \JsonSerializable
     }
 
     public function setClass(string $class): void {
+
         $this->_class = $class;
         $this->_request[0] = $class . '/' . $this->_method;
+
     }
 
     public function getMethod(): string {
@@ -100,8 +106,10 @@ class Request implements \JsonSerializable
     }
 
     public function setMethod(string $method): void {
+
         $this->_method = $method;
         $this->_request[0] = $this->_class . '/' . $method;
+        
     }
 
     public function toJson(int $flags = 0): string {

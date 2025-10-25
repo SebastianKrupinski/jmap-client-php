@@ -26,18 +26,18 @@ class MailboxQuery extends RequestQuery {
 
     public function filterAsTree(bool $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->_command['filterAsTree'] = $value;
-        // return self for function chaining 
+
         return $this;
         
     }
 
     public function sortAsTree(bool $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->_command['sortAsTree'] = $value;
-        // return self for function chaining 
+
         return $this;
         
     }

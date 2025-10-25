@@ -20,54 +20,54 @@ class MailParameters extends RequestParameters
 
     public function in(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('mailboxIds', $value, true);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function from(string $address, string $name = ''): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterCollection('from', (object) ['name' => $name, 'email' => $address]);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function to(string $address, string $name = ''): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterCollection('to', (object) ['name' => $name, 'email' => $address]);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function cc(string $address, string $name = ''): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterCollection('cc', (object) ['name' => $name, 'email' => $address]);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function bcc(string $address, string $name = ''): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterCollection('bcc', (object) ['name' => $name, 'email' => $address]);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function subject(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('subject', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
@@ -79,12 +79,12 @@ class MailParameters extends RequestParameters
             // generate unique id
             $id = uniqid();
         }
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('bodyStructure', 'partId', $id);
         $this->parameterStructured('bodyStructure', 'type', $id);
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('bodyValues', $id, (object) ['value' => $content, 'isTruncated' => false]);
-        // return self for function chaining
+        
         return $this;
 
     }
@@ -103,7 +103,7 @@ class MailParameters extends RequestParameters
 
     public function structure(): MailPart {
         
-        // creates or updates parameter and assigns value
+        
         if (!isset($this->_parameters->bodyStructure)) {
             $this->parameter('bodyStructure', new \stdClass());
         }
@@ -114,45 +114,45 @@ class MailParameters extends RequestParameters
 
     public function draft(): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('keywords', '$draft', true);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function seen(): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('keywords', '$seen', true);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function flagged(): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('keywords', '$flagged', true);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function answered(): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('keywords', '$answered', true);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function forwarded(): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterStructured('keywords', '$forwarded', true);
-        // return self for function chaining
+        
         return $this;
 
     }

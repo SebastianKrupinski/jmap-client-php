@@ -15,27 +15,27 @@ class MailSubmissionFilter extends RequestFilter {
 
     public function undoStatus(string $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('undoStatus', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function sendBefore(DateTime|DateTimeImmutable $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('before', $value->format(self::DATE_FORMAT_LOCAL));
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function sendAfter(DateTime|DateTimeImmutable $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->condition('after', $value->format(self::DATE_FORMAT_LOCAL));
-        // return self for function chaining
+        
         return $this;
 
     }

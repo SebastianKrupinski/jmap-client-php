@@ -17,9 +17,8 @@ class RequestSet extends Request {
 
     public function state(string $state): self {
 
-        // creates or updates parameter and assigns new value
         $this->_command['ifInState'] = $state;
-        // return self for function chaining 
+
         return $this;
 
     }
@@ -65,12 +64,13 @@ class RequestSet extends Request {
         }
         // return instance of the specific parameters class
         return new $this->_parametersClass($this->_command['update'][$id]);
+
     }
 
     public function delete(string $id): self {
-        // creates or updates parameter and assigns new value
+
         $this->_command['destroy'][] = $id;
-        // return self for function chaining 
+
         return $this;
     }
 

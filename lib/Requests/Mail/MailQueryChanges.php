@@ -26,9 +26,9 @@ class MailQueryChanges extends RequestQueryChanges {
     
     public function collapseThreads(bool $value): self {
 
-        // creates or updates parameter and assigns value
+        
         $this->_command['collapseThreads'] = $value;
-        // return self for function chaining 
+
         return $this;
         
     }

@@ -19,27 +19,27 @@ class MailIdentityParameters extends RequestParameters
 
     public function name(string $value): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameter('name', $value);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function replyTo(string $address, string $name = ''): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterCollection('replyTo', (object) ['name' => $name, 'email' => $address]);
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function bcc(string $address, string $name = ''): self {
         
-        // creates or updates parameter and assigns value
+        
         $this->parameterCollection('bcc', (object) ['name' => $name, 'email' => $address]);
-        // return self for function chaining
+        
         return $this;
 
     }
@@ -50,7 +50,7 @@ class MailIdentityParameters extends RequestParameters
             'plain' => $this->parameter('textSignature', $value),
             'html' => $this->parameter('htmlSignature', $value),
         };
-        // return self for function chaining
+        
         return $this;
 
     }

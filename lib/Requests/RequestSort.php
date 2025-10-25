@@ -12,9 +12,7 @@ class RequestSort
     protected array $_sort;
 
     public function __construct(array &$sort) {
-
         $this->_sort = &$sort;
-
     }
 
     public function condition(string $property, bool|null $direction = null, string|null $keyword = null, string|null $collation = null): self {
@@ -31,10 +29,8 @@ class RequestSort
         if ($collation !== null) {
             $condition->collation = $collation;
         }
-        
-        // creates or updates parameter and assigns value
         $this->_sort[] = $condition;
-        // return self for function chaining
+        
         return $this;
 
     }

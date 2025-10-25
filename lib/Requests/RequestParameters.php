@@ -23,53 +23,51 @@ class RequestParameters
         } else {
             $this->_parameters =& $parameters;
         }
+
     }
 
     public function bind(&$anchor): self {
+
         $anchor = $this->_parameters;
+
         return $this;
+
     }
 
     public function parameter(string $name, mixed $value): self {
         
-        // creates or updates parameter and assigns value
         $this->_parameters->$name = $value;
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function parameterStructured(string $name, string $label, mixed $value): self {
         
-        // evaluate if parameter is an object
         if (!is_object($this->_parameters->$name)) {
             $this->_parameters->$name = new stdClass();
         }
-        // creates or updates parameter and assigns value
         $this->_parameters->$name->$label = $value;
-        // return self for function chaining
+        
         return $this;
 
     }
 
     public function parameterCollection(string $name, mixed $value): self {
         
-        // evaluate if parameter is an object
         if (!is_array($this->_parameters->$name)) {
             $this->_parameters->$name = [];
         }
-        // creates or updates parameter and assigns value
         $this->_parameters->$name[] = $value;
-        // return self for function chaining
+
         return $this;
 
     }
 
     public function parametersRaw(array $value): self {
 
-        // creates or updates parameter and assigns value
         $this->_parameters = (object) $value;
-        // return self for function chaining
+
         return $this;
 
     }
