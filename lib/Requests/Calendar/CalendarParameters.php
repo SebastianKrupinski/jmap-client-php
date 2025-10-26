@@ -51,9 +51,13 @@ class CalendarParameters extends RequestParameters {
         return $this;
     }
 
-    public function sharees(string ...$value): self {
-        $this->parameter('shareWith', $value);
-        return $this;
+    public function sharees(string $id, ?CalendarPermissions $permissions = null): CalendarPermissions {
+        if (!isset($this->_parameters->shareWith?->$id)) {
+            $this->parameterStructured('shareWith', $id, $permissions ?? new \stdClass());
+        } else {
+            $permissions->bind($this->_parameters->shareWith->$id);
+        }
+        return new CalendarPermissions($this->_parameters->shareWith->$id);
     }
 
 }

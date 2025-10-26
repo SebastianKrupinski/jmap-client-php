@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Mail;
 
 use JmapClient\Responses\ResponseParameters;
+use JmapClient\Responses\ResponsePermissions;
 
 class MailboxParameters extends ResponseParameters {
 
@@ -26,8 +27,12 @@ class MailboxParameters extends ResponseParameters {
     public function priority(): int|null {
         return $this->parameter('sortOrder');
     }
-    public function rights(): object|null {
-        return $this->parameter('myRights');
+    public function rights(): MailboxPermissions|null {
+        $rights = $this->parameter('myRights');
+        if ($rights === null) {
+            return null;
+        }
+        return new MailboxPermissions((array) $rights);
     }
     public function subscribed(): bool|null {
         return $this->parameter('isSubscribed');

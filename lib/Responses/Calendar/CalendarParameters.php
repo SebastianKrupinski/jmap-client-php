@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Calendar;
 
 use JmapClient\Responses\ResponseParameters;
+use JmapClient\Responses\ResponsePermissions;
 
 class CalendarParameters extends ResponseParameters {
 
@@ -51,8 +52,12 @@ class CalendarParameters extends ResponseParameters {
         return $this->parameter('shareWith');
     }
 
-    public function rights(): object|null {
-        return $this->parameter('myRights');
+    public function rights(): CalendarPermissions|null {
+        $rights = $this->parameter('myRights');
+        if ($rights === null) {
+            return null;
+        }
+        return new CalendarPermissions((array) $rights);
     }
 
 }

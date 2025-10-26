@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Contacts;
 
 use JmapClient\Responses\ResponseParameters;
+use JmapClient\Responses\ResponsePermissions;
 
 class AddressBookParameters extends ResponseParameters {
 
@@ -39,8 +40,12 @@ class AddressBookParameters extends ResponseParameters {
         return $this->parameter('shareWith');
     }
 
-    public function rights(): object|null {
-        return $this->parameter('myRights');
+    public function rights(): AddressBookPermissions|null {
+        $rights = $this->parameter('myRights');
+        if ($rights === null) {
+            return null;
+        }
+        return new AddressBookPermissions((array) $rights);
     }
 
 }
