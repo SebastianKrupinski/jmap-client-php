@@ -65,6 +65,14 @@ class Request implements \JsonSerializable
         
     }
 
+    public function jsonSerialize(): array {
+        return $this->_request;
+    }
+
+    public function jsonEncode(int $flags = 0): string {
+        return json_encode($this->_request, JSON_UNESCAPED_SLASHES | $flags);
+    }
+
     public function getIdentifier(): string {
         return $this->_identifier;
     }
@@ -115,14 +123,6 @@ class Request implements \JsonSerializable
         $this->_method = $method;
         $this->_request[self::REQUEST_OPERATION] = $this->_class . '/' . $method;
         
-    }
-
-    public function toJson(int $flags = 0): string {
-        return json_encode($this->_request, JSON_UNESCAPED_SLASHES | $flags);
-    }
-
-    public function jsonSerialize(): mixed {
-        return $this->_request;
     }
 
 }

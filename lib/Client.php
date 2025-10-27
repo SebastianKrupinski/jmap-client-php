@@ -619,25 +619,27 @@ class Client {
 
         // evaluate if command(s) was passed as a request bundled
         if ($commands instanceof RequestBundle){
-            $request = $commands;
+            $requests = $commands;
         }
         else {
             // construct request bundle object
-            $request  = new RequestBundle(...$commands);
+            $requests  = new RequestBundle(...$commands);
         }
         
         // serialize request
-        $request = json_encode($request, JSON_UNESCAPED_SLASHES);
+        $data = $requests->jsonEncode();
+        
         // transmit and receive
-        $response = $this->transceive($this->_ServiceCommandLocation, $request);
+        $data = $this->transceive($this->_ServiceCommandLocation, $data);
+        
         // deserialize response
-        $response = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
-        // convert jmap to typed classes
-        if ($this->_ServiceResponseTypes !== null) {
-            $response = new ResponseBundle($response, $this->_ServiceResponseTypes);
+        $responses = new ResponseBundle();
+        if ($data !== null) {
+            $responses->jsonDecode($data);
         }
+        
         // return response
-        return $response;
+        return $responses;
 
     }
 
@@ -661,9 +663,9 @@ class Client {
 
         // execute request
         $response = $this->_client->request('POST', $uri, ['headers' => $this->_transportHeaders, 'body' => $data]);
-        $responseBody = $response->getBody()->getContents();
-        
-        return $responseBody;
+        $data = $response->getBody()->getContents();
+
+        return $data;
 
     }
 
@@ -744,6 +746,9 @@ class Client {
     private function transmissionListener(): callable {
         return function (callable $handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
+                // generate unique transaction ID for pairing request/response
+                $transactionId = bin2hex(random_bytes(8));
+                
                 // retain request headers
                 if ($this->_transportRequestHeaderFlag) {
                     $this->_transportRequestHeaderData = $request->getHeaders();
@@ -751,6 +756,7 @@ class Client {
                 // Optionally retain/log request body or URI
                 if ($this->_transportRequestBodyFlag || $this->_transportLogState) {
                     $requestMessage = null;
+                    $requestContentType = null;
                     $isStreamBody = is_resource($options['body'] ?? null);
                     if ($isStreamBody) {
                         $requestMessage = 'resource stream';
@@ -767,22 +773,21 @@ class Client {
                                 $requestBody = '';
                             }
                         }
-                        if ($requestBody === '') {
-                            $requestMessage = (string)$request->getUri();
-                        } else {
+                        if ($requestBody !== '') {
                             $requestMessage = $requestBody;
+                            $requestContentType = $request->getHeaderLine('Content-Type');
                         }
                     }
                     if ($this->_transportRequestBodyFlag && $requestMessage !== null) {
                         $this->_transportRequestBodyData = $requestMessage;
                     }
-                    if ($this->_transportLogState && $requestMessage !== null) {
-                        $this->transmissionLogger('request', $requestMessage);
+                    if ($this->_transportLogState) {
+                        $this->transmissionLogger('request', $requestMessage, null, $request->getMethod(), (string)$request->getUri(), $requestContentType, $transactionId);
                     }
                 }
 
                 return $handler($request, $options)->then(
-                    function (ResponseInterface $response) use ($request, $options) {
+                    function (ResponseInterface $response) use ($request, $options, $transactionId) {
                         // retain response code
                         $this->_transportResponseCode = $response->getStatusCode();
                         // retain response header
@@ -792,6 +797,7 @@ class Client {
                         // retain or log response body
                         if ($this->_transportResponseBodyFlag || $this->_transportLogState) {
                             $responseMessage = null;
+                            $responseContentType = null;
                             $body = $response->getBody();
                             $responseBody = '';
                             try {
@@ -804,21 +810,22 @@ class Client {
                             }
 
                             if ($responseBody === '' && is_resource($options['sink'] ?? null)) {
-                                $responseMessage = '"resource stream"';
-                            } else {
+                                $responseMessage = 'resource stream';
+                            } elseif ($responseBody !== '') {
                                 $responseMessage = $responseBody;
+                                $responseContentType = $response->getHeaderLine('Content-Type');
                             }
                             if ($this->_transportResponseBodyFlag && $responseMessage !== null) {
                                 $this->_transportResponseBodyData = $responseMessage;
                             }
-                            if ($this->_transportLogState && $responseMessage !== null) {
-                                $this->transmissionLogger('response', $responseMessage);
+                            if ($this->_transportLogState) {
+                                $this->transmissionLogger('response', $responseMessage, $response->getStatusCode(), $request->getMethod(), (string)$request->getUri(), $responseContentType, $transactionId);
                             }
                         }
 
                         return $response;
                     },
-                    function ($reason) use ($request, $options) {
+                    function ($reason) use ($request, $options, $transactionId) {
                         // Attempt to capture details even on HTTP exception
                         if ($reason instanceof RequestException && $reason->hasResponse()) {
                             $response = $reason->getResponse();
@@ -831,6 +838,8 @@ class Client {
                                 }
                                 // retain or log response body
                                 if ($this->_transportResponseBodyFlag || $this->_transportLogState) {
+                                    $responseMessage = null;
+                                    $responseContentType = null;
                                     $body = $response->getBody();
                                     $responseBody = '';
                                     try {
@@ -841,11 +850,15 @@ class Client {
                                     } catch (\Throwable $e) {
                                         $responseBody = '';
                                     }
-                                    if ($this->_transportResponseBodyFlag) {
+                                    if ($responseBody !== '') {
+                                        $responseMessage = $responseBody;
+                                        $responseContentType = $response->getHeaderLine('Content-Type');
+                                    }
+                                    if ($this->_transportResponseBodyFlag && $responseMessage !== null) {
                                         $this->_transportResponseBodyData = $responseBody;
                                     }
                                     if ($this->_transportLogState) {
-                                        $this->transmissionLogger('response', $responseBody);
+                                        $this->transmissionLogger('response', $responseMessage, $response->getStatusCode(), $request->getMethod(), (string)$request->getUri(), $responseContentType, $transactionId);
                                     }
                                 }
                             }
@@ -860,15 +873,65 @@ class Client {
     /**
      * Writes transmission log entries to the configured log file location
      */
-    private function transmissionLogger(string $type, string $message): void {
+    private function transmissionLogger(string $type, ?string $message, ?int $statusCode = null, ?string $method = null, ?string $url = null, ?string $contentType = null, ?string $transactionId = null): void {
         
         // evaluate if logging is enabled
         if (!$this->_transportLogState) {
             return;
         }
 
-        // format log entry with timestamp
-        $logEntry = PHP_EOL . '{"date": "' . date("Y-m-d H:i:s.") . gettimeofday()["usec"] . '", "' . $type . '":' . $message . '}';
+        // build log entry with date and type
+        $logData = [
+            'date' => date("Y-m-d H:i:s.") . gettimeofday()["usec"],
+            'type' => $type
+        ];
+        
+        // add transaction ID for pairing request/response
+        if ($transactionId !== null) {
+            $logData['transaction'] = $transactionId;
+        }
+        
+        // add method and URL for both request and response
+        if ($method !== null) {
+            $logData['method'] = $method;
+        }
+        if ($url !== null) {
+            $logData['url'] = $url;
+        }
+        
+        // add status code for response
+        if ($statusCode !== null) {
+            $logData['status'] = $statusCode;
+        }
+        
+        // add the message content if present
+        if ($message !== null && $message !== '') {
+            // check if content type indicates JSON
+            $isJson = false;
+            if ($contentType !== null && (
+                strpos($contentType, 'application/json') !== false ||
+                strpos($contentType, 'application/jmap+json') !== false
+            )) {
+                $isJson = true;
+            }
+            
+            // if it's JSON content type, try to decode and keep as object/array for prettier logging
+            if ($isJson) {
+                $decoded = json_decode($message, true);
+                if ($decoded !== null) {
+                    $logData['data'] = $decoded;
+                } else {
+                    // fallback if JSON decode fails
+                    $logData['data'] = $message;
+                }
+            } else {
+                // for non-JSON, store as string
+                $logData['data'] = $message;
+            }
+        }
+        
+        // encode to JSON and write to log file
+        $logEntry = json_encode($logData, JSON_UNESCAPED_SLASHES) . PHP_EOL;
 
         // write to log file
         file_put_contents($this->_transportLogLocation, $logEntry, FILE_APPEND);

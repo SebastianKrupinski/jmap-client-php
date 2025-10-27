@@ -19,12 +19,27 @@ class Response {
     protected string $_identifier = '';
     protected array $_response = [];
 
-    public function __construct (array $response = []) {
+    public function __construct (array $data = []) {
 
-        if (!empty($response)) {
-            $this->fromData($response);
+        if (!empty($data)) {
+            $this->jsonDeserialize($data);
         }
 
+    }
+
+    public function jsonDeserialize(array $data): self {
+        
+        $this->_response = $data;
+        [$this->_class, $this->_method] = explode('/', $this->_response[self::RESPONSE_OPERATION]);
+        $this->_account = (isset($this->_response[self::RESPONSE_OBJECT]['accountId'])) ? $this->_response[self::RESPONSE_OBJECT]['accountId'] : '';
+        $this->_identifier = (isset($this->_response[self::RESPONSE_IDENTIFIER])) ? $this->_response[self::RESPONSE_IDENTIFIER] : '';
+
+        return $this;
+
+    }
+
+    public function jsonDecode(string $data, int $options = 0): self {
+        return $this->jsonDeserialize(json_decode($data, true, 512, JSON_THROW_ON_ERROR | $options));
     }
 
     public function identifier(): string {
@@ -41,19 +56,6 @@ class Response {
 
     public function account(): string {
         return $this->_account;
-    }
-
-    public function fromData(array $response): void {
-        
-        $this->_response = $response;
-        [$this->_class, $this->_method] = explode('/', $this->_response[self::RESPONSE_OPERATION]);
-        $this->_account = (isset($this->_response[self::RESPONSE_OBJECT]['accountId'])) ? $this->_response[self::RESPONSE_OBJECT]['accountId'] : '';
-        $this->_identifier = (isset($this->_response[self::RESPONSE_IDENTIFIER])) ? $this->_response[self::RESPONSE_IDENTIFIER] : '';
-    
-    }
-
-    public function fromJson(string $json, int $options = 0): void {
-        $this->fromData(json_decode($json, true, 512, JSON_THROW_ON_ERROR | $options));
     }
 
 }

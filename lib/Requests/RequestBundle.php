@@ -17,6 +17,14 @@ class RequestBundle implements JsonSerializable
         // append requests to bundle
         $this->appendRequest(...$commands);
     }
+    
+    public function jsonSerialize(): array {
+        return $this->_requests;
+    }
+
+    public function jsonEncode(int $flags = 0): string {
+        return json_encode($this->_requests, JSON_UNESCAPED_SLASHES | $flags);
+    }
 
     public function appendRequest(Request ...$requests): self {
 
@@ -44,8 +52,6 @@ class RequestBundle implements JsonSerializable
 
     }
 
-    public function jsonSerialize(): array {
-        return $this->_requests;
-    }
+
 
 }

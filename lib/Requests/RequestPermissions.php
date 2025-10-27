@@ -40,7 +40,7 @@ class RequestPermissions
 
     }
 
-    public function parameterStructured(string $name, string $label, mixed $value): self {
+    protected function parameterStructured(string $name, string $label, mixed $value): self {
         
         if (!is_object($this->_parameters->$name)) {
             $this->_parameters->$name = new stdClass();
