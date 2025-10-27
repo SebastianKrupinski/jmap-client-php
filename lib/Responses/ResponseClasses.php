@@ -9,7 +9,7 @@ namespace JmapClient\Responses;
 
 class ResponseClasses
 {
-    static array $Parameters = [
+    private static array $parameters = [
         'PushSubscription' => 'JmapClient\Responses\Core\SubscriptionParameters',
         'Blob' => 'JmapClient\Responses\Blob\BlobParameters',
         'Mailbox' => 'JmapClient\Responses\Mail\MailboxParameters',
@@ -22,7 +22,7 @@ class ResponseClasses
         'ContactCard' => 'JmapClient\Responses\Contacts\ContactParameters',
     ];
 
-    static array $Commands = [
+    private static array $commands = [
         // errors
         'error' => 'JmapClient\Responses\ResponseException',
         // Core
@@ -88,5 +88,45 @@ class ResponseClasses
         'Task/query' => 'JmapClient\Responses\Tasks\TaskQuery',
         'Task/queryChanges' => 'JmapClient\Responses\Tasks\TaskQueryChanges',
     ];
+
+    public static function listCommand(): array
+    {
+        return self::$commands;
+    }
+
+    public static function hasCommand(string $command): bool
+    {
+        return isset(self::$commands[$command]);
+    }
+
+    public static function getCommand(string $command): ?string
+    {
+        return self::$commands[$command] ?? null;
+    }
+
+    public static function setCommand(string $command, string $class): void
+    {
+        self::$commands[$command] = $class;
+    }
+
+    public static function listParameter(): array
+    {
+        return self::$parameters;
+    }
+
+    public static function hasParameter(string $parameter): bool
+    {
+        return isset(self::$parameters[$parameter]);
+    }
+
+    public static function getParameter(string $parameter): ?string
+    {
+        return self::$parameters[$parameter] ?? null;
+    }
+
+    public static function setParameter(string $parameter, string $class): void
+    {
+        self::$parameters[$parameter] = $class;
+    }
 
 }

@@ -31,8 +31,8 @@ class ResponseBundle {
         $this->_responses = $data;
 
         foreach ($this->_responses['methodResponses'] as $key => $entry) {
-            if (array_key_exists($entry[0], ResponseClasses::$Commands)) {
-                $class = ResponseClasses::$Commands[$entry[0]];
+            $class = ResponseClasses::getCommand($entry[0]);
+            if ($class !== null) {
                 $this->_responses['methodResponses'][$key] = new $class($entry);
             }
         }

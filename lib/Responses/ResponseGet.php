@@ -17,8 +17,8 @@ class ResponseGet extends Response
 
         parent::__construct($response);
 
-        // evaluate if class exists for this response object type
-        $class = isset(ResponseClasses::$Parameters[$this->class()]) ? ResponseClasses::$Parameters[$this->class()] : null;
+        // retrieve class for this response object type
+        $class = ResponseClasses::getParameter($this->class());
         // evaluate if class was found
         if ($class !== null) {
             // convert response objects to classes

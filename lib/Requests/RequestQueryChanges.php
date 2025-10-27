@@ -16,24 +16,26 @@ class RequestQueryChanges extends Request {
     protected string $_sortClass = RequestSort::class;
     
     public function filter(): RequestFilter {
-        
-        // evaluate if filter parameter exist and create if needed
+
         if (!isset($this->_command['filter'])) {
             $this->_command['filter'] = new \stdClass();
         }
 
-        return new $this->_filterClass($this->_command['filter']);
+        $class = RequestClasses::getParameter($this->_class . '.filter') ?? $this->_filterClass;
+
+        return new $class($this->_command['filter']);
 
     }
 
     public function sort(): RequestSort {
         
-        // evaluate if filter parameter exist and create if needed
         if (!isset($this->_command['sort'])) {
             $this->_command['sort'] = [];
         }
 
-        return new $this->_sortClass($this->_command['sort']);
+        $class = RequestClasses::getParameter($this->_class . '.sort') ?? $this->_sortClass;
+
+        return new $class($this->_command['sort']);
 
     }
 

@@ -23,6 +23,7 @@ use JmapClient\Authentication\IAuthenticationCustom;
 use JmapClient\Authentication\IAuthenticationJsonBasic;
 use JmapClient\Authentication\None;
 use JmapClient\Requests\RequestBundle;
+use JmapClient\Requests\RequestClasses;
 use JmapClient\Responses\ResponseBundle;
 use JmapClient\Responses\ResponseClasses;
 use JmapClient\Session\Account;
@@ -89,8 +90,6 @@ class Client {
     protected string $_transportLogLocation = '/tmp/php-jmap.log';
     // Transport Redirect Max
     protected int $_transportRedirectAttempts = 3;
-    // Service Response Types
-    protected ResponseClasses $_ServiceResponseTypes;
     // Service Host
     protected string $_ServiceHost = '';
     // Service Locations
@@ -109,9 +108,6 @@ class Client {
         string $host = '',
         ?IAuthentication $authentication = null
     ) {
-
-        $this->_ServiceResponseTypes = new ResponseClasses;
-
         // set service host
         if (!empty($host)) {
             $this->setHost($host);
@@ -139,6 +135,32 @@ class Client {
         }
 
         return new GuzzleHttpClient($options);
+    }
+
+        /**
+     * Configures custom request class types for command or parameter request mapping
+     */
+    public function configureRequestTypes(string $collection, string $id, string $value) {
+
+        if ($collection === 'command') {
+            RequestClasses::setCommand($id, $value);
+        }elseif ($collection === 'parameters') {
+            RequestClasses::setParameter($id, $value);
+        }
+
+    }
+    
+    /**
+     * Configures custom response class types for command or parameter response mapping
+     */
+    public function configureResponseTypes(string $collection, string $id, string $value) {
+
+        if ($collection === 'command') {
+            ResponseClasses::setCommand($id, $value);
+        }elseif ($collection === 'parameters') {
+            ResponseClasses::setParameter($id, $value);
+        }
+
     }
 
     /**
@@ -263,19 +285,6 @@ class Client {
      */
     public function getTransportAgent(): string {
         return $this->_transportHeaders['User-Agent'];
-    }
-
-    /**
-     * Configures custom class types for command or parameter response mapping
-     */
-    public function configureClassTypes(string $collection, string $id, string $value) {
-
-        if ($collection === 'command') {
-            ResponseClasses::$Commands[$id] = $value;
-        }elseif ($collection === 'parameters') {
-            ResponseClasses::$Parameters[$id] = $value;
-        }
-
     }
 
     /**

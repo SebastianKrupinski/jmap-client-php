@@ -25,10 +25,13 @@ class RequestSet extends Request {
 
     public function create(string $id, ?RequestParameters $object = null): RequestParameters {
         
+        // get the class to use (override or default)
+        $class = RequestClasses::getParameter($this->_class . '.object') ?? $this->_parametersClass;
+        
         // validate object type if provided
-        if ($object !== null && !($object instanceof $this->_parametersClass)) {
+        if ($object !== null && !($object instanceof $class)) {
             throw new InvalidParameterTypeException(
-                $this->_parametersClass,
+                $class,
                 $object,
                 'object'
             );
@@ -41,16 +44,19 @@ class RequestSet extends Request {
             $object->bind($this->_command['create'][$id]);
         }
         // return instance of the specific parameters class
-        return new $this->_parametersClass($this->_command['create'][$id]);
+        return new $class($this->_command['create'][$id]);
 
     }
 
     public function update(string $id, ?RequestParameters $object = null): RequestParameters {
         
+        // get the class to use (override or default)
+        $class = RequestClasses::getParameter($this->_class . '.object') ?? $this->_parametersClass;
+        
         // validate object type if provided
-        if ($object !== null && !($object instanceof $this->_parametersClass)) {
+        if ($object !== null && !($object instanceof $class)) {
             throw new InvalidParameterTypeException(
-                $this->_parametersClass,
+                $class,
                 $object,
                 'object'
             );
@@ -63,7 +69,7 @@ class RequestSet extends Request {
             $object->bind($this->_command['update'][$id]);
         }
         // return instance of the specific parameters class
-        return new $this->_parametersClass($this->_command['update'][$id]);
+        return new $class($this->_command['update'][$id]);
 
     }
 

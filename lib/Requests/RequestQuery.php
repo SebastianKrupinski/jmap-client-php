@@ -21,7 +21,9 @@ class RequestQuery extends Request {
             $this->_command['filter'] = new \stdClass();
         }
 
-        return new $this->_filterClass($this->_command['filter']);
+        $class = RequestClasses::getParameter($this->_class . '.filter') ?? $this->_filterClass;
+
+        return new $class($this->_command['filter']);
 
     }
 
@@ -30,9 +32,11 @@ class RequestQuery extends Request {
         if (!isset($this->_command['sort'])) {
             $this->_command['sort'] = [];
         }
-        
-        return new $this->_sortClass($this->_command['sort']);
-    
+
+        $class = RequestClasses::getParameter($this->_class . '.sort') ?? $this->_sortClass;
+
+        return new $class($this->_command['sort']);
+
     }
 
     public function limitAbsolute(?int $position = null, ?int $count = null): self {

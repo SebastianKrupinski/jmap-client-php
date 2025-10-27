@@ -7,8 +7,6 @@ declare(strict_types=1);
  */
 namespace JmapClient\Requests\Calendar;
 
-use DateTime;
-use DateTimeImmutable;
 use DateTimeInterface;
 use JmapClient\Requests\RequestFilter;
 
