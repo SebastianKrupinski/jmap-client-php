@@ -7,24 +7,26 @@ declare(strict_types=1);
  */
 namespace JmapClient\Requests;
 
-class RequestBundle
+use JsonSerializable;
+
+class RequestBundle implements JsonSerializable
 {
-    protected array $_requests = ['using' => [], 'methodCalls' => []];
+    protected array $_requests = ['using' => ["urn:ietf:params:jmap:core"], 'methodCalls' => []];
 
-    public function __construct (array $spaces = [], array $requests = []) {
-
-        $this->_requests['using'] = $spaces;
-        $this->_requests['methodCalls'] = $requests;
-        
+    public function __construct (Request ...$commands) {
+        // append requests to bundle
+        $this->appendRequest(...$commands);
     }
 
-    public function appendRequest(string $space, object $request): self {
+    public function appendRequest(Request ...$requests): self {
 
-        // check if name space exist already
-        if (array_search($space, $this->_requests['using']) === false) {
-            $this->_requests['using'][] = $space;
+        foreach ($requests as $request) {
+            // check if name space exist already
+            if (array_search($request->getNamespace(), $this->_requests['using']) === false) {
+                $this->_requests['using'][] = $request->getNamespace();
+            }
+            $this->_requests['methodCalls'][] = $request;
         }
-        $this->_requests['methodCalls'][] = $request;
 
         return $this;
 
@@ -42,8 +44,8 @@ class RequestBundle
 
     }
 
-    public function phrase(): string {
-        return json_encode($this->_requests, JSON_UNESCAPED_SLASHES);
+    public function jsonSerialize(): array {
+        return $this->_requests;
     }
 
 }

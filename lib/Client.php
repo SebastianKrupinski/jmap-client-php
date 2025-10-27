@@ -9,7 +9,11 @@ namespace JmapClient;
 
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Cookie\CookieJar;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\HandlerStack;
 use InvalidArgumentException;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use JmapClient\Authentication\IAuthentication;
 use JmapClient\Authentication\Basic;
 use JmapClient\Authentication\Bearer;
@@ -27,22 +31,14 @@ use JmapClient\Session\CapabilityCollection;
 use JmapClient\Session\Session;
 
 /**
- * JMAP Client
+ * JMAP Client for communicating with JMAP-compliant servers
  */
 class Client {
-    /**
-     * Transport Versions
-     *
-     * @var int
-     */
-    const TRANSPORT_VERSION_1 = 1.0;
-    const TRANSPORT_VERSION_1_1 = 1.1;
-    const TRANSPORT_VERSION_2 = 2.0;
-    /**
-     * Transport Modes
-     *
-     * @var string
-     */
+    // Transport Versions
+    const TRANSPORT_VERSION_1 = "1.0";
+    const TRANSPORT_VERSION_1_1 = "1.1";
+    const TRANSPORT_VERSION_2 = "2.0";
+    // Transport Modes
     const TRANSPORT_MODE_STANDARD = 'http://';
     const TRANSPORT_MODE_SECURE = 'https://';
     // Transport Mode
@@ -59,47 +55,37 @@ class Client {
     protected array $_transportOptions = [
         'version' => self::TRANSPORT_VERSION_2,
         'timeout' => 30,
-        'verify' => false,
+        'expect' => false,
+        'verify' => true,
         'allow_redirects' => false,
         'cookies' => false,
-        'json' => true,
-        'decode_content' => false,
+        'decode_content' => true,
+        'http_errors' => true,
         'proxy' => [],
         'curl' => [
             CURLOPT_SSL_VERIFYPEER => 1,
             CURLOPT_SSL_VERIFYHOST => 2,
         ]
     ];
+    // Transport Client
+    protected ?GuzzleHttpClient $_client;
     // Transport Cookie
     protected ?string $_transportCookieJar = null;
-    // Transport Client
-    //protected CurlHandle|null $_client = null;
-    protected ?GuzzleHttpClient $_client;
-    // 
     protected $_transportCookieStoreRetrieve = null;
-    // 
     protected $_transportCookieStoreDeposit =  null;
-    // Retain Last Transport Request Header Flag
+    // Transport Request Retention
     protected bool $_transportRequestHeaderFlag = false;
-    // Retain Last Transport Request Body Flag
     protected bool $_transportRequestBodyFlag = false;
-    // Last Transport Request Header Data
-    protected string $_transportRequestHeaderData = '';
-    // Last Transport Request Body Data
+    protected array $_transportRequestHeaderData = [];
     protected string $_transportRequestBodyData = '';
-    // Retain Last Transport Response Header Flag
+    // Transport Response Retention
     protected bool $_transportResponseHeaderFlag = false;
-    // Retain Last Transport Response Body Flag
     protected bool $_transportResponseBodyFlag = false;
-    // Last Transport Response Code
-    protected int $_transportResponseCode = 0;
-    // Last Transport Response Header Data
-    protected string $_transportResponseHeaderData = '';
-    // Last Transport Response Header Data
+    protected array $_transportResponseHeaderData = [];
     protected string $_transportResponseBodyData = '';
-    // Transport Logging State (ON/OFF)
+    protected int $_transportResponseCode = 0;
+    // Transport Logging
     protected bool $_transportLogState = false;
-    // Transport Log File Location
     protected string $_transportLogLocation = '/tmp/php-jmap.log';
     // Transport Redirect Max
     protected int $_transportRedirectAttempts = 3;
@@ -107,29 +93,18 @@ class Client {
     protected ResponseClasses $_ServiceResponseTypes;
     // Service Host
     protected string $_ServiceHost = '';
-    // Service Discovery Path
+    // Service Locations
     protected string $_ServiceDiscoveryPath = '/.well-known/jmap';
-    // Service Command Location
     protected string $_ServiceCommandLocation = '';
-    // Service Download Location
     protected string $_ServiceDownloadLocation = '';
-    // Service Upload Location
     protected string $_ServiceUploadLocation = '';
-    // Service Event Location
     protected string $_ServiceEventLocation = '';
-    // Authentication to use when connecting to the service
+    // Service Authentication
     protected IAuthentication $_ServiceAuthentication;
-    // Session Connected Status
+    // Session State
     protected bool $_SessionConnected = false;
-    // Session data
     protected ?Session $_SessionData = null;
     
-    /**
-     * Constructor for the ExchangeWebServices class
-     *
-     * @param string $host       Service Host (FQDN, IPv4, IPv6)
-     * @param $authentication    Service Authentication
-     */
     public function __construct(
         string $host = '',
         ?IAuthentication $authentication = null
@@ -148,19 +123,34 @@ class Client {
 
     }
 
+    /**
+     * Constructs and configures a new Guzzle HTTP client instance with transport options
+     */
     public function constructClient(array $overrides = []): GuzzleHttpClient {
 
         $options = $this->_transportOptions;
 
         $options = array_replace($options, $overrides);
 
+        if ($this->_transportLogState || $this->_transportResponseHeaderFlag || $this->_transportResponseBodyFlag || $this->_transportRequestHeaderFlag || $this->_transportRequestBodyFlag) {
+            $stack = HandlerStack::create();
+            $stack->push($this->transmissionListener(), 'logger');
+            $options['handler'] = $stack;
+        }
+
         return new GuzzleHttpClient($options);
     }
 
+    /**
+     * Configures the HTTP protocol version used for transport
+     */
     public function configureTransportVersion(int $value): void {
         $this->_transportOptions['version'] = $value;
     }
     
+    /**
+     * Configures the transport mode (http or https)
+     */
     public function configureTransportMode(string $value): void {
         $this->_transportMode = match ($value) {
             'http' => self::TRANSPORT_MODE_STANDARD,
@@ -169,24 +159,30 @@ class Client {
         };
     }
 
+    /**
+     * Configures custom transport options for the HTTP client
+     */
     public function configureTransportOptions(array $options): void {
         $this->_transportOptions = array_replace($this->_transportOptions, $options);
     }
 
+    /**
+     * Configures SSL/TLS certificate verification for transport
+     */
     public function configureTransportVerification(bool $value): void {
         $this->_transportOptions['curl'][CURLOPT_SSL_VERIFYPEER] = $value ? 1 : 0;
         $this->_transportOptions['curl'][CURLOPT_SSL_VERIFYHOST] = $value ? 2 : 0;
     }
 
     /**
-     * enables or disables transport log
+     * Enables or disables transport logging
      */
     public function configureTransportLogState(bool $value): void {
         $this->_transportLogState = $value;
     }
 
     /**
-     * configures transport log location
+     * Configures the file path where transport logs are written
      */
     public function configureTransportLogLocation(string $value): void {
         $this->_transportLogLocation = $value;
@@ -221,123 +217,57 @@ class Client {
     }
 
     /**
-     * Retains transport request or response data based on configured flags
-     * 
-     * @param string $source The source type: 'request' or 'response'
-     * @param string $data The data to retain
-     * 
-     * @return void
+     * Returns the last retained request headers that were sent
      */
-    private function retainTransportBody(string $source, string $data): void {
-        
-        // skip retention for resources
-        if (is_resource($data)) {
-            return;
-        }
-        // retain request body
-        if ($source === 'request' && $this->_transportRequestBodyFlag) {
-            $this->_transportRequestBodyData = $data;
-        }
-        // retain response body
-        if ($source === 'response' && $this->_transportResponseBodyFlag) {
-            $this->_transportResponseBodyData = $data;
-        }
-
-    }
-
-    /**
-     * Retains request headers to be sent
-     * 
-     * @param array $headers The request headers
-     * 
-     * @return void
-     */
-    private function retainRequestHeaders(array $headers): void {
-        
-        // skip retention if not enabled
-        if (!$this->_transportRequestHeaderFlag) {
-            return;
-        }
-
-        // format headers for storage
-        $headerLines = [];
-        foreach ($headers as $name => $value) {
-            $headerLines[] = $name . ': ' . $value;
-        }
-
-        // store formatted headers
-        $this->_transportRequestHeaderData = implode(PHP_EOL, $headerLines);
-
-    }
-
-    /**
-     * Retains response headers from a response object
-     * 
-     * @param mixed $response The Guzzle response object
-     * 
-     * @return void
-     */
-    private function retainResponseHeaders($response): void {
-        
-        // skip retention if not enabled
-        if (!$this->_transportResponseHeaderFlag) {
-            return;
-        }
-
-        // format headers from response
-        $headerLines = [];
-        foreach ($response->getHeaders() as $name => $values) {
-            $headerLines[] = $name . ': ' . implode(', ', $values);
-        }
-
-        // store formatted headers
-        $this->_transportResponseHeaderData = implode(PHP_EOL, $headerLines);
-
-    }
-
-    /**
-     * returns last retained raw request header sent
-     */
-    public function discloseTransportRequestHeader(): string {
+    public function discloseTransportRequestHeader(): array {
         return $this->_transportRequestHeaderData;
     }
 
     /**
-     * returns last retained raw request body sent
+     * Returns the last retained request body that was sent
      */
     public function discloseTransportRequestBody(): string {
         return $this->_transportRequestBodyData;
     }
 
     /**
-     * returns last retained response code received
+     * Returns the last retained HTTP response code that was received
      */
     public function discloseTransportResponseCode(): int {
         return $this->_transportResponseCode;
     }
 
     /**
-     * returns last retained raw response header received
+     * Returns the last retained response headers that were received
      */
-    public function discloseTransportResponseHeader(): string {
+    public function discloseTransportResponseHeader(): array {
         return $this->_transportResponseHeaderData;
     }
 
     /**
-     * returns last retained raw response body received
+     * Returns the last retained response body that was received
      */
     public function discloseTransportResponseBody(): string {
         return $this->_transportResponseBodyData;
     }
 
+    /**
+     * Sets the User-Agent header for transport requests
+     */
     public function setTransportAgent(string $value): void {
         $this->_transportHeaders['User-Agent'] = $value;
     }
 
+    /**
+     * Gets the current User-Agent header value
+     */
     public function getTransportAgent(): string {
         return $this->_transportHeaders['User-Agent'];
     }
 
+    /**
+     * Configures custom class types for command or parameter response mapping
+     */
     public function configureClassTypes(string $collection, string $id, string $value) {
 
         if ($collection === 'command') {
@@ -434,14 +364,14 @@ class Client {
         $this->_ServiceEventLocation = $value;
     }
 
-     /**
+    /**
      * Gets the authentication parameters object
      */
     public function getAuthentication(): IAuthentication {
         return $this->_ServiceAuthentication;
     }
 
-     /**
+    /**
      * Sets the authentication parameters to be used for all requests
      */
     public function setAuthentication(IAuthentication $value, bool $reset = true): void {
@@ -471,40 +401,9 @@ class Client {
 
     }
 
-    public function transceive(string $uri, string $message): null|string {
-
-        // evaluate if http client is initialized
-        if (!isset($this->_client)) {
-            $this->_client = $this->constructClient();
-        }
-        // reset responses
-        $this->_transportResponseCode = 0;
-        $this->_transportResponseHeaderData = '';
-        $this->_transportResponseBodyData = '';
-
-        // retain request headers or body
-        $this->retainRequestHeaders($this->_transportHeaders);
-        $this->retainTransportBody('request', $message);
-        // log request
-        $this->logTransport('request', $message);
-
-        // execute request
-        $response = $this->_client->request('POST', $uri, ['headers' => $this->_transportHeaders, 'body' => $message]);
-        $message = $response->getBody()->getContents();
-
-        // retain response code
-        $this->_transportResponseCode = $response->getStatusCode();
-        // retain response headers or body
-        $this->retainResponseHeaders($response);
-        $this->retainTransportBody('response', $message);
-        // log response
-        $this->logTransport('response', $message);
-
-        // return response
-        return $message;
-
-    }
-
+    /**
+     * Establishes connection with the JMAP server and retrieves session information
+     */
     public function connect(): Session {
         // authenticate and retrieve json session
         $sessionData = $this->authenticate();
@@ -526,6 +425,9 @@ class Client {
 
     }
 
+    /**
+     * Performs authentication with the JMAP server based on the configured authentication method
+     */
     protected function authenticate(): ?array {
         // perform initial authentication
         if ($this->_ServiceAuthentication instanceof IAuthenticationCustom) {
@@ -543,11 +445,14 @@ class Client {
         return $this->authenticateSimple();
     }
 
+    /**
+     * Performs simple authentication using Basic or Bearer authentication methods
+     */
     protected function authenticateSimple(): ?array {
 
         $location = $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
 
-        $client = new GuzzleHttpClient([
+        $client = $this->constructClient([
             'base_uri' => $this->_transportMode . $this->_ServiceHost,
             'allow_redirects' => true
         ]);
@@ -561,6 +466,9 @@ class Client {
         return $responseData;
     }
 
+    /**
+     * Performs JSON-based authentication with multi-step username and password exchange
+     */
     protected function authenticateJson(): ?array {
 
         if (!$this->_ServiceAuthentication instanceof IAuthenticationJsonBasic) {
@@ -592,7 +500,7 @@ class Client {
         $client = $this->constructClient($clientOptions);
 
         /*===== perform initial transaction =====*/
-        $requestData = '{"type":"start"}';
+        $requestData = json_encode((object)['type' => 'start']);
         $response = $client->request('POST', $location, ['headers' => $clientHeaders, 'body' => $requestData]);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         // determine if login id was returned in initial request and fail if not
@@ -602,7 +510,11 @@ class Client {
 
         /*===== perform username exchange transaction =====*/
         $serviceLoginId = $responseData['loginId'];
-        $requestData = sprintf('{"type":"username","username":"%s","loginId":"%s"}', $this->_ServiceAuthentication->getId(), $serviceLoginId);
+        $requestData = json_encode((object)[
+            'type' => 'username',
+            'username' => $this->_ServiceAuthentication->getId(),
+            'loginId' => $serviceLoginId
+        ]);
         $response = $client->request('POST', $location, ['headers' => $clientHeaders, 'body' => $requestData]);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         // determine if login id was returned in initial request and fail if not
@@ -612,8 +524,12 @@ class Client {
 
         /*===== perform password exchange transaction =====*/
         $serviceLoginId = $responseData['loginId'];
-        $requestData = sprintf('{"type":"password","value":"%s","remember":false,"loginId":"%s"}', $this->_ServiceAuthentication->getSecret(), $serviceLoginId);
-        // perform transmit and receive
+        $requestData = json_encode((object)[
+            'type' => 'password',
+            'value' => $this->_ServiceAuthentication->getSecret(),
+            'remember' => false,
+            'loginId' => $serviceLoginId
+        ]);
         $response = $client->request('POST', $location, ['headers' => $clientHeaders, 'body' => $requestData]);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
@@ -627,6 +543,9 @@ class Client {
         return $responseData;
     }
 
+    /**
+     * Performs cookie-based session authentication using stored cookie data
+     */
     protected function authenticateSession(): ?array {
 
         // evaluate and validate authentication type
@@ -645,7 +564,7 @@ class Client {
         }
         $cookieJar = new CookieJar(false, $cookieData);
 
-        $client = new GuzzleHttpClient([
+        $client = $this->constructClient([
             'allow_redirects' => true,
             'cookies' => $cookieJar
         ]);
@@ -672,6 +591,9 @@ class Client {
 
     }
 
+    /**
+     * Performs custom authentication using a user-defined authentication callable
+     */
     protected function authenticateCustom(): ?array {
 
         // evaluate and validate authentication type
@@ -690,6 +612,9 @@ class Client {
 
     }
 
+    /**
+     * Executes one or more JMAP commands and returns the response bundle
+     */
     public function perform(RequestBundle|array $commands): ResponseBundle {
 
         // evaluate if command(s) was passed as a request bundled
@@ -698,15 +623,11 @@ class Client {
         }
         else {
             // construct request bundle object
-            $request  = new RequestBundle();
-            // append commands to bundle
-            foreach ($commands as $entry) {
-                $request->appendRequest($entry->getNamespace(), $entry);
-            }
+            $request  = new RequestBundle(...$commands);
         }
         
         // serialize request
-        $request = $request->phrase();
+        $request = json_encode($request, JSON_UNESCAPED_SLASHES);
         // transmit and receive
         $response = $this->transceive($this->_ServiceCommandLocation, $request);
         // deserialize response
@@ -720,11 +641,40 @@ class Client {
 
     }
 
+    /**
+     * Sends a request to the JMAP server and receives the response
+     */
+    public function transceive(string $uri, string $data): null|string {
+
+        // evaluate if client is connected
+        if (!$this->_SessionConnected) {
+            $this->connect();
+        }
+
+        // reset requests
+        $this->_transportRequestHeaderData = [];
+        $this->_transportRequestBodyData = '';
+        // reset responses
+        $this->_transportResponseCode = 0;
+        $this->_transportResponseHeaderData = [];
+        $this->_transportResponseBodyData = '';
+
+        // execute request
+        $response = $this->_client->request('POST', $uri, ['headers' => $this->_transportHeaders, 'body' => $data]);
+        $responseBody = $response->getBody()->getContents();
+        
+        return $responseBody;
+
+    }
+
+    /**
+     * Downloads a blob/file from the JMAP server to a variable or stream resource
+     */
     public function download(string $account, string $identifier, &$data, string $type = 'application/octet-stream', string $name = 'file.bin'): void {
 
-        // evaluate if http client is initialized
-        if (!isset($this->_client)) {
-            $this->_client = $this->constructClient();
+        // evaluate if client is connected
+        if (!$this->_SessionConnected) {
+            $this->connect();
         }
 
         // validate data
@@ -746,12 +696,6 @@ class Client {
             $transportHeaders['Accept']
         );
 
-        // retain request headers or body
-        $this->retainRequestHeaders($transportHeaders);
-        $this->retainTransportBody('request', $location);
-        // log request
-        $this->logTransport('request', $location);
-
         // determine data destination and set receiving options
         if (is_resource($data)) {
             // execute request and write to resource stream
@@ -762,21 +706,16 @@ class Client {
             $data = $response->getBody()->getContents();
         }
 
-        // retain response code
-        $this->_transportResponseCode = $response->getStatusCode();
-        // retain response headers or body 
-        $this->retainResponseHeaders($response);
-        $this->retainTransportBody('response', (is_resource($data) ? 'resource stream' : $data));
-        // log response
-        $this->logTransport('response', (is_resource($data) ? 'resource stream' : $data));
-
     }
 
+    /**
+     * Uploads a blob/file to the JMAP server from a variable or stream resource
+     */
     public function upload(string $account, string $type, &$data): string {
     
-        // evaluate if http client is initialized
-        if (!isset($this->_client)) {
-            $this->_client = $this->constructClient();
+        // evaluate if client is connected
+        if (!$this->_SessionConnected) {
+            $this->connect();
         }
 
         // validate data
@@ -791,37 +730,137 @@ class Client {
         $transportHeaders = $this->_transportHeaders;
         $transportHeaders['Content-Type'] = $type;
 
-        // retain request headers or body
-        $this->retainRequestHeaders($transportHeaders);
-        $this->retainTransportBody('request', (is_resource($data) ? 'resource stream' : $data));
-        // log request
-        $this->logTransport('request', $location);
-
         // execute request
         $response = $this->_client->request('POST', $location, ['headers' => $transportHeaders, 'body' => $data]);
         $responseBody = $response->getBody()->getContents();
-
-        // retain response code
-        $this->_transportResponseCode = $response->getStatusCode();
-        // retain response headers or body
-        $this->retainResponseHeaders($response);
-        $this->retainTransportBody('response', $responseBody);
-        // log response
-        $this->logTransport('response', $responseBody);
 
         return $responseBody;
 
     }
 
     /**
-     * Logs transport activity to the configured log file
-     * 
-     * @param string $type The type of log entry (request, response, download, upload, etc)
-     * @param string $message The message to log
-     * 
-     * @return void
+     * Creates a middleware function that logs and retains request/response transmission data
      */
-    private function logTransport(string $type, string $message): void {
+    private function transmissionListener(): callable {
+        return function (callable $handler) {
+            return function (RequestInterface $request, array $options) use ($handler) {
+                // retain request headers
+                if ($this->_transportRequestHeaderFlag) {
+                    $this->_transportRequestHeaderData = $request->getHeaders();
+                }
+                // Optionally retain/log request body or URI
+                if ($this->_transportRequestBodyFlag || $this->_transportLogState) {
+                    $requestMessage = null;
+                    $isStreamBody = is_resource($options['body'] ?? null);
+                    if ($isStreamBody) {
+                        $requestMessage = 'resource stream';
+                    } else {
+                        $body = $request->getBody();
+                        $requestBody = '';
+                        if ($body !== null) {
+                            try {
+                                $requestBody = $body->getContents();
+                                if ($body->isSeekable()) {
+                                    $body->rewind();
+                                }
+                            } catch (\Throwable $e) {
+                                $requestBody = '';
+                            }
+                        }
+                        if ($requestBody === '') {
+                            $requestMessage = (string)$request->getUri();
+                        } else {
+                            $requestMessage = $requestBody;
+                        }
+                    }
+                    if ($this->_transportRequestBodyFlag && $requestMessage !== null) {
+                        $this->_transportRequestBodyData = $requestMessage;
+                    }
+                    if ($this->_transportLogState && $requestMessage !== null) {
+                        $this->transmissionLogger('request', $requestMessage);
+                    }
+                }
+
+                return $handler($request, $options)->then(
+                    function (ResponseInterface $response) use ($request, $options) {
+                        // retain response code
+                        $this->_transportResponseCode = $response->getStatusCode();
+                        // retain response header
+                        if ($this->_transportResponseHeaderFlag) {
+                            $this->_transportResponseHeaderData = $response->getHeaders();
+                        }
+                        // retain or log response body
+                        if ($this->_transportResponseBodyFlag || $this->_transportLogState) {
+                            $responseMessage = null;
+                            $body = $response->getBody();
+                            $responseBody = '';
+                            try {
+                                $responseBody = $body->getContents();
+                                if ($body->isSeekable()) {
+                                    $body->rewind();
+                                }
+                            } catch (\Throwable $e) {
+                                $responseBody = '';
+                            }
+
+                            if ($responseBody === '' && is_resource($options['sink'] ?? null)) {
+                                $responseMessage = '"resource stream"';
+                            } else {
+                                $responseMessage = $responseBody;
+                            }
+                            if ($this->_transportResponseBodyFlag && $responseMessage !== null) {
+                                $this->_transportResponseBodyData = $responseMessage;
+                            }
+                            if ($this->_transportLogState && $responseMessage !== null) {
+                                $this->transmissionLogger('response', $responseMessage);
+                            }
+                        }
+
+                        return $response;
+                    },
+                    function ($reason) use ($request, $options) {
+                        // Attempt to capture details even on HTTP exception
+                        if ($reason instanceof RequestException && $reason->hasResponse()) {
+                            $response = $reason->getResponse();
+                            if ($response instanceof ResponseInterface) {
+                                // retain response code
+                                $this->_transportResponseCode = $response->getStatusCode();
+                                // retain response header
+                                if ($this->_transportResponseHeaderFlag) {
+                                    $this->_transportResponseHeaderData = $response->getHeaders();
+                                }
+                                // retain or log response body
+                                if ($this->_transportResponseBodyFlag || $this->_transportLogState) {
+                                    $body = $response->getBody();
+                                    $responseBody = '';
+                                    try {
+                                        $responseBody = $body->getContents();
+                                        if ($body->isSeekable()) {
+                                            $body->rewind();
+                                        }
+                                    } catch (\Throwable $e) {
+                                        $responseBody = '';
+                                    }
+                                    if ($this->_transportResponseBodyFlag) {
+                                        $this->_transportResponseBodyData = $responseBody;
+                                    }
+                                    if ($this->_transportLogState) {
+                                        $this->transmissionLogger('response', $responseBody);
+                                    }
+                                }
+                            }
+                        }
+                        throw $reason;
+                    }
+                );
+            };
+        };
+    }
+
+    /**
+     * Writes transmission log entries to the configured log file location
+     */
+    private function transmissionLogger(string $type, string $message): void {
         
         // evaluate if logging is enabled
         if (!$this->_transportLogState) {
@@ -836,18 +875,27 @@ class Client {
 
     }
 
+    /**
+     * Returns the current session connection status
+     */
     public function sessionStatus(): bool {
     
         return $this->_SessionConnected;
 
     }
 
+    /**
+     * Returns the current session data object
+     */
     public function sessionData(): ?Session {
     
         return $this->_SessionData;
 
     }
 
+    /**
+     * Checks if the session supports a specific capability
+     */
     public function sessionCapable(string $value, bool $standard = true): bool {
 
         if (!$this->_SessionData) {
@@ -861,6 +909,9 @@ class Client {
 
     }
 
+    /**
+     * Retrieves session capabilities, either all or for a specific capability
+     */
     public function sessionCapabilities(?string $value = null, bool $standard = true): CapabilityCollection|null {
     
         if (!$this->_SessionData) {
@@ -876,6 +927,9 @@ class Client {
 
     }
 
+    /**
+     * Returns all session accounts as a collection
+     */
     public function sessionAccounts(): AccountCollection|null {
     
         if (!$this->_SessionData) {
@@ -885,6 +939,9 @@ class Client {
 
     }
 
+    /**
+     * Returns the primary/default account for a specific capability or the core account
+     */
     public function sessionAccountDefault(?string $value = null, bool $standard = true): Account|null {
 
         if (!$this->_SessionData) {

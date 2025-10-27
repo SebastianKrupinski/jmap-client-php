@@ -41,7 +41,7 @@ final class CapabilityCollection extends ArrayObjectCollection {
      */
     public function capable(string $id): bool {
         $capability = $this->capability($id);
-        return $capability !== null && !$capability->empty();
+        return $capability !== null;
     }
 
 }
