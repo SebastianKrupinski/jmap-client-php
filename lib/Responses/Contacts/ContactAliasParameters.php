@@ -19,8 +19,9 @@ class ContactAliasParameters extends ResponseParameters {
         return $this->parameter('name');
     }
 
-    public function context(): array {
-        return array_keys($this->parameter('contexts') ?? []);
+    public function context(): array|null {
+        $collection = $this->parameter('contexts') ?? [];
+        return array_keys($collection);
     }
 
     public function priority(): int|null {
