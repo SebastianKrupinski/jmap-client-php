@@ -1,17 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 /**
  * SPDX-FileCopyrightText: 2025 Sebastian Krupinski <krupinski01@gmail.com>
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace JmapClient\Session;
 
 /**
  * Session - Represents JMAP session data returned from authentication
  */
-final class Session {
-
+final class Session
+{
     protected CapabilityCollection $_capabilities;
     protected AccountCollection $_accounts;
     protected array $_primaryAccounts;
@@ -25,10 +27,11 @@ final class Session {
 
     /**
      * Constructor
-     * 
+     *
      * @param array $sessionData Raw session data from JMAP authentication
      */
-    public function __construct(array $sessionData) {
+    public function __construct(array $sessionData)
+    {
 
         // Parse capabilities
         $this->_capabilities = new CapabilityCollection($sessionData['capabilities'] ?? []);
@@ -49,106 +52,121 @@ final class Session {
     /**
      * Get server capabilities
      */
-    public function capabilities(): CapabilityCollection {
+    public function capabilities(): CapabilityCollection
+    {
         return $this->_capabilities;
     }
 
     /**
      * Check if server supports a capability
      */
-    public function capable(string $capabilityId): bool {
+    public function capable(string $capabilityId): bool
+    {
         return $this->_capabilities->capable($capabilityId);
     }
 
     /**
      * Get a specific capability
      */
-    public function capability(string $capabilityId): ?Capability {
+    public function capability(string $capabilityId): ?Capability
+    {
         return $this->_capabilities->capability($capabilityId);
     }
 
     /**
      * Get all accounts
      */
-    public function accounts(): AccountCollection {
+    public function accounts(): AccountCollection
+    {
         return $this->_accounts;
     }
 
     /**
      * Get a specific account by ID
      */
-    public function account(string $accountId): ?Account {
+    public function account(string $accountId): ?Account
+    {
         return $this->_accounts->account($accountId);
     }
 
     /**
      * Get the primary account object for a capability
      */
-    public function primaryAccount(string $capabilityId): ?Account {
+    public function primaryAccount(string $capabilityId): ?Account
+    {
         $accountId = $this->_primaryAccounts[$capabilityId] ?? null;
         return $accountId ? $this->account($accountId) : null;
     }
-    
+
     /**
      * Get authenticated username
      */
-    public function username(): string {
+    public function username(): string
+    {
         return $this->_username;
     }
 
     /**
      * Get API URL
      */
-    public function commandUrl(): string {
+    public function commandUrl(): string
+    {
         return $this->_commandUrl;
     }
 
     /**
      * Get download URL template
      */
-    public function downloadUrl(): string {
+    public function downloadUrl(): string
+    {
         return $this->_downloadUrl;
     }
 
     /**
      * Get upload URL template
      */
-    public function uploadUrl(): string {
+    public function uploadUrl(): string
+    {
         return $this->_uploadUrl;
     }
 
     /**
      * Get event URL template
      */
-    public function eventUrl(): string {
+    public function eventUrl(): string
+    {
         return $this->_eventUrl;
     }
 
     /**
      * Get session state
      */
-    public function state(): string {
+    public function state(): string
+    {
         return $this->_state;
     }
 
     /**
      * Get raw session data
      */
-    public function getRawData(): array {
+    public function getRawData(): array
+    {
         return $this->_rawData;
     }
 
     /**
      * Check if session has a property
      */
-    public function hasProperty(string $property): bool {
+    public function hasProperty(string $property): bool
+    {
         return isset($this->_rawData[$property]);
     }
 
     /**
      * Get a raw property value
      */
-    public function getProperty(string $property, mixed $default = null): mixed {
+    public function getProperty(string $property, mixed $default = null): mixed
+    {
         return $this->_rawData[$property] ?? $default;
     }
 

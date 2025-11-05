@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 /**
  * SPDX-FileCopyrightText: 2024 Sebastian Krupinski <krupinski01@gmail.com>
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace JmapClient\Requests;
 
 class Request implements \JsonSerializable
@@ -25,7 +27,8 @@ class Request implements \JsonSerializable
     protected array $_command;
     protected array $_request = ['/', [], ''];
 
-    public function __construct (?string $account = null, ?string $identifier = null, ?string $space = null, ?string $class = null, ?string $method = null) {
+    public function __construct(?string $account = null, ?string $identifier = null, ?string $space = null, ?string $class = null, ?string $method = null)
+    {
 
         if ($account !== null) {
             $this->_account = $account;
@@ -61,68 +64,72 @@ class Request implements \JsonSerializable
         $this->_request[self::REQUEST_COMMAND] = ['accountId' => $this->_account];
         $this->_request[self::REQUEST_IDENTIFIER] = $this->_identifier;
 
-        $this->_command =& $this->_request[self::REQUEST_COMMAND];
-        
+        $this->_command = & $this->_request[self::REQUEST_COMMAND];
+
     }
 
-    public function jsonSerialize(): array {
+    public function jsonSerialize(): array
+    {
         return $this->_request;
     }
 
-    public function jsonEncode(int $flags = 0): string {
+    public function jsonEncode(int $flags = 0): string
+    {
         return json_encode($this->_request, JSON_UNESCAPED_SLASHES | $flags);
     }
 
-    public function getIdentifier(): string {
+    public function getIdentifier(): string
+    {
         return $this->_identifier;
     }
 
-    public function setIdentifier(string $identifier): void {
-        
+    public function setIdentifier(string $identifier): void
+    {
         $this->_identifier = $identifier;
         $this->_request[self::REQUEST_IDENTIFIER] = $identifier;
-    
     }
 
-    public function getAccount(): string {
+    public function getAccount(): string
+    {
         return $this->_account;
     }
 
-    public function setAccount(string $account): void {
-    
+    public function setAccount(string $account): void
+    {
         $this->_account = $account;
         $this->_command['accountId'] = $account;
-    
     }
 
-    public function getNamespace(): string {
+    public function getNamespace(): string
+    {
         return $this->_space;
     }
 
-    public function setNamespace(string $space): void {
+    public function setNamespace(string $space): void
+    {
         $this->_space = $space;
     }
 
-    public function getClass(): string {
+    public function getClass(): string
+    {
         return $this->_class;
     }
 
-    public function setClass(string $class): void {
-
+    public function setClass(string $class): void
+    {
         $this->_class = $class;
         $this->_request[self::REQUEST_OPERATION] = $class . '/' . $this->_method;
-
     }
 
-    public function getMethod(): string {
+    public function getMethod(): string
+    {
         return $this->_method;
     }
 
-    public function setMethod(string $method): void {
-
+    public function setMethod(string $method): void
+    {
         $this->_method = $method;
         $this->_request[self::REQUEST_OPERATION] = $this->_class . '/' . $method;
-        
     }
 
 }

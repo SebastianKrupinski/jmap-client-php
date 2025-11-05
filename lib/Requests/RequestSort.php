@@ -1,21 +1,25 @@
 <?php
+
 declare(strict_types=1);
 
 /**
  * SPDX-FileCopyrightText: 2024 Sebastian Krupinski <krupinski01@gmail.com>
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace JmapClient\Requests;
 
 class RequestSort
 {
     protected array $_sort;
 
-    public function __construct(array &$sort) {
+    public function __construct(array &$sort)
+    {
         $this->_sort = &$sort;
     }
 
-    public function condition(string $property, bool|null $direction = null, string|null $keyword = null, string|null $collation = null): self {
+    public function condition(string $property, bool|null $direction = null, string|null $keyword = null, string|null $collation = null): static
+    {
 
         // construct condition
         $condition = new \stdClass();
@@ -30,7 +34,7 @@ class RequestSort
             $condition->collation = $collation;
         }
         $this->_sort[] = $condition;
-        
+
         return $this;
 
     }

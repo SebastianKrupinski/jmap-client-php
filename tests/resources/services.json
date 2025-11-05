@@ -1,0 +1,11 @@
+{
+    "service1": {
+        "protocol": "http",
+        "host": "stalwart.local",
+        "port": 8080,
+        "security": 0,
+        "authentication": "basic",
+        "identifier": "user1@stalwart.local",
+        "secret": "Password1234"
+    }
+}

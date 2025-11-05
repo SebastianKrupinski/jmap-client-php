@@ -1,21 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 /**
  * SPDX-FileCopyrightText: 2024 Sebastian Krupinski <krupinski01@gmail.com>
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace JmapClient\Requests;
 
-use JmapClient\Requests\Request;
-
-class RequestQueryChanges extends Request {
-
+class RequestQueryChanges extends Request
+{
     protected string $_method = 'queryChanges';
     protected string $_filterClass = RequestFilter::class;
     protected string $_sortClass = RequestSort::class;
-    
-    public function filter(): RequestFilter {
+
+    public function filter(): RequestFilter
+    {
 
         if (!isset($this->_command['filter'])) {
             $this->_command['filter'] = new \stdClass();
@@ -27,8 +28,9 @@ class RequestQueryChanges extends Request {
 
     }
 
-    public function sort(): RequestSort {
-        
+    public function sort(): RequestSort
+    {
+
         if (!isset($this->_command['sort'])) {
             $this->_command['sort'] = [];
         }
@@ -39,7 +41,8 @@ class RequestQueryChanges extends Request {
 
     }
 
-    public function state(string $value): self {
+    public function state(string $value): static
+    {
 
         $this->_command['sinceQueryState'] = $value;
 
@@ -47,23 +50,26 @@ class RequestQueryChanges extends Request {
 
     }
 
-    public function limitRelative(int $value): self {
+    public function limitRelative(int $value): static
+    {
 
         $this->_command['maxChanges'] = $value;
-        
+
         return $this;
 
     }
 
-    public function limitAbsolute(string $value): self {
+    public function limitAbsolute(string $value): static
+    {
 
         $this->_command['upToId'] = $value;
-        
+
         return $this;
 
     }
 
-    public function tally(bool $value): self {
+    public function tally(bool $value): static
+    {
 
 
         $this->_command['calculateTotal'] = $value;

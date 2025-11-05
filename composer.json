@@ -20,7 +20,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "JmapClient\\Tests\\": "tests/"
+            "JmapClient\\Tests\\Unit\\": "tests/unit/",
+            "JmapClient\\Tests\\Integration\\": "tests/integration/"
         }
     },
     "require": {
@@ -29,6 +30,12 @@
         "guzzlehttp/guzzle": "^7.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9.5"
+        "friendsofphp/php-cs-fixer": "^3.89"
+    },
+    "scripts": {
+        "test:unit": "phpunit --testsuite 'Unit Tests'",
+        "test:integration": "phpunit --testsuite 'Integration Tests'",
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix"
     }
 }

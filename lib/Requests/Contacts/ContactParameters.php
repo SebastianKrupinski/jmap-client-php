@@ -1,18 +1,21 @@
 <?php
+
 declare(strict_types=1);
 
 /**
  * SPDX-FileCopyrightText: 2025 Sebastian Krupinski <krupinski01@gmail.com>
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace JmapClient\Requests\Contacts;
 
 use DateTimeInterface;
 use JmapClient\Requests\RequestParameters;
 
-class ContactParameters extends RequestParameters {
-
-    public function __construct(&$parameters = null) {
+class ContactParameters extends RequestParameters
+{
+    public function __construct(&$parameters = null)
+    {
         parent::__construct($parameters);
         $this->parameter('@type', 'Card');
         $this->parameter('version', '1.0');
@@ -20,52 +23,62 @@ class ContactParameters extends RequestParameters {
 
     /** Metadata Properties */
 
-    public function in(string $value): static {
-        $this->parameterStructured('addressbookIds', $value, true);
+    public function in(string $value): static
+    {
+        $this->parameterStructured('addressBookIds', $value, true);
         return $this;
     }
 
-    public function uid(string $value): static {
+    public function uid(string $value): static
+    {
         $this->parameter('uid', $value);
         return $this;
     }
 
-    public function type(string $value): static {
+    public function type(string $value): static
+    {
         $this->parameter('@type', $value);
         return $this;
     }
 
-    public function version(string $value): static {
+    public function version(string $value): static
+    {
         $this->parameter('version', $value);
         return $this;
     }
 
-    public function created(DateTimeInterface $value): static {
+    public function created(DateTimeInterface $value): static
+    {
         $this->parameter('created', $value->format(static::DATE_FORMAT_UTC));
         return $this;
     }
 
-    public function updated(DateTimeInterface $value): static {
+    public function updated(DateTimeInterface $value): static
+    {
         $this->parameter('updated', $value->format(static::DATE_FORMAT_UTC));
         return $this;
     }
 
-    public function source(string $value): static {
+    public function source(string $value): static
+    {
         $this->parameter('prodId', $value);
         return $this;
     }
 
-    public function kind(string $value): static {
+    public function kind(string $value): static
+    {
         $this->parameter('kind', $value);
         return $this;
     }
 
-    public function language(string $value): static {
+    public function language(string $value): static
+    {
         $this->parameter('language', $value);
         return $this;
     }
 
-    public function members(string ...$values): static {
+    public function members(string ...$values): static
+    {
         foreach ($values as $value) {
             $this->parameterStructured('members', $value, true);
         }
@@ -75,11 +88,12 @@ class ContactParameters extends RequestParameters {
     /**
      * Add a related contact for this contact
      * The uid parameter is the unique identifier of the related contact
-     * 
+     *
      * @param string $uid
      * @return ContactRelationParameters
      */
-    public function relations(string $uid): ContactRelationParameters {
+    public function relations(string $uid): ContactRelationParameters
+    {
         if (!isset($this->_parameters->relatedTo?->$uid)) {
             $this->parameterStructured('relatedTo', $uid, new \stdClass());
         }
@@ -87,15 +101,17 @@ class ContactParameters extends RequestParameters {
     }
 
     /** Name Properties */
-    
-    public function name(): ContactNameParameters {
+
+    public function name(): ContactNameParameters
+    {
         if (!isset($this->_parameters->name)) {
             $this->parameter('name', new \stdClass());
         }
         return new ContactNameParameters($this->_parameters->name);
     }
 
-    public function aliases(string $id): ContactAliasParameters {
+    public function aliases(string $id): ContactAliasParameters
+    {
         if (!isset($this->_parameters->nicknames?->$id)) {
             $this->parameterStructured('nicknames', $id, new \stdClass());
         }
@@ -105,10 +121,11 @@ class ContactParameters extends RequestParameters {
     /**
      * Get the SpeakToAs information for this contact
      * Includes grammatical gender and pronouns
-     * 
+     *
      * @return ContactSpeakToAsParameters
      */
-    public function speakToAs(): ContactSpeakToAsParameters {
+    public function speakToAs(): ContactSpeakToAsParameters
+    {
         if (!isset($this->_parameters->speakToAs)) {
             $this->parameter('speakToAs', new \stdClass());
         }
@@ -117,7 +134,8 @@ class ContactParameters extends RequestParameters {
 
     /** Personal Properties */
 
-    public function anniversaries(string $id): ContactAnniversaryParameters {
+    public function anniversaries(string $id): ContactAnniversaryParameters
+    {
         if (!isset($this->_parameters->anniversaries?->$id)) {
             $this->parameterStructured('anniversaries', $id, new \stdClass());
         }
@@ -126,14 +144,16 @@ class ContactParameters extends RequestParameters {
 
     /** Organization Properties */
 
-    public function titles(string $id): ContactTitleParameters {
+    public function titles(string $id): ContactTitleParameters
+    {
         if (!isset($this->_parameters->titles?->$id)) {
             $this->parameterStructured('titles', $id, new \stdClass());
         }
         return new ContactTitleParameters($this->_parameters->titles->$id);
     }
 
-    public function organizations(string $id): ContactOrganizationParameters {
+    public function organizations(string $id): ContactOrganizationParameters
+    {
         if (!isset($this->_parameters->organizations?->$id)) {
             $this->parameterStructured('organizations', $id, new \stdClass());
         }
@@ -142,21 +162,24 @@ class ContactParameters extends RequestParameters {
 
     /** Communication Properties  */
 
-    public function emails(string $id): ContactEmailParameters {
+    public function emails(string $id): ContactEmailParameters
+    {
         if (!isset($this->_parameters->emails?->$id)) {
             $this->parameterStructured('emails', $id, new \stdClass());
         }
         return new ContactEmailParameters($this->_parameters->emails->$id);
     }
 
-    public function phones(string $id): ContactPhoneParameters {
+    public function phones(string $id): ContactPhoneParameters
+    {
         if (!isset($this->_parameters->phones?->$id)) {
             $this->parameterStructured('phones', $id, new \stdClass());
         }
         return new ContactPhoneParameters($this->_parameters->phones->$id);
     }
 
-    public function addresses(string $id): ContactAddressParameters {
+    public function addresses(string $id): ContactAddressParameters
+    {
         if (!isset($this->_parameters->addresses?->$id)) {
             $this->parameterStructured('addresses', $id, new \stdClass());
         }
@@ -165,7 +188,8 @@ class ContactParameters extends RequestParameters {
 
     /** Commentary Properties */
 
-    public function tags(string ...$value): self {
+    public function tags(string ...$value): static
+    {
         foreach ($value as $entry) {
             $collection[$entry] = true;
         }
@@ -173,7 +197,8 @@ class ContactParameters extends RequestParameters {
         return $this;
     }
 
-    public function notes(string $id): ContactNoteParameters {
+    public function notes(string $id): ContactNoteParameters
+    {
         if (!isset($this->_parameters->notes?->$id)) {
             $this->parameterStructured('notes', $id, new \stdClass());
         }
@@ -182,28 +207,32 @@ class ContactParameters extends RequestParameters {
 
     /** Resources Properties  */
 
-    public function crypto(string $id): ContactCryptoParameters {
+    public function crypto(string $id): ContactCryptoParameters
+    {
         if (!isset($this->_parameters->cryptoKeys?->$id)) {
             $this->parameterStructured('cryptoKeys', $id, new \stdClass());
         }
         return new ContactCryptoParameters($this->_parameters->cryptoKeys->$id);
     }
 
-    public function directories(string $id): ContactDirectoryParameters {
+    public function directories(string $id): ContactDirectoryParameters
+    {
         if (!isset($this->_parameters->directories?->$id)) {
             $this->parameterStructured('directories', $id, new \stdClass());
         }
         return new ContactDirectoryParameters($this->_parameters->directories->$id);
     }
 
-    public function links(string $id): ContactLinkParameters {
+    public function links(string $id): ContactLinkParameters
+    {
         if (!isset($this->_parameters->links?->$id)) {
             $this->parameterStructured('links', $id, new \stdClass());
         }
         return new ContactLinkParameters($this->_parameters->links->$id);
     }
 
-    public function media(string $id): ContactMediaParameters {
+    public function media(string $id): ContactMediaParameters
+    {
         if (!isset($this->_parameters->media?->$id)) {
             $this->parameterStructured('media', $id, new \stdClass());
         }

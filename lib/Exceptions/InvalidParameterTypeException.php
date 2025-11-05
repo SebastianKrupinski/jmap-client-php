@@ -1,10 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 /**
  * SPDX-FileCopyrightText: 2025 Sebastian Krupinski <krupinski01@gmail.com>
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
+
 namespace JmapClient\Exceptions;
 
 class InvalidParameterTypeException extends \InvalidArgumentException
@@ -26,7 +28,7 @@ class InvalidParameterTypeException extends \InvalidArgumentException
         \Throwable $previous = null
     ) {
         $actualType = is_object($actualValue) ? get_class($actualValue) : gettype($actualValue);
-        
+
         $message = sprintf(
             'Invalid %s type: expected instance of %s, got %s',
             $this->parameterName,
