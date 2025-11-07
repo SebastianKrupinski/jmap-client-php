@@ -90,5 +90,4 @@ class MailVacationParameters extends ResponseParameters
     {
         return $this->parameter('htmlBody');
     }
-
 }

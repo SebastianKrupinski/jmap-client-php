@@ -36,5 +36,4 @@ class ResponseException
     {
         return isset($this->_response[self::RESPONSE_OBJECT]['description']) ? $this->_response[self::RESPONSE_OBJECT]['description'] : '';
     }
-
 }

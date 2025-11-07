@@ -31,5 +31,4 @@ class SubscriptionSet extends RequestSet
     {
         return parent::create($id, $object);
     }
-
 }

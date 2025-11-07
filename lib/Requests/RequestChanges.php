@@ -20,20 +20,15 @@ class RequestChanges extends Request implements RequestChangesInterface
 
     public function state(string $value): static
     {
-
         $this->_command['sinceState'] = $value;
 
         return $this;
-
     }
 
     public function limitRelative(int $value): static
     {
-
         $this->_command['maxChanges'] = $value;
 
         return $this;
-
     }
-
 }

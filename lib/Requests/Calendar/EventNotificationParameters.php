@@ -48,5 +48,4 @@ class EventNotificationParameters extends RequestParameters
         $this->parameter('acknowledged', $value);
         return $this;
     }
-
 }

@@ -57,5 +57,4 @@ class MailIdentityParameters extends ResponseParameters
     {
         return $this->parameter('mayDelete');
     }
-
 }

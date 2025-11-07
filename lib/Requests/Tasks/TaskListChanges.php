@@ -15,5 +15,4 @@ class TaskListChanges extends RequestChanges
 {
     protected string $_space = 'urn:ietf:params:jmap:tasks';
     protected string $_class = 'TaskList';
-
 }

@@ -103,5 +103,4 @@ final class Account
     {
         return $this->_data[$property] ?? $default;
     }
-
 }

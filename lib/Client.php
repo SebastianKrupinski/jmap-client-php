@@ -119,7 +119,6 @@ class Client
         if (isset($authentication)) {
             $this->setAuthentication($authentication);
         }
-
     }
 
     /**
@@ -127,7 +126,6 @@ class Client
      */
     public function constructClient(array $overrides = []): GuzzleHttpClient
     {
-
         $options = $this->_transportOptions;
 
         $options = array_replace($options, $overrides);
@@ -146,13 +144,11 @@ class Client
      */
     public function configureRequestTypes(string $collection, string $id, string $value)
     {
-
         if ($collection === 'command') {
             RequestClasses::setCommand($id, $value);
         } elseif ($collection === 'parameters') {
             RequestClasses::setParameter($id, $value);
         }
-
     }
 
     /**
@@ -160,13 +156,11 @@ class Client
      */
     public function configureResponseTypes(string $collection, string $id, string $value)
     {
-
         if ($collection === 'command') {
             ResponseClasses::setCommand($id, $value);
         } elseif ($collection === 'parameters') {
             ResponseClasses::setParameter($id, $value);
         }
-
     }
 
     /**
@@ -421,7 +415,6 @@ class Client
      */
     public function setAuthentication(IAuthentication $value, bool $reset = true): void
     {
-
         // store parameter
         $this->_ServiceAuthentication = $value;
         // destroy existing client will need to be initialized again
@@ -444,7 +437,6 @@ class Client
         if ($this->_ServiceAuthentication instanceof Bearer) {
             $this->_transportHeaders['Authorization'] = 'Bearer ' . $this->_ServiceAuthentication->getToken();
         }
-
     }
 
     /**
@@ -469,7 +461,6 @@ class Client
         $this->_SessionConnected = true;
         // return session object
         return $this->_SessionData;
-
     }
 
     /**
@@ -498,7 +489,6 @@ class Client
      */
     protected function authenticateSimple(): ?array
     {
-
         $location = $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
 
         $client = $this->constructClient([
@@ -520,7 +510,6 @@ class Client
      */
     protected function authenticateJson(): ?array
     {
-
         if (!$this->_ServiceAuthentication instanceof IAuthenticationJsonBasic) {
             return [];
         }
@@ -598,7 +587,6 @@ class Client
      */
     protected function authenticateSession(): ?array
     {
-
         // evaluate and validate authentication type
         if (!$this->_ServiceAuthentication instanceof IAuthenticationCookie) {
             return [];
@@ -639,7 +627,6 @@ class Client
         } else {
             return [];
         }
-
     }
 
     /**
@@ -647,7 +634,6 @@ class Client
      */
     protected function authenticateCustom(): ?array
     {
-
         // evaluate and validate authentication type
         if (!$this->_ServiceAuthentication instanceof IAuthenticationCustom) {
             return [];
@@ -661,7 +647,6 @@ class Client
         $session = $authenticate($client);
         $this->_client = $client;
         return $session;
-
     }
 
     /**
@@ -669,7 +654,6 @@ class Client
      */
     public function perform(RequestBundle|array $commands): ResponseBundle
     {
-
         // evaluate if command(s) was passed as a request bundled
         if ($commands instanceof RequestBundle) {
             $requests = $commands;
@@ -692,7 +676,6 @@ class Client
 
         // return response
         return $responses;
-
     }
 
     /**
@@ -700,7 +683,6 @@ class Client
      */
     public function transceive(string $uri, string $data): null|string
     {
-
         // evaluate if client is connected
         if (!$this->_SessionConnected) {
             $this->connect();
@@ -719,7 +701,6 @@ class Client
         $data = $response->getBody()->getContents();
 
         return $data;
-
     }
 
     /**
@@ -727,7 +708,6 @@ class Client
      */
     public function download(string $account, string $identifier, &$data, string $type = 'application/octet-stream', string $name = 'file.bin'): void
     {
-
         // evaluate if client is connected
         if (!$this->_SessionConnected) {
             $this->connect();
@@ -761,7 +741,6 @@ class Client
             $response = $this->_client->request('GET', $location, ['headers' => $transportHeaders]);
             $data = $response->getBody()->getContents();
         }
-
     }
 
     /**
@@ -769,7 +748,6 @@ class Client
      */
     public function upload(string $account, string $type, &$data): string
     {
-
         // evaluate if client is connected
         if (!$this->_SessionConnected) {
             $this->connect();
@@ -792,7 +770,6 @@ class Client
         $responseBody = $response->getBody()->getContents();
 
         return $responseBody;
-
     }
 
     /**
@@ -931,7 +908,6 @@ class Client
      */
     private function transmissionLogger(string $type, ?string $message, ?int $statusCode = null, ?string $method = null, ?string $url = null, ?string $contentType = null, ?string $transactionId = null): void
     {
-
         // evaluate if logging is enabled
         if (!$this->_transportLogState) {
             return;
@@ -992,7 +968,6 @@ class Client
 
         // write to log file
         file_put_contents($this->_transportLogLocation, $logEntry, FILE_APPEND);
-
     }
 
     /**
@@ -1000,9 +975,7 @@ class Client
      */
     public function sessionStatus(): bool
     {
-
         return $this->_SessionConnected;
-
     }
 
     /**
@@ -1010,9 +983,7 @@ class Client
      */
     public function sessionData(): ?Session
     {
-
         return $this->_SessionData;
-
     }
 
     /**
@@ -1020,7 +991,6 @@ class Client
      */
     public function sessionCapable(string $value, bool $standard = true): bool
     {
-
         if (!$this->_SessionData) {
             return false;
         }
@@ -1029,7 +999,6 @@ class Client
         } else {
             return $this->_SessionData->capable('urn:ietf:params:jmap:' . $value);
         }
-
     }
 
     /**
@@ -1037,7 +1006,6 @@ class Client
      */
     public function sessionCapabilities(?string $value = null, bool $standard = true): CapabilityCollection|null
     {
-
         if (!$this->_SessionData) {
             return null;
         }
@@ -1048,7 +1016,6 @@ class Client
         } else {
             return $this->_SessionData->capabilities();
         }
-
     }
 
     /**
@@ -1056,12 +1023,10 @@ class Client
      */
     public function sessionAccounts(): AccountCollection|null
     {
-
         if (!$this->_SessionData) {
             return null;
         }
         return $this->_SessionData->accounts();
-
     }
 
     /**
@@ -1069,7 +1034,6 @@ class Client
      */
     public function sessionAccountDefault(?string $value = null, bool $standard = true): Account|null
     {
-
         if (!$this->_SessionData) {
             return null;
         }
@@ -1080,7 +1044,5 @@ class Client
         } else {
             return $this->_SessionData->primaryAccount('urn:ietf:params:jmap:core');
         }
-
     }
-
 }

@@ -42,5 +42,4 @@ class MailboxFilter extends RequestFilter
         $this->condition('isSubscribed', $value);
         return $this;
     }
-
 }

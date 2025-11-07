@@ -32,5 +32,4 @@ class EventNotificationTriggerAbsoluteParameters extends RequestParameters
         $this->parameter('when', $value->format(self::DATE_FORMAT_UTC));
         return $this;
     }
-
 }

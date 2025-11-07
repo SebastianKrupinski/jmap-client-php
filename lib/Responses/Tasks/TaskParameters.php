@@ -42,5 +42,4 @@ class TaskParameters extends ResponseParameters
         $value = $this->parameter('updated');
         return ($value) ? new DateTimeImmutable($value) : null;
     }
-
 }

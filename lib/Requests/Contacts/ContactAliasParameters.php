@@ -45,5 +45,4 @@ class ContactAliasParameters extends RequestParameters
         $this->parameter('pref', $value);
         return $this;
     }
-
 }

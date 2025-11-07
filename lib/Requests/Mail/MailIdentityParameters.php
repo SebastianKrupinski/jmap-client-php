@@ -55,5 +55,4 @@ class MailIdentityParameters extends RequestParameters
     {
         return $this->parameter('htmlSignature', $value);
     }
-
 }

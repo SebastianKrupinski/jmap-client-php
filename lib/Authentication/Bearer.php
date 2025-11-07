@@ -58,5 +58,4 @@ class Bearer implements IAuthenticationBearer
     {
         $this->Location = $value;
     }
-
 }

@@ -25,6 +25,7 @@ class EventSet extends RequestSet
      *
      * @param string $id Event identifier
      * @param EventParameters|null $object Event parameters object
+     *
      * @return EventParameters The event parameters for method chaining
      */
     public function create(string $id, mixed $object = null): EventParameters
@@ -37,6 +38,7 @@ class EventSet extends RequestSet
      *
      * @param string $id Event identifier
      * @param EventParameters|null $object Event parameters object
+     *
      * @return EventParameters The event parameters for method chaining
      */
     public function update(string $id, mixed $object = null): EventParameters
@@ -54,5 +56,4 @@ class EventSet extends RequestSet
     {
         return parent::delete($id);
     }
-
 }

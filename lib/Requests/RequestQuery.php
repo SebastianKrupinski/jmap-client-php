@@ -24,7 +24,6 @@ class RequestQuery extends Request implements RequestQueryInterface
 
     public function filter(): RequestFilter
     {
-
         if (!isset($this->_command['filter'])) {
             $this->_command['filter'] = new \stdClass();
         }
@@ -32,12 +31,10 @@ class RequestQuery extends Request implements RequestQueryInterface
         $class = RequestClasses::getParameter($this->_class . '.filter') ?? $this->_filterClass;
 
         return new $class($this->_command['filter']);
-
     }
 
     public function sort(): RequestSort
     {
-
         if (!isset($this->_command['sort'])) {
             $this->_command['sort'] = [];
         }
@@ -45,12 +42,10 @@ class RequestQuery extends Request implements RequestQueryInterface
         $class = RequestClasses::getParameter($this->_class . '.sort') ?? $this->_sortClass;
 
         return new $class($this->_command['sort']);
-
     }
 
     public function limitAbsolute(?int $position = null, ?int $count = null): static
     {
-
         if ($position !== null) {
             $this->_command['position'] = $position;
         }
@@ -59,12 +54,10 @@ class RequestQuery extends Request implements RequestQueryInterface
         }
 
         return $this;
-
     }
 
     public function limitRelative(?int $anchor = null, ?int $count = null, ?int $offset = null): static
     {
-
         if ($anchor !== null) {
             $this->_command['anchor'] = $anchor;
         }
@@ -76,16 +69,12 @@ class RequestQuery extends Request implements RequestQueryInterface
         }
 
         return $this;
-
     }
 
     public function tally(bool $value): static
     {
-
         $this->_command['calculateTotal'] = $value;
 
         return $this;
-
     }
-
 }

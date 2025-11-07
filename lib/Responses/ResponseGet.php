@@ -13,7 +13,6 @@ class ResponseGet extends Response
 {
     public function __construct(array $response = [])
     {
-
         parent::__construct($response);
 
         // retrieve class for this response object type
@@ -25,7 +24,6 @@ class ResponseGet extends Response
                 $this->_response[self::RESPONSE_OBJECT]['list'][$key] = new $class($entry);
             }
         }
-
     }
 
     public function state(): string
@@ -42,5 +40,4 @@ class ResponseGet extends Response
     {
         return (isset($this->_response[self::RESPONSE_OBJECT]['list'])) ? $this->_response[self::RESPONSE_OBJECT]['list'][$position] : null;
     }
-
 }

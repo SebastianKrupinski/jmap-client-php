@@ -114,5 +114,4 @@ class MailParameters extends RequestParameters
         $this->parameterStructured('keywords', '$forwarded', true);
         return $this;
     }
-
 }

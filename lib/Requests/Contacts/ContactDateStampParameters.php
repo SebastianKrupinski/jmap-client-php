@@ -31,5 +31,4 @@ class ContactDateStampParameters extends RequestParameters
         $this->parameter('utc', $value->format(static::DATE_FORMAT_UTC));
         return $this;
     }
-
 }

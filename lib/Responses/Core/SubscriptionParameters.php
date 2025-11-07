@@ -42,5 +42,4 @@ class SubscriptionParameters extends ResponseParameters
     {
         return $this->parameter('keys');
     }
-
 }

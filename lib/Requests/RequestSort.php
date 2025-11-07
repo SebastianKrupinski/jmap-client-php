@@ -20,7 +20,6 @@ class RequestSort
 
     public function condition(string $property, bool|null $direction = null, string|null $keyword = null, string|null $collation = null): static
     {
-
         // construct condition
         $condition = new \stdClass();
         $condition->property = $property;
@@ -36,7 +35,5 @@ class RequestSort
         $this->_sort[] = $condition;
 
         return $this;
-
     }
-
 }

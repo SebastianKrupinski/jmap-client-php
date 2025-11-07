@@ -16,5 +16,4 @@ class ContactLinkParameters extends ContactResourceParameters
         parent::__construct($parameters);
         $this->parameter('@type', 'Link');
     }
-
 }

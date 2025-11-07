@@ -50,5 +50,4 @@ class MailboxParameters extends RequestParameters
         $this->parameter('isSubscribed', $value);
         return $this;
     }
-
 }

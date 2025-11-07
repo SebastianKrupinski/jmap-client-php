@@ -70,5 +70,4 @@ class CalendarParameters extends RequestParameters
         }
         return new CalendarPermissions($this->_parameters->shareWith->$id);
     }
-
 }

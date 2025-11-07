@@ -24,5 +24,4 @@ interface RequestParametersInterface
      * @return self For method chaining
      */
     public function bind(&$anchor): static;
-
 }

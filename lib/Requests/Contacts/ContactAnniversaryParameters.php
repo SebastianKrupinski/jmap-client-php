@@ -54,5 +54,4 @@ class ContactAnniversaryParameters extends RequestParameters
         }
         return new ContactAddressParameters($this->_parameters->place);
     }
-
 }

@@ -49,5 +49,4 @@ class SubscriptionParameters extends RequestParameters
         $this->parameter('keys', $value);
         return $this;
     }
-
 }

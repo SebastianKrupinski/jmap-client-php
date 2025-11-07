@@ -15,16 +15,13 @@ class ResponseBundle
 
     public function __construct(array|object|string $responses = [])
     {
-
         if (!empty($responses)) {
             $this->jsonDeserialize($responses);
         }
-
     }
 
     public function jsonDeserialize(array|object|string $data): static
     {
-
         if (is_string($data)) {
             return $this->jsonDecode($data);
         }
@@ -42,7 +39,6 @@ class ResponseBundle
         }
 
         return $this;
-
     }
 
     public function jsonDecode(string $data, int $options = 0): static
@@ -79,5 +75,4 @@ class ResponseBundle
     {
         return (isset($this->_responses['methodResponses'])) ? end($this->_responses['methodResponses']) : null;
     }
-
 }

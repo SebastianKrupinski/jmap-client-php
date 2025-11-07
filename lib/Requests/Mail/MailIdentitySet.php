@@ -54,5 +54,4 @@ class MailIdentitySet extends RequestSet
     {
         return parent::delete($id);
     }
-
 }

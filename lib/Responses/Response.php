@@ -23,23 +23,19 @@ class Response
 
     public function __construct(array $data = [])
     {
-
         if (!empty($data)) {
             $this->jsonDeserialize($data);
         }
-
     }
 
     public function jsonDeserialize(array $data): static
     {
-
         $this->_response = $data;
         [$this->_class, $this->_method] = explode('/', $this->_response[self::RESPONSE_OPERATION]);
         $this->_account = (isset($this->_response[self::RESPONSE_OBJECT]['accountId'])) ? $this->_response[self::RESPONSE_OBJECT]['accountId'] : '';
         $this->_identifier = (isset($this->_response[self::RESPONSE_IDENTIFIER])) ? $this->_response[self::RESPONSE_IDENTIFIER] : '';
 
         return $this;
-
     }
 
     public function jsonDecode(string $data, int $options = 0): static
@@ -66,5 +62,4 @@ class Response
     {
         return $this->_account;
     }
-
 }

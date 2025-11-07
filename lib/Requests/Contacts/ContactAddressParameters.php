@@ -91,5 +91,4 @@ class ContactAddressParameters extends RequestParameters
         $this->parameter('phoneticSystem', $value);
         return $this;
     }
-
 }

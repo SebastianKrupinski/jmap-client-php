@@ -82,5 +82,4 @@ class EventRecurrenceRuleParameters extends ResponseParameters
     {
         return $this->parameter('bySetPosition') ?? [];
     }
-
 }

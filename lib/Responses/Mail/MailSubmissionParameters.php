@@ -32,5 +32,4 @@ class MailSubmissionParameters extends ResponseParameters
     {
         return $this->parameter('threadId');
     }
-
 }

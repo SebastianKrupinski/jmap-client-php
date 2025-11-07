@@ -15,5 +15,4 @@ class SubscriptionGet extends RequestGet
 {
     protected string $_space = 'urn:ietf:params:jmap:core';
     protected string $_class = 'PushSubscription';
-
 }

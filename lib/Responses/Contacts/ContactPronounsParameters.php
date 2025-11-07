@@ -51,5 +51,4 @@ class ContactPronounsParameters extends ResponseParameters
     {
         return $this->parameter('pref');
     }
-
 }

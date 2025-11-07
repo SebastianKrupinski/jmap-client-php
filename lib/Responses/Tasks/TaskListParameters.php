@@ -67,5 +67,4 @@ class TaskListParameters extends ResponseParameters
     {
         return $this->parameter('myRights');
     }
-
 }

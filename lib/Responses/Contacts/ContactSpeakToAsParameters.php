@@ -43,5 +43,4 @@ class ContactSpeakToAsParameters extends ResponseParameters
         }
         return $collection;
     }
-
 }

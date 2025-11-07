@@ -48,5 +48,4 @@ class ContactDatePartialParameters extends RequestParameters
         $this->parameter('calendarScale', $value);
         return $this;
     }
-
 }

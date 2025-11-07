@@ -27,5 +27,4 @@ class EventQueryChanges extends RequestQueryChanges
     {
         return parent::sort();
     }
-
 }

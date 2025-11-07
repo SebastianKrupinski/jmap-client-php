@@ -29,14 +29,9 @@ class EventQuery extends RequestQuery
         return parent::sort();
     }
 
-    public function timezone(DateTimeZone $value): staticic
+    public function timezone(DateTimeZone $value): static
     {
-
-
         $this->_command['timeZone'] = $value->getName();
-
         return $this;
-
     }
-
 }

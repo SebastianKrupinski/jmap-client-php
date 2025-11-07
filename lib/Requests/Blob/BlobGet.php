@@ -27,5 +27,4 @@ class BlobGet extends RequestGet
         $this->_command['length'] = $value;
         return $this;
     }
-
 }

@@ -15,39 +15,24 @@ class BlobParameters extends RequestParameters
 {
     public function __construct(&$parameters = null)
     {
-
         parent::__construct($parameters);
-
     }
 
     public function type(string $value): static
     {
-
-
         $this->parameter('type', $value);
-
         return $this;
-
     }
 
     public function dataPlain(string $value): static
     {
-
-
         $this->parameterStructured('data', 'data:asText', $value);
-
         return $this;
-
     }
 
     public function dataEncoded(string $value): static
     {
-
-
         $this->parameterStructured('data', 'data:asBase64', $value);
-
         return $this;
-
     }
-
 }

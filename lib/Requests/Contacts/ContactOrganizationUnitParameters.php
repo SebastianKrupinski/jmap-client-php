@@ -36,5 +36,4 @@ class ContactOrganizationUnitParameters extends RequestParameters
         $this->parameter('sortAs', $value);
         return $this;
     }
-
 }

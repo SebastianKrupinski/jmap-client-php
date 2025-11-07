@@ -36,5 +36,4 @@ class AddressBookPermissions extends RequestPermissions
         $this->parameter('mayAdmin', $value);
         return $this;
     }
-
 }

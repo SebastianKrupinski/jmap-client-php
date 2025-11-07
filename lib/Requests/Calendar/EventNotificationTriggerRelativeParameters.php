@@ -43,5 +43,4 @@ class EventNotificationTriggerRelativeParameters extends RequestParameters
         });
         return $this;
     }
-
 }

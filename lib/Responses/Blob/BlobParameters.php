@@ -37,5 +37,4 @@ class BlobParameters extends ResponseParameters
     {
         return $this->parameter('data:asBase64');
     }
-
 }

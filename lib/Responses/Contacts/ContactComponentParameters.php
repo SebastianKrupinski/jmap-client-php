@@ -22,5 +22,4 @@ class ContactComponentParameters extends ResponseParameters
     {
         return $this->parameter('value');
     }
-
 }

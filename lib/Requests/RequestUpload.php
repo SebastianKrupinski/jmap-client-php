@@ -31,7 +31,6 @@ class RequestUpload extends Request implements RequestUploadInterface
      */
     public function create(string $id, mixed $object = null): RequestParametersInterface
     {
-
         // get the class to use (override or default)
         $class = $this->_parametersClass;
 
@@ -43,7 +42,5 @@ class RequestUpload extends Request implements RequestUploadInterface
         }
 
         return new $class($this->_command['create'][$id]);
-
     }
-
 }

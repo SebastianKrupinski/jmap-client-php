@@ -60,5 +60,4 @@ class ContactPhoneParameters extends RequestParameters
         $this->parameter('features', (object)$collection);
         return $this;
     }
-
 }

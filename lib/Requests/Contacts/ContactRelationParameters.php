@@ -42,5 +42,4 @@ class ContactRelationParameters extends RequestParameters
         $this->parameter('relation', (object)$collection);
         return $this;
     }
-
 }

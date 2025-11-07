@@ -74,5 +74,4 @@ class EventParameters extends EventCommonParameters
         }
         return $collection;
     }
-
 }

@@ -57,5 +57,4 @@ class MailSubmissionParameters extends RequestParameters
         $this->parameterStructured('onSuccessDestroyEmail', $id, $actions);
         return $this;
     }
-
 }

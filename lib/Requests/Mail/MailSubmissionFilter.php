@@ -32,5 +32,4 @@ class MailSubmissionFilter extends RequestFilter
         $this->condition('after', $value->format(self::DATE_FORMAT_LOCAL));
         return $this;
     }
-
 }

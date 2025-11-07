@@ -57,5 +57,4 @@ class MailboxPermissions extends ResponsePermissions
     {
         return $this->parameter('maySubmit');
     }
-
 }

@@ -27,5 +27,4 @@ class ContactDateStampParameters extends ResponseParameters
         }
         return null;
     }
-
 }

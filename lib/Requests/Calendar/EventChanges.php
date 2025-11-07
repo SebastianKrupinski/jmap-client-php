@@ -15,5 +15,4 @@ class EventChanges extends RequestChanges
 {
     protected string $_space = 'urn:ietf:params:jmap:calendars';
     protected string $_class = 'CalendarEvent';
-
 }

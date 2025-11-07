@@ -32,5 +32,4 @@ class ContactEmailParameters extends ResponseParameters
     {
         return $this->parameter('label');
     }
-
 }

@@ -57,5 +57,4 @@ class MailSubmissionSet extends RequestSet
     {
         return parent::delete($id);
     }
-
 }

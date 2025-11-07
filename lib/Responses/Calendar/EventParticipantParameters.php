@@ -47,5 +47,4 @@ class EventParticipantParameters extends ResponseParameters
     {
         return $this->parameter('roles') ?? [];
     }
-
 }

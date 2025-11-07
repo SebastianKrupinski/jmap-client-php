@@ -33,5 +33,4 @@ class ContactAnniversaryParameters extends ResponseParameters
 
         return null;
     }
-
 }

@@ -70,5 +70,4 @@ class TaskListSet extends RequestSet
         $this->_command['onDestroyRemoveEvents'] = $value;
         return $this;
     }
-
 }

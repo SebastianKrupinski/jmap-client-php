@@ -42,5 +42,4 @@ class ContactTitleParameters extends RequestParameters
         $this->parameter('organizationId', $value);
         return $this;
     }
-
 }

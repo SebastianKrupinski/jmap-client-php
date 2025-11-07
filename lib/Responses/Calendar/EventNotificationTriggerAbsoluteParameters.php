@@ -24,5 +24,4 @@ class EventNotificationTriggerAbsoluteParameters extends ResponseParameters
         $value = $this->parameter('when');
         return ($value) ? new DateTimeImmutable($value) : null;
     }
-
 }

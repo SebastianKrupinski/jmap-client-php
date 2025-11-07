@@ -71,5 +71,4 @@ class CalendarParameters extends ResponseParameters
         }
         return new CalendarPermissions((array) $rights);
     }
-
 }

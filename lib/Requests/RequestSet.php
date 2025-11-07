@@ -38,7 +38,6 @@ class RequestSet extends Request implements RequestSetInterface
      */
     public function create(string $id, mixed $object = null): RequestParametersInterface
     {
-
         // get the class to use (override or default)
         $class = RequestClasses::getParameter($this->_class . '.object') ?? $this->_parametersClass;
 
@@ -57,7 +56,6 @@ class RequestSet extends Request implements RequestSetInterface
         $instance = new $class($this->_command['create'][$id]);
 
         return $instance;
-
     }
 
     /**
@@ -70,7 +68,6 @@ class RequestSet extends Request implements RequestSetInterface
      */
     protected function update(string $id, RequestParametersInterface|null $object = null): RequestParametersInterface
     {
-
         // get the class to use (override or default)
         $class = RequestClasses::getParameter($this->_class . '.object') ?? $this->_parametersClass;
 
@@ -89,7 +86,6 @@ class RequestSet extends Request implements RequestSetInterface
         $instance = new $class($this->_command['update'][$id]);
 
         return $instance;
-
     }
 
     /**
@@ -101,10 +97,7 @@ class RequestSet extends Request implements RequestSetInterface
      */
     protected function delete(string $id): static
     {
-
         $this->_command['destroy'][] = $id;
         return $this;
-
     }
-
 }

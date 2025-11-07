@@ -91,5 +91,4 @@ class JsonBasicCookie implements IAuthenticationJsonBasic, IAuthenticationCookie
     {
         $this->CookieDepositStore = $value;
     }
-
 }

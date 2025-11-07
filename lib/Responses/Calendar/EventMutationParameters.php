@@ -25,5 +25,4 @@ class EventMutationParameters extends EventCommonParameters
     {
         return $this->parameter('recurrenceIdTimeZone');
     }
-
 }

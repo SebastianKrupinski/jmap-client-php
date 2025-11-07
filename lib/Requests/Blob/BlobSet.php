@@ -31,5 +31,4 @@ class BlobSet extends RequestUpload
     {
         return parent::create($id, $object);
     }
-
 }

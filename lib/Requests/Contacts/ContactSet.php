@@ -57,5 +57,4 @@ class ContactSet extends RequestSet
     {
         return parent::delete($id);
     }
-
 }

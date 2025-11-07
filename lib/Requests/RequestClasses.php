@@ -54,5 +54,4 @@ class RequestClasses
     {
         self::$parameters[$parameter] = $class;
     }
-
 }

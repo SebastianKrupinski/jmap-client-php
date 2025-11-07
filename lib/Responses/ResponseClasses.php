@@ -130,5 +130,4 @@ class ResponseClasses
     {
         self::$parameters[$parameter] = $class;
     }
-
 }

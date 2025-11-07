@@ -29,7 +29,6 @@ class Request implements \JsonSerializable
 
     public function __construct(?string $account = null, ?string $identifier = null, ?string $space = null, ?string $class = null, ?string $method = null)
     {
-
         if ($account !== null) {
             $this->_account = $account;
         }
@@ -65,7 +64,6 @@ class Request implements \JsonSerializable
         $this->_request[self::REQUEST_IDENTIFIER] = $this->_identifier;
 
         $this->_command = & $this->_request[self::REQUEST_COMMAND];
-
     }
 
     public function jsonSerialize(): array
@@ -131,5 +129,4 @@ class Request implements \JsonSerializable
         $this->_method = $method;
         $this->_request[self::REQUEST_OPERATION] = $this->_class . '/' . $method;
     }
-
 }

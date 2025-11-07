@@ -27,5 +27,4 @@ class TaskQueryChanges extends RequestQueryChanges
     {
         return parent::sort();
     }
-
 }

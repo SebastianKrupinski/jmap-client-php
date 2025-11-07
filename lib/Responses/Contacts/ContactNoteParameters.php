@@ -30,5 +30,4 @@ class ContactNoteParameters extends ResponseParameters
         $value = $this->parameter('name');
         return $value !== null ? new ContactNoteAuthorParameters($value) : null;
     }
-
 }

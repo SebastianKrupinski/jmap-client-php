@@ -60,5 +60,4 @@ class RequestFactory
         $class = RequestClasses::getCommand($module . '/upload');
         return self::instance($class, ...$arguments);
     }
-
 }

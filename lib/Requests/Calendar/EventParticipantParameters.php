@@ -78,5 +78,4 @@ class EventParticipantParameters extends RequestParameters
         $this->parameter('roles', (object)$collection);
         return $this;
     }
-
 }

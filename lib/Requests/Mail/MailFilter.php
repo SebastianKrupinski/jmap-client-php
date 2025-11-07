@@ -110,5 +110,4 @@ class MailFilter extends RequestFilter
         $this->condition('maxSize', $value);
         return $this;
     }
-
 }

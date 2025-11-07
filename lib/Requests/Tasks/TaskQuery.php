@@ -31,12 +31,8 @@ class TaskQuery extends RequestQuery
 
     public function timezone(DateTimeZone $value): static
     {
-
-
         $this->_command['timeZone'] = $value->getName();
 
         return $this;
-
     }
-
 }

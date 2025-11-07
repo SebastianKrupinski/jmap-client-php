@@ -72,5 +72,4 @@ final class AccountCollection extends ArrayObjectCollection
     {
         return $this->filter(static fn ($account) => $account->capable($capabilityId));
     }
-
 }

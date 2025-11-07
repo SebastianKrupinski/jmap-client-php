@@ -15,5 +15,4 @@ class TaskListGet extends RequestGet
 {
     protected string $_space = 'urn:ietf:params:jmap:tasks';
     protected string $_class = 'TaskList';
-
 }

@@ -86,5 +86,4 @@ class MailPart extends RequestParameters
         }
         return $this->_parameters->subParts;
     }
-
 }

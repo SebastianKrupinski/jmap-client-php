@@ -15,5 +15,4 @@ class AddressBookChanges extends RequestChanges
 {
     protected string $_space = 'urn:ietf:params:jmap:contacts';
     protected string $_class = 'AddressBook';
-
 }

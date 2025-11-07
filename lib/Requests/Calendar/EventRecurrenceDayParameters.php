@@ -36,5 +36,4 @@ class EventRecurrenceDayParameters extends RequestParameters
         $this->parameter('nthOfPeriod', $value);
         return $this;
     }
-
 }

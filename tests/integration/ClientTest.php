@@ -28,5 +28,4 @@ class ClientTest extends TestCase
         $session = $this->client->connect();
         $this->assertInstanceOf(Session::class, $session);
     }
-
 }

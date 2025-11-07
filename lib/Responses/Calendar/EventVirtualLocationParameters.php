@@ -32,5 +32,4 @@ class EventVirtualLocationParameters extends ResponseParameters
     {
         return $this->parameter('features');
     }
-
 }

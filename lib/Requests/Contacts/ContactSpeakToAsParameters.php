@@ -51,5 +51,4 @@ class ContactSpeakToAsParameters extends RequestParameters
         }
         return new ContactPronounsParameters($this->_parameters->pronouns->$id);
     }
-
 }

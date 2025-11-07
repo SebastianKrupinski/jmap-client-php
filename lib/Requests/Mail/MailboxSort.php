@@ -24,5 +24,4 @@ class MailboxSort extends RequestSort
         $this->condition('sortOrder', $value);
         return $this;
     }
-
 }

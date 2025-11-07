@@ -209,5 +209,4 @@ class EventCommonParameters extends RequestParameters
         }
         return new EventNotificationParameters($this->_parameters->alerts->$id);
     }
-
 }

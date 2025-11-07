@@ -59,5 +59,4 @@ class MailParse extends RequestParse
         $this->_command['maxBodyValueBytes'] = $value;
         return $this;
     }
-
 }

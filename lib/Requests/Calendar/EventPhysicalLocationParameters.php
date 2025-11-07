@@ -69,5 +69,4 @@ class EventPhysicalLocationParameters extends RequestParameters
         $this->parameter('relativeTo', $value);
         return $this;
     }
-
 }

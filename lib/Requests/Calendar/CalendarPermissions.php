@@ -60,5 +60,4 @@ class CalendarPermissions extends RequestPermissions
         $this->parameter('mayDelete', $value);
         return $this;
     }
-
 }

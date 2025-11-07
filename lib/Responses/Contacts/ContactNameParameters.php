@@ -47,5 +47,4 @@ class ContactNameParameters extends ResponseParameters
     {
         return $this->parameter('sortAs');
     }
-
 }

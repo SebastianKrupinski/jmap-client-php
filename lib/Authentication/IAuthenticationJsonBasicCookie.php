@@ -26,5 +26,4 @@ interface IAuthenticationJsonBasicCookie extends IAuthenticationJsonBasic
     public function getCookieStoreDeposit(): ?callable;
 
     public function setCookieStoreDeposit(callable $value): void;
-
 }

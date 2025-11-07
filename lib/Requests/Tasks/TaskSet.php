@@ -57,5 +57,4 @@ class TaskSet extends RequestSet
     {
         return parent::delete($id);
     }
-
 }

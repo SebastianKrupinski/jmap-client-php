@@ -52,5 +52,4 @@ class CalendarPermissions extends ResponsePermissions
     {
         return $this->parameter('mayDelete');
     }
-
 }

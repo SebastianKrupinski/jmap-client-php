@@ -45,5 +45,4 @@ class ContactNoteParameters extends RequestParameters
         }
         return new ContactNoteAuthorParameters($this->_parameters->author);
     }
-
 }

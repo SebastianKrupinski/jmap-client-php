@@ -27,5 +27,4 @@ class ResponsePermissions
     {
         return $this->_response;
     }
-
 }

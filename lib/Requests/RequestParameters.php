@@ -65,5 +65,4 @@ class RequestParameters implements RequestParametersInterface
         $this->_parameters = (object) $value;
         return $this;
     }
-
 }

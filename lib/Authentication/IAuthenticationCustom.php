@@ -12,5 +12,4 @@ namespace JmapClient\Authentication;
 interface IAuthenticationCustom extends IAuthentication
 {
     public function authenticate(): ?callable;
-
 }

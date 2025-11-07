@@ -70,5 +70,4 @@ class CalendarSet extends RequestSet
         $this->_command['onDestroyRemoveEvents'] = $value;
         return $this;
     }
-
 }

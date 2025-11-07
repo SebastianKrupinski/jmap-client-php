@@ -32,5 +32,4 @@ class AddressBookPermissions extends ResponsePermissions
     {
         return $this->parameter('mayAdmin');
     }
-
 }

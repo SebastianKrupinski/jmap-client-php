@@ -24,5 +24,4 @@ class EventNotificationTriggerUnknownParameters extends RequestParameters
         $this->parameter('@type', $value);
         return $this;
     }
-
 }

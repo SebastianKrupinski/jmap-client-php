@@ -54,5 +54,4 @@ class MailSort extends RequestSort
         $this->condition('hasKeyword', $value);
         return $this;
     }
-
 }

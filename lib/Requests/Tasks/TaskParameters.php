@@ -21,58 +21,41 @@ class TaskParameters extends RequestParameters
 
     public function __construct(&$parameters = null)
     {
-
         parent::__construct($parameters);
-
     }
 
     public function type(): string
     {
-
         return 'application/jstask+json;type=task';
-
     }
 
     /* Metadata Properties */
 
     public function in(string $value): static
     {
-
-
         $this->parameterStructured('taskListId', $value, true);
 
         return $this;
-
     }
 
     public function uid(string $value): static
     {
-
-
         $this->parameter('uid', $value);
 
         return $this;
-
     }
 
     public function created(DateTime|DateTimeImmutable $value): static
     {
-
-
         $this->parameter('created', $value->format(self::DATE_FORMAT_UTC));
 
         return $this;
-
     }
 
     public function updated(DateTime|DateTimeImmutable $value): static
     {
-
-
         $this->parameter('updated', $value->format(self::DATE_FORMAT_UTC));
 
         return $this;
-
     }
-
 }

@@ -63,5 +63,4 @@ class ContactAddressParameters extends ResponseParameters
     {
         return $this->parameter('phoneticSystem');
     }
-
 }

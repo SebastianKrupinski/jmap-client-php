@@ -56,5 +56,4 @@ class AddressBookParameters extends ResponseParameters
         }
         return new AddressBookPermissions((array) $rights);
     }
-
 }

@@ -47,5 +47,4 @@ class Basic implements IAuthenticationBasic
     {
         $this->Location = $value;
     }
-
 }

@@ -63,5 +63,4 @@ class MailboxSet extends RequestSet
         $this->_command['onDestroyRemoveEmails'] = $value;
         return $this;
     }
-
 }

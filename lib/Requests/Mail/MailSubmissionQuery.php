@@ -27,5 +27,4 @@ class MailSubmissionQuery extends RequestQuery
     {
         return parent::sort();
     }
-
 }

@@ -15,20 +15,15 @@ class RequestParse extends Request
 
     public function target(string ...$id): static
     {
-
         $this->_command['blobIds'] = $id;
 
         return $this;
-
     }
 
     public function property(string ...$name): static
     {
-
         $this->_command['properties'] = $name;
 
         return $this;
-
     }
-
 }

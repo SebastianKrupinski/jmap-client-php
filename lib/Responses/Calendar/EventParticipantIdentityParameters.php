@@ -52,5 +52,4 @@ class EventParticipantIdentityParameters extends ResponseParameters
     {
         return $this->parameter('isDefault');
     }
-
 }

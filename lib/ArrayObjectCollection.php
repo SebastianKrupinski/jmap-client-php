@@ -245,5 +245,4 @@ class ArrayObjectCollection extends ArrayObject implements Countable
         $keys = array_keys($this->getArrayCopy());
         return isset($keys[$this->_position]);
     }
-
 }

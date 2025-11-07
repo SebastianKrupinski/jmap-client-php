@@ -15,5 +15,4 @@ class ContactGet extends RequestGet
 {
     protected string $_space = 'urn:ietf:params:jmap:contacts';
     protected string $_class = 'ContactCard';
-
 }

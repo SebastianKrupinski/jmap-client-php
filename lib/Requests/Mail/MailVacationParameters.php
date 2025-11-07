@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Mail;
 
-use DateTime;
-use DateTimeImmutable;
 use DateTimeInterface;
 use JmapClient\Requests\RequestParameters;
 
@@ -25,7 +23,7 @@ class MailVacationParameters extends RequestParameters
      * Set whether vacation response is enabled
      *
      * @param bool $value Should vacation response be sent
-     * 
+     *
      * @return static
      */
     public function enabled(bool $value): static
@@ -37,7 +35,7 @@ class MailVacationParameters extends RequestParameters
      * Set the start date for vacation response
      *
      * @param DateTimeInterface $value UTC date-time string (null for immediate effect)
-     * 
+     *
      * @return static
      */
     public function start(DateTimeInterface $value): static
@@ -49,7 +47,7 @@ class MailVacationParameters extends RequestParameters
      * Set the end date for vacation response
      *
      * @param DateTimeInterface $value UTC date-time string (null for indefinite)
-     * 
+     *
      * @return static
      */
     public function end(DateTimeInterface $value): static
@@ -61,7 +59,7 @@ class MailVacationParameters extends RequestParameters
      * Set the subject line for vacation response
      *
      * @param string|null $value Subject text (null for server-generated)
-     * 
+     *
      * @return static
      */
     public function subject(string $value): static
@@ -73,7 +71,7 @@ class MailVacationParameters extends RequestParameters
      * Set the plaintext body for vacation response
      *
      * @param string|null $value Plaintext body content
-     * 
+     *
      * @return static
      */
     public function textBody(string $value): static
@@ -85,12 +83,11 @@ class MailVacationParameters extends RequestParameters
      * Set the HTML body for vacation response
      *
      * @param string|null $value HTML body content
-     * 
+     *
      * @return static
      */
     public function htmlBody(string $value): static
     {
         return $this->parameter('htmlBody', $value);
     }
-
 }

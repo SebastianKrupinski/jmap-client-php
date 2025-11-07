@@ -25,12 +25,11 @@ class MailVacationSet extends RequestSet
      *
      * @param string $id Vacation response identifier (should be "singleton")
      * @param MailVacationParameters|null $object Vacation parameters object
-     * 
+     *
      * @return MailVacationParameters The vacation parameters for method chaining
      */
     public function update(string $id, mixed $object = null): MailVacationParameters
     {
         return parent::update($id, $object);
     }
-
 }

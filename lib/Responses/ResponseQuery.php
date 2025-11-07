@@ -20,5 +20,4 @@ class ResponseQuery extends Response
     {
         return (isset($this->_response[self::RESPONSE_OBJECT]['ids'])) ? $this->_response[self::RESPONSE_OBJECT]['ids'] : [];
     }
-
 }

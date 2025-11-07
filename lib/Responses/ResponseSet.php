@@ -93,5 +93,4 @@ class ResponseSet extends Response
     {
         return $this->_response[self::RESPONSE_OBJECT]['notDestroyed'][$id] ?? null;
     }
-
 }

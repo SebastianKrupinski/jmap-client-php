@@ -47,7 +47,6 @@ class ContactNameParameters extends RequestParameters
                 $this->_parameters->components[array_key_last($this->_parameters->components)]
             );
         }
-
     }
 
     public function separator(string $value): static
@@ -69,5 +68,4 @@ class ContactNameParameters extends RequestParameters
         }
         return $this;
     }
-
 }

@@ -15,5 +15,4 @@ class CalendarGet extends RequestGet
 {
     protected string $_space = 'urn:ietf:params:jmap:calendars';
     protected string $_class = 'Calendar';
-
 }

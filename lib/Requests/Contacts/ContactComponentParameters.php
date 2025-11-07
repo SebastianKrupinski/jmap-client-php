@@ -24,5 +24,4 @@ class ContactComponentParameters extends RequestParameters
         $this->parameter('value', $value);
         return $this;
     }
-
 }

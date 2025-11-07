@@ -238,5 +238,4 @@ class ContactParameters extends RequestParameters
         }
         return new ContactMediaParameters($this->_parameters->media->$id);
     }
-
 }

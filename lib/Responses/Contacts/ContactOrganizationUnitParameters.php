@@ -22,5 +22,4 @@ class ContactOrganizationUnitParameters extends ResponseParameters
     {
         return $this->parameter('sortAs');
     }
-
 }

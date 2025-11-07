@@ -122,5 +122,4 @@ class EventRecurrenceRuleParameters extends RequestParameters
         $this->parameter('bySetPosition', $value);
         return $this;
     }
-
 }

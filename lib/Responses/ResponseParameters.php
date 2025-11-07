@@ -27,5 +27,4 @@ class ResponseParameters
     {
         return $this->_response;
     }
-
 }

@@ -58,5 +58,4 @@ class Cookie implements IAuthenticationCookie
     {
         $this->CookieDepositStore = $value;
     }
-
 }

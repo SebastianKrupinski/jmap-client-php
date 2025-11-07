@@ -40,5 +40,4 @@ class ResponseChanges extends Response
     {
         return (isset($this->_response[self::RESPONSE_OBJECT]['destroyed'])) ? $this->_response[self::RESPONSE_OBJECT]['destroyed'] : [];
     }
-
 }

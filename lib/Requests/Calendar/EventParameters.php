@@ -155,5 +155,4 @@ class EventParameters extends EventCommonParameters
         }
         return new EventMutationParameters($this->_parameters->recurrenceOverrides->$id);
     }
-
 }

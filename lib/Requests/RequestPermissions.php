@@ -17,43 +17,34 @@ class RequestPermissions
 
     public function __construct(&$parameters = null)
     {
-
         if ($parameters === null) {
             $this->_parameters = new stdClass();
         } else {
             $this->_parameters = & $parameters;
         }
-
     }
 
     public function bind(&$anchor): static
     {
-
         $anchor = $this->_parameters;
 
         return $this;
-
     }
 
     protected function parameter(string $name, mixed $value): static
     {
-
         $this->_parameters->$name = $value;
 
         return $this;
-
     }
 
     protected function parameterStructured(string $name, string $label, mixed $value): static
     {
-
         if (!is_object($this->_parameters->$name)) {
             $this->_parameters->$name = new stdClass();
         }
         $this->_parameters->$name->$label = $value;
 
         return $this;
-
     }
-
 }

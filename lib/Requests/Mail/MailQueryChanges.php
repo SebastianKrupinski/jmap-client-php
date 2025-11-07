@@ -33,5 +33,4 @@ class MailQueryChanges extends RequestQueryChanges
         $this->_command['collapseThreads'] = $value;
         return $this;
     }
-
 }

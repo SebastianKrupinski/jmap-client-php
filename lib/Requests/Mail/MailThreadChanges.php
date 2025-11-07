@@ -15,5 +15,4 @@ class MailThreadChanges extends RequestChanges
 {
     protected string $_space = 'urn:ietf:params:jmap:mail';
     protected string $_class = 'Thread';
-
 }

@@ -79,5 +79,4 @@ class MailPart
     {
         return $this->_subparts;
     }
-
 }

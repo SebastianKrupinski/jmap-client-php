@@ -15,5 +15,4 @@ class MailSubmissionChanges extends RequestChanges
 {
     protected string $_space = 'urn:ietf:params:jmap:submission';
     protected string $_class = 'EmailSubmission';
-
 }

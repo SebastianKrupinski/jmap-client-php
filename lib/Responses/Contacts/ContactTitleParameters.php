@@ -32,5 +32,4 @@ class ContactTitleParameters extends ResponseParameters
     {
         return $this->parameter('organizationId');
     }
-
 }

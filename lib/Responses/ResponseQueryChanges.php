@@ -35,5 +35,4 @@ class ResponseQueryChanges extends Response
     {
         return (isset($this->_response[self::RESPONSE_OBJECT]['removed'])) ? $this->_response[self::RESPONSE_OBJECT]['removed'] : [];
     }
-
 }

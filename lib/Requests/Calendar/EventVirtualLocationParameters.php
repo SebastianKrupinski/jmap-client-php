@@ -51,5 +51,4 @@ class EventVirtualLocationParameters extends RequestParameters
         $this->parameter('features', (object)$collection);
         return $this;
     }
-
 }

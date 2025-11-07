@@ -30,5 +30,4 @@ class MailSubmissionSort extends RequestSort
         $this->condition('threadId', $value);
         return $this;
     }
-
 }

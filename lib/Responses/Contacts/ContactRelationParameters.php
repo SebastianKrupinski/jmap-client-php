@@ -30,5 +30,4 @@ class ContactRelationParameters extends ResponseParameters
         $value = $this->parameter('relation');
         return $value ? array_keys((array)$value) : null;
     }
-
 }

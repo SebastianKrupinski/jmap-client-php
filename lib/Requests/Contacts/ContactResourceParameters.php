@@ -57,5 +57,4 @@ class ContactResourceParameters extends RequestParameters
         $this->parameter('label', $value);
         return $this;
     }
-
 }

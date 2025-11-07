@@ -37,5 +37,4 @@ class ContactResourceParameters extends ResponseParameters
     {
         return $this->parameter('label');
     }
-
 }

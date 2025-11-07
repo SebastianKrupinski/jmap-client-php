@@ -15,5 +15,4 @@ class MailboxGet extends RequestGet
 {
     protected string $_space = 'urn:ietf:params:jmap:mail';
     protected string $_class = 'Mailbox';
-
 }

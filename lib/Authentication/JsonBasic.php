@@ -47,5 +47,4 @@ class JsonBasic implements IAuthenticationJsonBasic
     {
         $this->Location = $value;
     }
-
 }

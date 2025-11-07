@@ -39,5 +39,4 @@ class MailboxQuery extends RequestQuery
         $this->_command['sortAsTree'] = $value;
         return $this;
     }
-
 }

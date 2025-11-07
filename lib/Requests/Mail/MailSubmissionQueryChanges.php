@@ -27,5 +27,4 @@ class MailSubmissionQueryChanges extends RequestQueryChanges
     {
         return parent::sort();
     }
-
 }

@@ -15,5 +15,4 @@ class MailSubmissionGet extends RequestGet
 {
     protected string $_space = 'urn:ietf:params:jmap:submission';
     protected string $_class = 'EmailSubmission';
-
 }

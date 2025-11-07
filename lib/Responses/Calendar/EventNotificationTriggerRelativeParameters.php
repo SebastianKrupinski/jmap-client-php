@@ -26,7 +26,6 @@ class EventNotificationTriggerRelativeParameters extends ResponseParameters
 
     public function offset(): DateInterval
     {
-
         $value = $this->parameter('offset');
         if (strpos($value, '-') === 0) {
             $value = new DateInterval(ltrim($value, '-'));
@@ -35,7 +34,5 @@ class EventNotificationTriggerRelativeParameters extends ResponseParameters
         } else {
             return new DateInterval($value);
         }
-
     }
-
 }

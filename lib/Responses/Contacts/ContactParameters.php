@@ -235,5 +235,4 @@ class ContactParameters extends ResponseParameters
         }
         return $collection;
     }
-
 }

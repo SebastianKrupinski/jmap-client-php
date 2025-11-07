@@ -59,5 +59,4 @@ class MailGet extends RequestGet
         $this->_command['maxBodyValueBytes'] = $value;
         return $this;
     }
-
 }

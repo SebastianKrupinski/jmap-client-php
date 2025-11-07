@@ -36,5 +36,4 @@ class ContactOrganizationParameters extends ResponseParameters
         }
         return $collection;
     }
-
 }

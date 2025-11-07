@@ -17,5 +17,4 @@ class EventNotificationTriggerUnknownParameters extends ResponseParameters
     {
         return 'unknown';
     }
-
 }

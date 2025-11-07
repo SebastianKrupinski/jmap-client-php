@@ -70,5 +70,4 @@ class AddressBookSet extends RequestSet
         $this->_command['onDestroyRemoveContents'] = $value;
         return $this;
     }
-
 }

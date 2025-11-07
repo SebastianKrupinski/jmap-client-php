@@ -23,11 +23,8 @@ class RequestFilter
 
     public function condition(string $property, mixed $value): static
     {
-
         $this->_filter->$property = $value;
 
         return $this;
-
     }
-
 }

@@ -27,5 +27,4 @@ class ContactQueryChanges extends RequestQueryChanges
     {
         return parent::sort();
     }
-
 }

@@ -61,5 +61,4 @@ class MailboxParameters extends ResponseParameters
     {
         return $this->parameter('unreadThreads');
     }
-
 }

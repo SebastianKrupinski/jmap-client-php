@@ -48,5 +48,4 @@ final class CapabilityCollection extends ArrayObjectCollection
         $capability = $this->capability($id);
         return $capability !== null;
     }
-
 }

@@ -32,7 +32,6 @@ final class Session
      */
     public function __construct(array $sessionData)
     {
-
         // Parse capabilities
         $this->_capabilities = new CapabilityCollection($sessionData['capabilities'] ?? []);
         // Parse accounts
@@ -46,7 +45,6 @@ final class Session
         $this->_uploadUrl = $sessionData['uploadUrl'] ?? '';
         $this->_eventUrl = $sessionData['eventSourceUrl'] ?? '';
         $this->_state = $sessionData['state'] ?? '';
-
     }
 
     /**
@@ -169,5 +167,4 @@ final class Session
     {
         return $this->_rawData[$property] ?? $default;
     }
-
 }

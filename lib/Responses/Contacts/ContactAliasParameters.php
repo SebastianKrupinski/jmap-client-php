@@ -33,5 +33,4 @@ class ContactAliasParameters extends ResponseParameters
     {
         return (int)$this->parameter('pref');
     }
-
 }

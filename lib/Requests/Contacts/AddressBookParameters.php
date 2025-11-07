@@ -52,5 +52,4 @@ class AddressBookParameters extends RequestParameters
         }
         return new AddressBookPermissions($this->_parameters->shareWith->$id);
     }
-
 }

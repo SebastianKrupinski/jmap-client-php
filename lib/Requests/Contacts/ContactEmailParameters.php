@@ -51,5 +51,4 @@ class ContactEmailParameters extends RequestParameters
         $this->parameter('label', $value);
         return $this;
     }
-
 }

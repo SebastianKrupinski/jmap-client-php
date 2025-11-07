@@ -22,5 +22,4 @@ interface IAuthenticationBasic extends IAuthentication
     public function getLocation(): ?string;
 
     public function setLocation(string $value): void;
-
 }

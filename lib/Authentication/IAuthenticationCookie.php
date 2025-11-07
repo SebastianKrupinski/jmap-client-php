@@ -26,5 +26,4 @@ interface IAuthenticationCookie extends IAuthentication
     public function getCookieStoreDeposit(): ?callable;
 
     public function setCookieStoreDeposit(callable $value): void;
-
 }
