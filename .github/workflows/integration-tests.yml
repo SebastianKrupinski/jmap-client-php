@@ -1,0 +1,55 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ["8.2", "8.5"]
+
+    name: PHP ${{ matrix.php-version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Stalwart Mail Server
+        uses: SebastianKrupinski/action-stalwart-install@v1.0.1
+        with:
+          admin_password: Password1234
+          domains: |
+            [
+              {"name": "stalwart.local", "description": "Test domain"}
+            ]
+          users: |
+            [
+              {
+                "email": "user1@stalwart.local",
+                "password": "Password1234",
+                "name": "Test User 1"
+              }
+            ]
+
+      - name: Add stalwart.local to /etc/hosts
+        run: echo "127.0.0.1 stalwart.local" | sudo tee -a /etc/hosts
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: json, curl
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Run integration tests
+        run: composer test:integration
