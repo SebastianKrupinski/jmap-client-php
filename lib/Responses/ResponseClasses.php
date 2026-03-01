@@ -16,6 +16,7 @@ class ResponseClasses
         'Blob' => 'JmapClient\Responses\Blob\BlobParameters',
         'Mailbox' => 'JmapClient\Responses\Mail\MailboxParameters',
         'Identity' => 'JmapClient\Responses\Mail\MailIdentityParameters',
+        'VacationResponse' => 'JmapClient\Responses\Mail\MailVacationParameters',
         'Email' => 'JmapClient\Responses\Mail\MailParameters',
         'EmailSubmission' => 'JmapClient\Responses\Mail\MailSubmissionParameters',
         'Calendar' => 'JmapClient\Responses\Calendar\CalendarParameters',
@@ -37,6 +38,9 @@ class ResponseClasses
         'Identity/get' => 'JmapClient\Responses\Mail\MailIdentityGet',
         'Identity/set' => 'JmapClient\Responses\Mail\MailIdentitySet',
         'Identity/changes' => 'JmapClient\Responses\Mail\MailIdentityChanges',
+        // Mail Vacation
+        'VacationResponse/get' => 'JmapClient\Responses\Mail\MailVacationGet',
+        'VacationResponse/set' => 'JmapClient\Responses\Mail\MailVacationSet',
         // Mail Collections
         'Mailbox/get' => 'JmapClient\Responses\Mail\MailboxGet',
         'Mailbox/set' => 'JmapClient\Responses\Mail\MailboxSet',

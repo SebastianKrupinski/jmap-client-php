@@ -65,12 +65,8 @@ class MailIdentityTest extends TestCase
                  str_starts_with($identity->name(), 'To Delete Identity '))) {
                 $rq = new MailIdentitySetRequest($this->account->id());
                 $rq->delete($identity->id());
-                $commands[] = $rq;
+                $this->client->perform([$rq]);
             }
-        }
-        // transceive
-        if (!empty($commands)) {
-            //$this->client->perform($commands);
         }
     }
 

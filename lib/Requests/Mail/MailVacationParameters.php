@@ -62,7 +62,7 @@ class MailVacationParameters extends RequestParameters
      *
      * @return static
      */
-    public function subject(string $value): static
+    public function subject(string|null $value): static
     {
         return $this->parameter('subject', $value);
     }
@@ -74,7 +74,7 @@ class MailVacationParameters extends RequestParameters
      *
      * @return static
      */
-    public function textBody(string $value): static
+    public function textBody(string|null $value): static
     {
         return $this->parameter('textBody', $value);
     }
@@ -86,7 +86,7 @@ class MailVacationParameters extends RequestParameters
      *
      * @return static
      */
-    public function htmlBody(string $value): static
+    public function htmlBody(string|null $value): static
     {
         return $this->parameter('htmlBody', $value);
     }
