@@ -24,22 +24,21 @@ jobs:
       - name: Install Stalwart Mail Server
         uses: SebastianKrupinski/action-stalwart-install@v1.0.1
         with:
-          admin_password: Password1234
           domains: |
             [
-              {"name": "stalwart.local", "description": "Test domain"}
+              {"name": "example1.com", "description": "Test domain"}
             ]
           users: |
             [
               {
-                "email": "user1@stalwart.local",
+                "email": "user1@example1.com",
                 "password": "Password1234",
                 "name": "Test User 1"
               }
             ]
 
-      - name: Add stalwart.local to /etc/hosts
-        run: echo "127.0.0.1 stalwart.local" | sudo tee -a /etc/hosts
+      - name: Add example1.com to /etc/hosts
+        run: echo "127.0.0.1 example1.com" | sudo tee -a /etc/hosts
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2

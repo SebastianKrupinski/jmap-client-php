@@ -29,6 +29,16 @@ class ClientFactory
             $service['identifier'],
             $service['secret']
         ));
+        $client->configureTransportLogState(true);
+        $client->configureTransportLogLocation('/tmp/jmap_client.log');
         return $client;
+    }
+
+    public static function identifier(string $serviceName): string
+    {
+        $servicesFile = __DIR__ . '/../resources/services.json';
+        $servicesData = file_get_contents($servicesFile);
+        $servicesData = json_decode($servicesData, true);
+        return $servicesData[$serviceName]['identifier'];
     }
 }

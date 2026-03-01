@@ -18,6 +18,12 @@ class MailIdentityParameters extends RequestParameters
         parent::__construct($parameters);
     }
 
+    public function address(string $value): static
+    {
+        $this->parameter('email', $value);
+        return $this;
+    }
+
     public function name(string $value): static
     {
         $this->parameter('name', $value);
