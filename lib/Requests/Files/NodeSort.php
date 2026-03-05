@@ -13,7 +13,6 @@ use JmapClient\Requests\RequestSort;
 
 class NodeSort extends RequestSort
 {
-    
     public function label(bool $value = true): static
     {
         $this->condition('name', $value, null, null);

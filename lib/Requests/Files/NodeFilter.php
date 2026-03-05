@@ -13,7 +13,6 @@ use JmapClient\Requests\RequestFilter;
 
 class NodeFilter extends RequestFilter
 {
-    
     public function isTopLevel(bool $value): static
     {
         $this->condition('isTopLevel', $value);

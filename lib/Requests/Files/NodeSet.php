@@ -30,7 +30,6 @@ class NodeSet extends RequestSet
         return parent::update($id, $object);
     }
 
-
     public function delete(string $id): static
     {
         return parent::delete($id);
