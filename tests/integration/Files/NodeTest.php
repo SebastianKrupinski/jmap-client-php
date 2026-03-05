@@ -83,6 +83,100 @@ class NodeTest extends TestCase
         $this->assertArrayHasKey('id', $result);
     }
 
+    public function testNodeSetCreateWithTextContent(): void
+    {
+        // upload plain text content via the standard JMAP upload endpoint
+        $content = 'Hello, JMAP!';
+        $uploadResponse = json_decode($this->client->upload($this->account->id(), 'text/plain', $content), true);
+        $this->assertArrayHasKey('blobId', $uploadResponse, 'Upload did not return a blobId');
+        $blobId = $uploadResponse['blobId'];
+
+        // create a file node pointing to the blob
+        $nodeId = uniqid();
+        $r1 = new NodeSetRequest($this->account->id());
+        $p1 = $r1->create($nodeId);
+        $p1->label('Test File Node ' . time());
+        $p1->type('text/plain');
+        $p1->blob($blobId);
+
+        // transceive
+        $bundle = $this->client->perform([$r1]);
+
+        // verify node was created
+        $this->assertEquals(1, $bundle->tally());
+        $this->assertInstanceOf(NodeSetResponse::class, $bundle->first());
+        $nodeResult = $bundle->first()->createSuccess($nodeId);
+        $this->assertNotNull($nodeResult);
+        $this->assertArrayHasKey('id', $nodeResult);
+    }
+
+    public function testNodeSetCreateWithBinaryContent(): void
+    {
+        // upload raw binary content via the standard JMAP upload endpoint
+        $content = "\x00\x01\x02\x03binary data\xFF\xFE";
+        $uploadResponse = json_decode($this->client->upload($this->account->id(), 'application/octet-stream', $content), true);
+        $this->assertArrayHasKey('blobId', $uploadResponse, 'Upload did not return a blobId');
+        $blobId = $uploadResponse['blobId'];
+
+        // create a file node pointing to the blob
+        $nodeId = uniqid();
+        $r1 = new NodeSetRequest($this->account->id());
+        $p1 = $r1->create($nodeId);
+        $p1->label('Test File Node ' . time());
+        $p1->type('application/octet-stream');
+        $p1->blob($blobId);
+
+        // transceive
+        $bundle = $this->client->perform([$r1]);
+
+        // verify node was created
+        $this->assertEquals(1, $bundle->tally());
+        $this->assertInstanceOf(NodeSetResponse::class, $bundle->first());
+        $nodeResult = $bundle->first()->createSuccess($nodeId);
+        $this->assertNotNull($nodeResult);
+        $this->assertArrayHasKey('id', $nodeResult);
+    }
+
+    public function testNodeGetWithBlobContent(): void
+    {
+        // upload plain text content via the standard JMAP upload endpoint
+        $content = 'Hello, JMAP!';
+        $uploadResponse = json_decode($this->client->upload($this->account->id(), 'text/plain', $content), true);
+        $blobId = $uploadResponse['blobId'];
+
+        // create a file node pointing to the blob
+        $nodeId = uniqid();
+        $nodeLabel = 'Test File Node ' . time();
+        $r1 = new NodeSetRequest($this->account->id());
+        $p1 = $r1->create($nodeId);
+        $p1->label($nodeLabel);
+        $p1->type('text/plain');
+        $p1->blob($blobId);
+
+        // transceive
+        $bundle = $this->client->perform([$r1]);
+        $nodeId = $bundle->first()->createSuccess($nodeId)['id'];
+
+        // fetch the node and verify blob properties — request non-default fields explicitly
+        $r2 = new NodeGetRequest($this->account->id());
+        $r2->target($nodeId);
+        $r2->property('id', 'name', 'blobId', 'type', 'size');
+
+        // transceive
+        $bundle = $this->client->perform([$r2]);
+
+        // verify get response includes blob metadata
+        $this->assertEquals(1, $bundle->tally());
+        $this->assertInstanceOf(NodeGetResponse::class, $bundle->first());
+        $result = $bundle->first()->object(0);
+        $this->assertInstanceOf(NodeParameters::class, $result);
+        $this->assertEquals($nodeId, $result->id());
+        $this->assertEquals($nodeLabel, $result->label());
+        $this->assertNotEmpty($result->blob());
+        $this->assertEquals('text/plain', $result->type());
+        $this->assertGreaterThan(0, $result->size());
+    }
+
     public function testNodeSetUpdate(): void
     {
         // construct create request
@@ -112,6 +206,44 @@ class NodeTest extends TestCase
         $result = $bundle->first()->updateSuccess($nodeId);
         $this->assertNotNull($result);
         $this->assertArrayHasKey('id', $result);
+    }
+
+    public function testNodeSetUpdateContent(): void
+    {
+        // upload initial content via the standard JMAP upload endpoint
+        $initialContent = 'Initial content';
+        $uploadResponse = json_decode($this->client->upload($this->account->id(), 'text/plain', $initialContent), true);
+        $initialBlobId = $uploadResponse['blobId'];
+
+        // create file node with initial blob
+        $nodeId = uniqid();
+        $r1 = new NodeSetRequest($this->account->id());
+        $p1 = $r1->create($nodeId);
+        $p1->label('Test File Node ' . time());
+        $p1->type('text/plain');
+        $p1->blob($initialBlobId);
+
+        // transceive
+        $bundle = $this->client->perform([$r1]);
+        $nodeId = $bundle->first()->createSuccess($nodeId)['id'];
+
+        // upload replacement content
+        $updatedContent = 'Updated content';
+        $uploadResponse = json_decode($this->client->upload($this->account->id(), 'text/plain', $updatedContent), true);
+        $updatedBlobId = $uploadResponse['blobId'];
+
+        // update the node to point to the new blob
+        $r3 = new NodeSetRequest($this->account->id());
+        $p3 = $r3->update($nodeId);
+        $p3->blob($updatedBlobId);
+
+        // transceive
+        $bundle = $this->client->perform([$r3]);
+
+        // verify update response
+        $this->assertEquals(1, $bundle->tally());
+        $this->assertInstanceOf(NodeSetResponse::class, $bundle->first());
+        $this->assertNotNull($bundle->first()->updateSuccess($nodeId));
     }
 
     public function testNodeSetDelete(): void
