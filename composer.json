@@ -34,8 +34,8 @@
         "phpunit/phpunit": "^11.0"
     },
     "scripts": {
-        "test:unit": "./vendor/bin/phpunit --testsuite 'Unit Tests' --testdox",
-        "test:integration": "./vendor/bin/phpunit --testsuite 'Integration Tests' --testdox",
+        "test:unit": "./vendor/bin/phpunit --testsuite 'Unit Tests'",
+        "test:integration": "./vendor/bin/phpunit --testsuite 'Integration Tests'",
         "cs:check": "php-cs-fixer fix --dry-run --diff",
         "cs:fix": "php-cs-fixer fix"
     }

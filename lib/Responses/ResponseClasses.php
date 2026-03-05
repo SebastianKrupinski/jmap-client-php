@@ -22,6 +22,7 @@ class ResponseClasses
         'CalendarEvent' => 'JmapClient\Responses\Calendar\EventParameters',
         'AddressBook' => 'JmapClient\Responses\Contacts\AddressBookParameters',
         'ContactCard' => 'JmapClient\Responses\Contacts\ContactParameters',
+        'FileNode' => 'JmapClient\Responses\Files\NodeParameters',
     ];
 
     private static array $commands = [
@@ -89,6 +90,12 @@ class ResponseClasses
         'Task/changes' => 'JmapClient\Responses\Tasks\TaskChanges',
         'Task/query' => 'JmapClient\Responses\Tasks\TaskQuery',
         'Task/queryChanges' => 'JmapClient\Responses\Tasks\TaskQueryChanges',
+        // FileNode
+        'FileNode/get' => 'JmapClient\Responses\Files\NodeGet',
+        'FileNode/set' => 'JmapClient\Responses\Files\NodeSet',
+        'FileNode/changes' => 'JmapClient\Responses\Files\NodeChanges',
+        'FileNode/query' => 'JmapClient\Responses\Files\NodeQuery',
+        'FileNode/queryChanges' => 'JmapClient\Responses\Files\NodeQueryChanges',
     ];
 
     public static function listCommand(): array

@@ -1,7 +1,7 @@
 {
     "service1": {
         "protocol": "http",
-        "host": "example1.com",
+        "host": "localhost",
         "port": 8080,
         "security": 0,
         "authentication": "basic",

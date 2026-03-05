@@ -4,6 +4,7 @@
          bootstrap="tests/bootstrap.php"
          colors="true"
          verbose="true"
+         testdox="true"
          stopOnFailure="false">
     <testsuites>
         <testsuite name="Unit Tests">
