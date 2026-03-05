@@ -13,7 +13,6 @@ use JmapClient\Requests\RequestPermissions;
 
 class NodePermissions extends RequestPermissions
 {
-    
     public function read(bool $value): static
     {
         $this->parameter('mayRead', $value);
