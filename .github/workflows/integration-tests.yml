@@ -1,14 +1,18 @@
 name: Integration Tests
 
 on:
-  push:
-    branches: ["main"]
   pull_request:
     branches: ["main"]
 
 jobs:
   integration:
     runs-on: ubuntu-latest
+
+    services:
+      stalwart:
+        image: stalwartlabs/stalwart:v0.15.5
+        ports:
+          - 8080:8080
 
     strategy:
       fail-fast: false
@@ -21,24 +25,52 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Stalwart Mail Server
-        uses: SebastianKrupinski/action-stalwart-install@v1.0.1
-        with:
-          domains: |
-            [
-              {"name": "example1.com", "description": "Test domain"}
-            ]
-          users: |
-            [
-              {
-                "email": "user1@example1.com",
-                "password": "Password1234",
-                "name": "Test User 1"
-              }
-            ]
+      - name: Wait for Stalwart and capture admin password
+        id: stalwart
+        run: |
+          container_id='${{ job.services.stalwart.id }}'
+          service_hostname=$(docker inspect -f '{{ .Config.Hostname }}' "$container_id")
 
-      - name: Add example1.com to /etc/hosts
-        run: echo "127.0.0.1 example1.com" | sudo tee -a /etc/hosts
+          for attempt in $(seq 1 30); do
+            if curl -sf -m 5 http://localhost:8080/login >/dev/null 2>&1; then
+              break
+            fi
+
+            if [ "$attempt" -eq 30 ]; then
+              echo "Stalwart did not become ready in time." >&2
+              docker logs "$container_id" >&2
+              exit 1
+            fi
+
+            sleep 2
+          done
+
+          admin_password=$(docker logs "$container_id" 2>&1 | sed -n "s/.*with password '\([^']*\)'.*/\1/p" | tail -n 1)
+
+          if [ -z "$admin_password" ]; then
+            echo "Unable to extract Stalwart admin password from service logs." >&2
+            docker logs "$container_id" >&2
+            exit 1
+          fi
+
+          echo "admin_password=$admin_password" >> "$GITHUB_OUTPUT"
+          echo "service_hostname=$service_hostname" >> "$GITHUB_OUTPUT"
+
+      - name: Create domain and account in Stalwart
+        run: |
+          curl --retry 10 --retry-delay 3 --retry-connrefused -sf -X POST http://localhost:8080/api/principal \
+            -u "admin:${{ steps.stalwart.outputs.admin_password }}" \
+            -H 'Content-Type: application/json' \
+            -d '{"type":"domain","name":"example1.com","description":"Test domain"}'
+          curl -sf -X POST http://localhost:8080/api/principal \
+            -u "admin:${{ steps.stalwart.outputs.admin_password }}" \
+            -H 'Content-Type: application/json' \
+            -d '{"type":"individual","name":"user1@example1.com","secrets":["Password1234"],"emails":["user1@example1.com"],"roles":["user"],"description":"Test User 1"}'
+
+      - name: Add test hostnames to /etc/hosts
+        run: |
+          echo "127.0.0.1 example1.com" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 ${{ steps.stalwart.outputs.service_hostname }}" | sudo tee -a /etc/hosts
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
