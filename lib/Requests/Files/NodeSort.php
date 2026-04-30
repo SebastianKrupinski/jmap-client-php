@@ -13,15 +13,9 @@ use JmapClient\Requests\RequestSort;
 
 class NodeSort extends RequestSort
 {
-    public function label(bool $value = true): static
+    public function type(bool $value = true): static
     {
-        $this->condition('name', $value, null, null);
-        return $this;
-    }
-
-    public function tree(bool $value = true): static
-    {
-        $this->condition('tree', $value, null, null);
+        $this->condition('type', $value, null, null);
         return $this;
     }
 
@@ -31,33 +25,9 @@ class NodeSort extends RequestSort
         return $this;
     }
 
-    public function type(bool $value = true): static
+    public function tree(bool $value = true): static
     {
-        $this->condition('type', $value, null, null);
-        return $this;
-    }
-
-    public function size(bool $value = true): static
-    {
-        $this->condition('size', $value, null, null);
-        return $this;
-    }
-
-    public function created(bool $value = true): static
-    {
-        $this->condition('created', $value, null, null);
-        return $this;
-    }
-
-    public function modified(bool $value = true): static
-    {
-        $this->condition('modified', $value, null, null);
-        return $this;
-    }
-
-    public function accessed(bool $value = true): static
-    {
-        $this->condition('accessed', $value, null, null);
+        $this->condition('tree', $value, null, null);
         return $this;
     }
 }
