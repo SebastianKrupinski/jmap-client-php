@@ -39,7 +39,7 @@ class MailSet extends RequestSet
      * @param MailParameters|null $object Email parameters object
      * @return MailParameters The email parameters for method chaining
      */
-    public function update(string $id, mixed $object = null): MailParameters|stdClass
+    public function update(string $id, mixed $object = null): MailParameters
     {
         return parent::update($id, $object);
     }

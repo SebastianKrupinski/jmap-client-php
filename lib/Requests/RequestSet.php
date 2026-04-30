@@ -66,13 +66,13 @@ class RequestSet extends Request implements RequestSetInterface
      *
      * @return TParameters The parameters object for method chaining
      */
-    protected function update(string $id, RequestParametersInterface|array|null $object = null): RequestParametersInterface|stdClass
+    protected function update(string $id, RequestParametersInterface|null $object = null): RequestParametersInterface
     {
         // get the class to use (override or default)
         $class = RequestClasses::getParameter($this->_class . '.object') ?? $this->_parametersClass;
 
         // validate object type if provided
-        if ($object !== null && !($object instanceof $class) && !is_array($object)) {
+        if ($object !== null && !($object instanceof $class)) {
             throw new InvalidParameterTypeException($class, $object, 'object');
         }
 
@@ -80,18 +80,10 @@ class RequestSet extends Request implements RequestSetInterface
         if (!isset($this->_command['update'][$id]) && $object === null) {
             $this->_command['update'][$id] = new \stdClass();
         } elseif ($object !== null) {
-            if ($object instanceof $class) {
-                $object->bind($this->_command['update'][$id]);
-            } elseif (is_array($object)) {
-                $this->_command['update'][$id] = (object)$object;
-            }
+            $object->bind($this->_command['update'][$id]);
         }
         // return instance of the specific parameters class
-        if ($object instanceof $class) {
-            $instance = new $class($this->_command['update'][$id]);
-        } else {
-            $instance = $this->_command['update'][$id];
-        }
+        $instance = new $class($this->_command['update'][$id]);
 
         return $instance;
     }
