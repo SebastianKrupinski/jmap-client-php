@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests;
 
 use JmapClient\Requests\Interfaces\RequestParametersInterface;
+use JmapClient\Requests\Interfaces\RequestPatchInterface;
 use stdClass;
 
 class RequestParameters implements RequestParametersInterface
@@ -32,6 +33,50 @@ class RequestParameters implements RequestParametersInterface
     {
         $anchor = $this->_parameters;
         return $this;
+    }
+
+    public function patch(): RequestPatchInterface
+    {
+        $flatten = function (object|array $parameters, string $prefix = '') use (&$flatten): array {
+            $patch = [];
+
+            $entries = is_object($parameters) ? get_object_vars($parameters) : $parameters;
+
+            foreach ($entries as $name => $value) {
+                $path = $prefix === '' ? self::escapePatchSegment($name) : $prefix . '/' . self::escapePatchSegment($name);
+
+                if (is_object($value)) {
+                    $entries = $flatten($value, $path);
+                    if ($entries === []) {
+                        $patch[$path] = new stdClass();
+                        continue;
+                    }
+
+                    $patch = array_merge($patch, $entries);
+                    continue;
+                }
+
+                if (is_array($value) && array_is_list($value) === false) {
+                    $entries = $flatten($value, $path);
+                    if ($entries === []) {
+                        $patch[$path] = new stdClass();
+                        continue;
+                    }
+
+                    $patch = array_merge($patch, $entries);
+                    continue;
+                }
+
+                $patch[$path] = $value;
+            }
+
+            return $patch;
+        };
+
+        $patch = new RequestPatch();
+        $patch->parametersRaw($flatten($this->_parameters));
+
+        return $patch;
     }
 
     protected function parameter(string $name, mixed $value): static
@@ -64,5 +109,10 @@ class RequestParameters implements RequestParametersInterface
     {
         $this->_parameters = (object) $value;
         return $this;
+    }
+
+    private static function escapePatchSegment(string $segment): string
+    {
+        return str_replace(['~', '/'], ['~0', '~1'], $segment);
     }
 }

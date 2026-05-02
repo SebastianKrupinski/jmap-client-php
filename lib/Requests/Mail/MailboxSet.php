@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Mail;
 
 use JmapClient\Requests\RequestSet;
+use JmapClient\Requests\Interfaces\RequestPatchInterface;
 
 /**
  * @extends RequestSet<MailboxParameters>
@@ -44,6 +45,18 @@ class MailboxSet extends RequestSet
     public function update(string $id, mixed $object = null): MailboxParameters
     {
         return parent::update($id, $object);
+    }
+    
+    /**
+     * Patch a mailbox
+     *
+     * @param string $id Mailbox identifier
+     * @param MailboxParameters|RequestPatchInterface|null $object Optional structured or patch object
+     * @return RequestPatchInterface The patch object for method chaining
+     */
+    public function patch(string $id, mixed $object = null): RequestPatchInterface
+    {
+        return parent::patch($id, $object);
     }
 
     /**
