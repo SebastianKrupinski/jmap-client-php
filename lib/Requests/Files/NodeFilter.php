@@ -13,7 +13,6 @@ use JmapClient\Requests\RequestFilter;
 
 class NodeFilter extends RequestFilter
 {
-
     // Hierarchy Filters
 
     public function in(string | null $value): static
@@ -151,5 +150,4 @@ class NodeFilter extends RequestFilter
         $this->condition('maxSize', $value);
         return $this;
     }
-
 }
