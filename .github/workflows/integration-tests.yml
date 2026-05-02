@@ -81,6 +81,6 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
-
+        
       - name: Run integration tests
         run: composer test:integration

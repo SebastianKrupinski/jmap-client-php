@@ -27,52 +27,57 @@ class MailPart
 
     public function id(): string|null
     {
-        return $this->_part['partId'];
+        return $this->_part['partId'] ?? null;
     }
 
     public function blob(): string|null
     {
-        return $this->_part['blobId'];
-    }
-
-    public function disposition(): string|null
-    {
-        return $this->_part['disposition'];
-    }
-
-    public function type(): string|null
-    {
-        return $this->_part['type'];
-    }
-
-    public function charset(): string|null
-    {
-        return $this->_part['charset'];
-    }
-
-    public function name(): string|null
-    {
-        return $this->_part['name'];
-    }
-
-    public function location(): string|null
-    {
-        return $this->_part['location'];
-    }
-
-    public function cid(): string|null
-    {
-        return $this->_part['cid'];
+        return $this->_part['blobId'] ?? null;
     }
 
     public function size(): int|null
     {
-        return $this->_part['size'];
+        return $this->_part['size'] ?? null;
     }
 
-    public function imageSize(): int|null
+    public function headers(): array|null
     {
-        return $this->_part['imageSize'];
+        return $this->_part['headers'] ?? null;
+    }
+
+    public function name(): string|null
+    {
+        return $this->_part['name'] ?? null;
+    }
+
+    public function type(): string|null
+    {
+        return $this->_part['type'] ?? null;
+    }
+
+    public function disposition(): string|null
+    {
+        return $this->_part['disposition'] ?? null;
+    }
+
+    public function cid(): string|null
+    {
+        return $this->_part['cid'] ?? null;
+    }
+
+    public function charset(): string|null
+    {
+        return $this->_part['charset'] ?? null;
+    }
+
+    public function language(): array|null
+    {
+        return $this->_part['language'] ?? null;
+    }
+
+    public function location(): string|null
+    {
+        return $this->_part['location'] ?? null;
     }
 
     public function parts(): array|null
