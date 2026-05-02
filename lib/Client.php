@@ -43,10 +43,10 @@ class Client
     public const TRANSPORT_VERSION_1_1 = '1.1';
     public const TRANSPORT_VERSION_2 = '2.0';
     // Transport Modes
-    public const TRANSPORT_MODE_STANDARD = 'http://';
-    public const TRANSPORT_MODE_SECURE = 'https://';
+    public const TRANSPORT_MODE_STANDARD = 'http';
+    public const TRANSPORT_MODE_SECURE = 'https';
     // Transport Mode
-    protected string $_transportMode = self::TRANSPORT_MODE_SECURE;
+    protected string $_transportMode = self::TRANSPORT_MODE_SECURE . '://';
     // Transport Headers
     protected array $_transportHeaders = [
         'User-Agent' => 'PHP-JMAP-Client/1.0 (1.0; x64)',
@@ -177,8 +177,8 @@ class Client
     public function configureTransportMode(string $value): void
     {
         $this->_transportMode = match ($value) {
-            'http' => self::TRANSPORT_MODE_STANDARD,
-            'https' => self::TRANSPORT_MODE_SECURE,
+            self::TRANSPORT_MODE_STANDARD => self::TRANSPORT_MODE_STANDARD . '://',
+            self::TRANSPORT_MODE_SECURE => self::TRANSPORT_MODE_SECURE . '://',
             default => throw new InvalidArgumentException('Invalid transport mode'),
         };
     }
