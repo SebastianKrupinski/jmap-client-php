@@ -14,7 +14,7 @@ jobs:
       matrix:
         php-version: ["8.2", "8.5"]
 
-    name: Unit PHP ${{ matrix.php-version }}
+    name: PHP ${{ matrix.php-version }}
 
     steps:
       - name: Checkout repository
@@ -32,3 +32,13 @@ jobs:
 
       - name: Run unit tests
         run: composer test:unit
+
+  unit-test:
+    runs-on: ubuntu-latest
+    needs: unit
+
+    name: Unit Test
+
+    steps:
+      - name: Unit test matrix passed
+        run: echo "All unit test matrix jobs passed."

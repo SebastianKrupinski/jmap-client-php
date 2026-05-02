@@ -20,7 +20,7 @@ jobs:
       matrix:
         php-version: ["8.2", "8.5"]
 
-    name: Integration PHP ${{ matrix.php-version }}
+    name: PHP ${{ matrix.php-version }}
 
     steps:
       - name: Checkout repository
@@ -85,3 +85,13 @@ jobs:
         
       - name: Run integration tests
         run: composer test:integration
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: integration
+
+    name: Integration Test
+
+    steps:
+      - name: Integration test matrix passed
+        run: echo "All integration test matrix jobs passed."
