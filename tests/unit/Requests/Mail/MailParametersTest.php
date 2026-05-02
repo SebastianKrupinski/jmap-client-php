@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Requests\Mail;
 
-use JmapClient\Requests\Mail\MailPart;
 use JmapClient\Requests\Mail\MailParameters;
+use JmapClient\Requests\Mail\MailPart;
 use PHPUnit\Framework\TestCase;
 
 class MailParametersTest extends TestCase

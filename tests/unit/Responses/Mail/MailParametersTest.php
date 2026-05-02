@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Responses\Mail;
 
-use JmapClient\Responses\Mail\MailPart;
 use JmapClient\Responses\Mail\MailParameters;
+use JmapClient\Responses\Mail\MailPart;
 use PHPUnit\Framework\TestCase;
 
 class MailParametersTest extends TestCase
@@ -252,7 +252,7 @@ class MailParametersTest extends TestCase
         $this->assertSame($response['bodyValues']['part-1.1']['value'], $mail->bodyText());
     }
 
-        public function testBodyTextWalksStructureWhenBodyListsAreMissing(): void
+    public function testBodyTextWalksStructureWhenBodyListsAreMissing(): void
     {
         $response = $this->response;
         unset($response['htmlBody'], $response['textBody']);

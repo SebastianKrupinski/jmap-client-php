@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Contacts;
 
-use JmapClient\Requests\RequestSet;
 use JmapClient\Requests\Interfaces\RequestPatchInterface;
+use JmapClient\Requests\RequestSet;
 
 /**
  * @extends RequestSet<AddressBookParameters>
