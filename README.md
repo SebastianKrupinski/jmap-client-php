@@ -10,13 +10,13 @@ The library is built with PHP 8.0+ strict typing in mind, ensuring robust type s
 
 ## Features
 
-- **Full JMAP Protocol Support** - Complete implementation of the JMAP specification (Still in progress)
+- **Broad JMAP Coverage** - Request and response types for core, mail, contacts, calendar, files, and tasks workflows
 - **Type-Safe** - Built with PHP 8.0+ strict types for better code quality and IDE support
-- **Multiple Authentication Methods** - Support for Basic Auth, Bearer Token, JSON-RPC, and custom authentication schemes
-- **Session Management** - Automatic session handling and capability negotiation
-- **Request/Response Handling** - Robust request bundling and response parsing
-- **Cookie Support** - Built-in cookie jar management for stateful sessions
-- **Error Handling** - Comprehensive exception handling
+- **Multiple Authentication Methods** - Support for Basic auth, bearer tokens, JSON login flows, cookie-backed sessions, and custom authentication schemes
+- **Session Management** - Automatic session discovery, account lookup, and capability negotiation
+- **Request Bundling** - Compose related JMAP method calls into a single round trip
+- **Transport Diagnostics** - Built-in request/response retention and NDJSON-style transport logging for debugging
+- **Error Handling** - Comprehensive transport and JMAP-level error handling
 
 ## Requirements
 
@@ -61,7 +61,7 @@ use JmapClient\Authentication\Basic;
 $client = new Client();
 
 // Configure transport
-$client->configureTransportMode('https://');
+$client->configureTransportMode('https');
 $client->setHost('jmap.example.com:443');
 $client->configureTransportVerification(true);
 
@@ -74,7 +74,7 @@ $session = $client->connect();
 echo "Connected to: " . $session->apiUrl();
 
 // Access the default account for core operations
-$account = $client->sessionAccountDefault(null, true);
+$account = $client->sessionAccountDefault();
 if ($account !== null) {
     echo "Account ID: " . $account->id();
 }
@@ -91,7 +91,7 @@ use JmapClient\Client;
 use JmapClient\Authentication\Basic;
 
 $client = new Client();
-$client->configureTransportMode('https://');
+$client->configureTransportMode('https');
 $client->setHost('jmap.example.com:443');
 $client->configureTransportVerification(true);
 
@@ -110,7 +110,7 @@ use JmapClient\Client;
 use JmapClient\Authentication\Bearer;
 
 $client = new Client();
-$client->configureTransportMode('https://');
+$client->configureTransportMode('https');
 $client->setHost('jmap.example.com:443');
 $client->configureTransportVerification(true);
 
@@ -119,6 +119,111 @@ $auth = new Bearer('user@example.com', 'your-access-token', 1735689600);
 $client->setAuthentication($auth);
 
 $session = $client->connect();
+```
+
+### Working with Mail
+
+#### Listing Mailboxes
+
+```php
+use JmapClient\Requests\Mail\MailboxGet;
+use JmapClient\Requests\Mail\MailboxQuery;
+
+$client = // ... (setup client from examples above)
+
+// Get the default account for mail
+$account = $client->sessionAccountDefault('mail');
+if ($account === null) {
+    echo "No mail account found";
+    exit;
+}
+
+// Construct request to find the mailbox by name
+$request = new MailboxQuery($account->id());
+$request->filter()->name('Inbox');
+
+// Execute the request
+$bundle = $client->perform([$request]);
+$response = $bundle->first();
+
+// Extract the matching mailbox identifiers
+$identifiers = $response->list();
+if ($identifiers === []) {
+    echo "Inbox mailbox not found";
+    exit;
+}
+
+// Construct request for the mailbox details
+$request = new MailboxGet($account->id());
+$request->target($identifiers[0]);
+
+// Execute the request
+$bundle = $client->perform([$request]);
+
+// Extract the first and only response
+$response = $bundle->first();
+
+// Extract the first object
+$inbox = $response->object(0);
+
+// Use the mailbox details
+echo "Mailbox: " . $inbox->label() . "\n";
+echo "Unread messages: " . ($inbox->objectsUnseen() ?? 0) . "\n";
+```
+
+#### Fetching Recent Messages from a Mailbox
+
+```php
+use JmapClient\Requests\Mail\MailGet;
+use JmapClient\Requests\Mail\MailQuery;
+
+$client = // ... (setup client and resolve $inbox from the mailbox example above)
+
+// Get the default account for mail
+$account = $client->sessionAccountDefault('mail');
+if ($account === null) {
+    echo "No mail account found";
+    exit;
+}
+
+// Construct request to find all the messages in the inbox
+$request1 = new MailQuery($account->id());
+$request1->filter()->in($inbox->id());
+$request1->sort()->received(false);
+
+// Construct request to retrieve the message details
+// for the all messages found in the first request 
+$request2 = new MailGet($account->id());
+$request2->targetFromRequest($mailQuery, '/ids');
+$request2->property('id', 'subject', 'from', 'receivedAt', 'preview', 'bodyStructure', 'bodyValues');
+$request2->bodyText(true);
+$request2->bodyHtml(true);
+$request2->bodyTruncate(16384);
+
+// Execute both requests in a single batch
+$bundle = $client->perform([$request1, $request2]);
+
+// Extract the second response with message details
+$response = $bundle->response(1);
+
+// Process the resulting messages
+foreach ($response->objects() as $message) {
+    echo "Subject: " . ($message->subject() ?? '(no subject)') . "\n";
+    echo "Received: " . ($message->received() ?? 'unknown') . "\n";
+    echo "Preview: " . ($message->bodyTextPreview() ?? 'n/a') . "\n";
+
+    $from = $message->from();
+    if (!empty($from)) {
+        $author = $from[0]['name'] ?? $from[0]['email'] ?? 'unknown sender';
+        echo "From: " . $author . "\n";
+    }
+
+    foreach ($message->attachments() as $attachment) {
+        echo "Attachment: " . ($attachment->name() ?? $attachment->id() ?? 'unnamed') . "\n";
+    }
+
+    echo "---\n";
+}
 ```
 
 ### Working with Contacts
@@ -131,7 +236,7 @@ use JmapClient\Requests\Contacts\AddressBookGet;
 $client = // ... (setup client from examples above)
 
 // Get the default account for contacts
-$account = $client->sessionAccountDefault('contacts', true);
+$account = $client->sessionAccountDefault('contacts');
 if ($account === null) {
     echo "No contacts account found";
     exit;
@@ -139,17 +244,17 @@ if ($account === null) {
 
 $accountId = $account->id();
 
-// Create a request to fetch all address books
+// Construct request to fetch all address books
 $request = new AddressBookGet($accountId);
 
 // Execute the request
-$response = $client->perform([$request]);
+$bundle = $client->perform([$request]);
 
-// Get the response for the first (and only) request
-$addressBookResponse = $response->response(0);
+// Extract the response for the first request
+$response = $bundle->first();
 
 // Process the results
-foreach ($addressBookResponse->objects() as $addressBook) {
+foreach ($response->objects() as $addressBook) {
     echo "Address Book: " . $addressBook->label() . " (ID: " . $addressBook->id() . ")\n";
 }
 ```
@@ -159,18 +264,19 @@ foreach ($addressBookResponse->objects() as $addressBook) {
 ```php
 use JmapClient\Requests\Contacts\ContactGet;
 
-// Fetch specific contacts by ID
+// Construct request to retrieve a specific contacts by ID
 $request = new ContactGet($accountId);
 $request->target('contact-id-1', 'contact-id-2', 'contact-id-3');
 
 // You can also limit properties to fetch
 $request->property('id', 'uid', 'name', 'emails');
 
-$response = $client->perform([$request]);
-$contactResponse = $response->response(0);
+// Execute the request
+$bundle = $client->perform([$request]);
+$response = $bundle->first();
 
 // Access contact properties
-foreach ($contactResponse->objects() as $contact) {
+foreach ($response->objects() as $contact) {
     if ($contact->name() !== null) {
         echo "Name: " . json_encode($contact->name()->components()) . "\n";
     }
@@ -189,27 +295,27 @@ foreach ($contactResponse->objects() as $contact) {
 use JmapClient\Requests\Contacts\ContactQuery;
 use JmapClient\Requests\Contacts\ContactGet;
 
-$account = $client->sessionAccountDefault('contacts', true);
+$account = $client->sessionAccountDefault('contacts');
 $accountId = $account->id();
 
-// First, query for all contacts in a specific address book
-$queryRequest = new ContactQuery($accountId);
+// Construct a request to query for all contacts in a specific address book
+$request1 = new ContactQuery($accountId);
 // Set up filter for the address book
-$queryRequest->filter()->in('address-book-id');
+$request1->filter()->in('address-book-id');
 
 // Then create a request to fetch the contact details
 // using the IDs from the query result
-$getRequest = new ContactGet($accountId);
-$getRequest->targetFromRequest($queryRequest, '/ids');
+$request2 = new ContactGet($accountId);
+$request2->targetFromRequest($request1, '/ids');
 
 // Perform both requests in a single batch
-$response = $client->perform([$queryRequest, $getRequest]);
+$bundle = $client->perform([$request1, $request2]);
 
 // Get the response to the GET request (second request, index 1)
-$contactResponse = $response->response(1);
+$response = $bundle->response(1);
 
 // Process all contacts
-foreach ($contactResponse->objects() as $contact) {
+foreach ($response->objects() as $contact) {
     echo $contact->id() . ": " . json_encode($contact->name()) . "\n";
 }
 ```
@@ -218,12 +324,12 @@ foreach ($contactResponse->objects() as $contact) {
 
 ```php
 // Check if server supports specific JMAP extensions
-$supportsContacts = $client->sessionCapable('contacts', true);
-$supportsMail = $client->sessionCapable('mail', true);
-$supportsTasks = $client->sessionCapable('tasks', true);
+$supportsContacts = $client->sessionCapable('contacts');
+$supportsMail = $client->sessionCapable('mail');
+$supportsTasks = $client->sessionCapable('tasks');
 
 // Get all available capabilities
-$capabilities = $client->sessionCapabilities(null, true);
+$capabilities = $client->sessionCapabilities();
 if ($capabilities !== null) {
     foreach ($capabilities->objects() as $capability => $data) {
         echo "Capability: " . $capability . "\n";
@@ -264,7 +370,7 @@ if ($accounts !== null) {
 $client = new Client();
 
 // Set transport mode (http or https)
-$client->configureTransportMode('https://');
+$client->configureTransportMode('https');
 
 // Configure host and port
 $client->setHost('jmap.example.com:443');
@@ -326,7 +432,7 @@ use JmapClient\Responses\ResponseException;
 try {
     $client = // ... (setup client)
     
-    $account = $client->sessionAccountDefault('contacts', true);
+    $account = $client->sessionAccountDefault('contacts');
     if ($account === null) {
         echo "No contacts account available";
         exit;
@@ -390,6 +496,14 @@ Contributions are welcome! Please ensure that:
 
 1. Code is properly type-hinted
 2. Changes include appropriate documentation
+
+For local validation, the most useful project scripts are:
+
+```bash
+composer test:unit
+composer test:integration
+composer cs:check
+```
 
 ## License
 
