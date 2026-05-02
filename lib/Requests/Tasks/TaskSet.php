@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Tasks;
 
 use JmapClient\Requests\RequestSet;
+use JmapClient\Requests\Interfaces\RequestPatchInterface;
 
 /**
  * @extends RequestSet<TaskParameters>
@@ -44,6 +45,18 @@ class TaskSet extends RequestSet
     public function update(string $id, mixed $object = null): TaskParameters
     {
         return parent::update($id, $object);
+    }
+
+    /**
+     * Patch an task
+     *
+     * @param string $id Task identifier
+     * @param TaskParameters|RequestPatchInterface|null $object Optional structured or patch object
+     * @return RequestPatchInterface The patch object for method chaining
+     */
+    public function patch(string $id, mixed $object = null): RequestPatchInterface
+    {
+        return parent::patch($id, $object);
     }
 
     /**

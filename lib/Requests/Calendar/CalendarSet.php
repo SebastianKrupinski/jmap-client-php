@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Calendar;
 
 use JmapClient\Requests\RequestSet;
+use JmapClient\Requests\Interfaces\RequestPatchInterface;
 
 /**
  * @extends RequestSet<CalendarParameters>
@@ -44,6 +45,18 @@ class CalendarSet extends RequestSet
     public function update(string $id, mixed $object = null): CalendarParameters
     {
         return parent::update($id, $object);
+    }
+
+    /**
+     * Patch a calendar
+     *
+     * @param string $id Calendar identifier
+     * @param CalendarParameters|RequestPatchInterface|null $object Optional structured or patch object
+     * @return RequestPatchInterface The patch object for method chaining
+     */
+    public function patch(string $id, mixed $object = null): RequestPatchInterface
+    {
+        return parent::patch($id, $object);
     }
 
     /**

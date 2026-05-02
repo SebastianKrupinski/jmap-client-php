@@ -24,4 +24,11 @@ interface RequestParametersInterface
      * @return self For method chaining
      */
     public function bind(&$anchor): static;
+
+    /**
+     * Create a patch snapshot from the current structured parameters
+     *
+     * @return RequestPatchInterface The patch representation of these parameters
+     */
+    public function patch(): RequestPatchInterface;
 }
