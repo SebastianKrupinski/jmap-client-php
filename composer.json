@@ -1,10 +1,14 @@
 {
     "name": "sebastiankrupinski/jmap-client-php",
     "type": "library",
-    "description": "JMAP PHP Client",
-    "keywords": ["enum"],
+    "description": "Type-safe PHP client for JMAP mail, calendar, contacts, files, and tasks APIs",
+    "keywords": ["jmap", "mail", "calendar", "contacts", "files", "tasks", "email", "api-client"],
     "homepage": "https://github.com/SebastianKrupinski/jmap-client-php",
-    "license": "AGL3",
+    "support": {
+        "issues": "https://github.com/SebastianKrupinski/jmap-client-php/issues",
+        "source": "https://github.com/SebastianKrupinski/jmap-client-php"
+    },
+    "license": "AGPL-3.0-only",
     "authors": [
         {
 			"name": "Sebastian Krupinski",
