@@ -3,6 +3,7 @@ name: Integration Tests
 on:
   pull_request:
     branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   integration:
@@ -19,7 +20,7 @@ jobs:
       matrix:
         php-version: ["8.2", "8.5"]
 
-    name: PHP ${{ matrix.php-version }}
+    name: Integration PHP ${{ matrix.php-version }}
 
     steps:
       - name: Checkout repository
