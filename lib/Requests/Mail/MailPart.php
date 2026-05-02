@@ -32,6 +32,12 @@ class MailPart extends RequestParameters
         return $this;
     }
 
+    public function size(int $value): static
+    {
+        $this->_parameters->size = $value;
+        return $this;
+    }
+
     public function type(string $value): static
     {
         $this->_parameters->type = $value;
@@ -56,7 +62,7 @@ class MailPart extends RequestParameters
         return $this;
     }
 
-    public function language(string $value): static
+    public function language(string|array $value): static
     {
         $this->_parameters->language = $value;
         return $this;
@@ -65,6 +71,32 @@ class MailPart extends RequestParameters
     public function location(string $value): static
     {
         $this->_parameters->location = $value;
+        return $this;
+    }
+
+    public function cid(string $value): static
+    {
+        $this->_parameters->cid = $value;
+        return $this;
+    }
+
+    public function headers(array $value): static
+    {
+        $this->_parameters->headers = $value;
+        return $this;
+    }
+
+    public function header(string $name, string $value): static
+    {
+        if (!isset($this->_parameters->headers) || !is_array($this->_parameters->headers)) {
+            $this->_parameters->headers = [];
+        }
+
+        $this->_parameters->headers[] = (object) [
+            'name' => $name,
+            'value' => $value,
+        ];
+
         return $this;
     }
 
@@ -79,7 +111,7 @@ class MailPart extends RequestParameters
         );
     }
 
-    public function subParts(): MailPart
+    public function subParts(): array
     {
         if (!isset($this->_parameters->subParts)) {
             $this->_parameters->subParts = [];

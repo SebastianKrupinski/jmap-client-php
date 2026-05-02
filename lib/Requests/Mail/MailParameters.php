@@ -24,6 +24,50 @@ class MailParameters extends RequestParameters
         return $this;
     }
 
+    public function headers(array $headers): static
+    {
+        foreach ($headers as $name => $value) {
+            $this->parameter(sprintf('header:%s:asRaw', $name), $value);
+        }
+        return $this;
+    }
+
+    public function messageId(string $value): static
+    {
+        $this->parameterCollection('messageId', $value);
+        return $this;
+    }
+
+    public function inReplyTo(string $value): static
+    {
+        $this->parameterCollection('inReplyTo', $value);
+        return $this;
+    }
+
+    public function references(string $value): static
+    {
+        $this->parameterCollection('references', $value);
+        return $this;
+    }
+
+    public function received(string $value): static
+    {
+        $this->parameter('receivedAt', $value);
+        return $this;
+    }
+
+    public function sent(string $value): static
+    {
+        $this->parameter('sentAt', $value);
+        return $this;
+    }
+
+    public function sender(string $address, string $name = ''): static
+    {
+        $this->parameterCollection('sender', (object) ['name' => $name, 'email' => $address]);
+        return $this;
+    }
+
     public function from(string $address, string $name = ''): static
     {
         $this->parameterCollection('from', (object) ['name' => $name, 'email' => $address]);
@@ -48,36 +92,42 @@ class MailParameters extends RequestParameters
         return $this;
     }
 
+    public function replyTo(string $address, string $name = ''): static
+    {
+        $this->parameterCollection('replyTo', (object) ['name' => $name, 'email' => $address]);
+        return $this;
+    }
+
     public function subject(string $value): static
     {
         $this->parameter('subject', $value);
         return $this;
     }
 
-    public function contents(string $content, string $type, ?string $id = null): static
+    public function bodyText(string $content, string $type, ?string $id = null): static
     {
         if (empty($id)) {
             $id = uniqid();
         }
 
         $this->parameterStructured('bodyStructure', 'partId', $id);
-        $this->parameterStructured('bodyStructure', 'type', $id);
-        $this->parameterStructured('bodyValues', $id, (object) ['value' => $content, 'isTruncated' => false]);
+        $this->parameterStructured('bodyStructure', 'type', $type);
+        $this->bodyPartValue($id, $content);
 
         return $this;
     }
 
-    public function contentsPlain(string $content, string $id = null): static
+    public function bodyTextPlain(string $content, string $id = null): static
     {
-        return $this->contents($content, 'text/plain', $id);
+        return $this->bodyText($content, 'text/plain', $id);
     }
 
-    public function contentsHtml(string $content, string $id = null): static
+    public function bodyTextHtml(string $content, string $id = null): static
     {
-        return $this->contents($content, 'text/html', $id);
+        return $this->bodyText($content, 'text/html', $id);
     }
 
-    public function structure(): MailPart
+    public function bodyPartStructure(): MailPart
     {
         if (!isset($this->_parameters->bodyStructure)) {
             $this->parameter('bodyStructure', new \stdClass());
@@ -85,33 +135,80 @@ class MailParameters extends RequestParameters
         return new MailPart($this->_parameters->bodyStructure);
     }
 
-    public function draft(): static
+    public function bodyPartValue(string $id, string $value, bool $isTruncated = false, bool $isEncodingProblem = false): static
     {
-        $this->parameterStructured('keywords', '$draft', true);
+        $this->parameterStructured('bodyValues', $id, (object) [
+            'value' => $value,
+            'isTruncated' => $isTruncated,
+            'isEncodingProblem' => $isEncodingProblem,
+        ]);
         return $this;
     }
 
-    public function seen(): static
+    public function bodyPartValues(array $value): static
     {
-        $this->parameterStructured('keywords', '$seen', true);
+        $this->parameter('bodyValues', (object) $value);
         return $this;
     }
 
-    public function flagged(): static
+    public function attachment(array $value): MailPart
     {
-        $this->parameterStructured('keywords', '$flagged', true);
+        $this->parameterCollection('attachments', (object) $value);
+
+        return new MailPart($this->_parameters->attachments[array_key_last($this->_parameters->attachments)]);
+    }
+
+    public function keywords(array $keywords): static
+    {
+        foreach ($keywords as $name => $value) {
+            $this->keyword($name, $value);
+        }
         return $this;
     }
 
-    public function answered(): static
+    public function keyword(string $name, bool $value = true): static
     {
-        $this->parameterStructured('keywords', '$answered', true);
+        $this->parameterStructured('keywords', $name, $value);
         return $this;
     }
 
-    public function forwarded(): static
+    public function draft(bool $value = true): static
     {
-        $this->parameterStructured('keywords', '$forwarded', true);
-        return $this;
+        return $this->keyword('$draft', $value);
+    }
+
+    public function seen(bool $value = true): static
+    {
+        return $this->keyword('$seen', $value);
+    }
+
+    public function flagged(bool $value = true): static
+    {
+        return $this->keyword('$flagged', $value);
+    }
+
+    public function answered(bool $value = true): static
+    {
+        return $this->keyword('$answered', $value);
+    }
+
+    public function forwarded(bool $value = true): static
+    {
+        return $this->keyword('$forwarded', $value);
+    }
+
+    public function phishing(bool $value = true): static
+    {
+        return $this->keyword('$phishing', $value);
+    }
+
+    public function junk(bool $value = true): static
+    {
+        return $this->keyword('$junk', $value);
+    }
+
+    public function notjunk(bool $value = true): static
+    {
+        return $this->keyword('$notjunk', $value);
     }
 }
