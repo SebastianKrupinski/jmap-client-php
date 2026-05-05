@@ -45,16 +45,4 @@ class MailSubmissionParameters extends RequestParameters
         $this->parameterStructured('envelope', 'rcptTo', $recipients);
         return $this;
     }
-
-    public function completionUpdate(string $id, array $actions)
-    {
-        $this->parameterStructured('onSuccessUpdateEmail', $id, $actions);
-        return $this;
-    }
-
-    public function completionDestroy(string $id, array $actions)
-    {
-        $this->parameterStructured('onSuccessDestroyEmail', $id, $actions);
-        return $this;
-    }
 }
