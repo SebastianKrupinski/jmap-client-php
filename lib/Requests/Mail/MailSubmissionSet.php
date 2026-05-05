@@ -57,4 +57,43 @@ class MailSubmissionSet extends RequestSet
     {
         return parent::delete($id);
     }
+
+    /**
+     * Define a patch to be applied to the email object on successful submission
+     *
+     * @param string $submissionId The submission identifier this patch belongs to
+     * @param array $patch The patch to apply to the email object on successful submission
+     *
+     * @return self
+     */
+    public function completionUpdate(string $submissionId, array $patch): static
+    {
+        if (!isset($this->_command['onSuccessUpdateEmail']) || !is_object($this->_command['onSuccessUpdateEmail'])) {
+            $this->_command['onSuccessUpdateEmail'] = new \stdClass();
+        }
+
+        $this->_command['onSuccessUpdateEmail']->{$submissionId} = (object) $patch;
+
+        return $this;
+    }
+
+    /**
+     * Define a deletion of the email object on successful submission
+     *
+     * @param string ...$submissionIds The submission identifiers for which the email object should be deleted on successful submission
+     *
+     * @return self
+     */
+    public function completionDestroy(string ...$submissionIds): static
+    {
+        if (!isset($this->_command['onSuccessDestroyEmail']) || !is_array($this->_command['onSuccessDestroyEmail'])) {
+            $this->_command['onSuccessDestroyEmail'] = [];
+        }
+
+        foreach ($submissionIds as $submissionId) {
+            $this->_command['onSuccessDestroyEmail'][] = $submissionId;
+        }
+
+        return $this;
+    }
 }
