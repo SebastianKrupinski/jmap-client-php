@@ -16,7 +16,7 @@ use JmapClient\Requests\RequestUpload;
  */
 class BlobSet extends RequestUpload
 {
-    protected string $_space = 'urn:ietf:params:jmap:Blob';
+    protected string $_space = 'urn:ietf:params:jmap:blob';
     protected string $_class = 'Blob';
     protected string $_parametersClass = BlobParameters::class;
 
