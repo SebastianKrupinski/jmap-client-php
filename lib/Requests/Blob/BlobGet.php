@@ -13,7 +13,7 @@ use JmapClient\Requests\RequestGet;
 
 class BlobGet extends RequestGet
 {
-    protected string $_space = 'urn:ietf:params:jmap:Blob';
+    protected string $_space = 'urn:ietf:params:jmap:blob';
     protected string $_class = 'Blob';
 
     public function offset(int $value): static
