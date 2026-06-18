@@ -12,6 +12,7 @@ namespace JmapClient;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Cookie\CookieJar;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
 use InvalidArgumentException;
 use JmapClient\Authentication\Basic;
@@ -32,6 +33,7 @@ use JmapClient\Session\CapabilityCollection;
 use JmapClient\Session\Session;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * JMAP Client for communicating with JMAP-compliant servers
@@ -741,6 +743,52 @@ class Client
             $response = $this->_client->request('GET', $location, ['headers' => $transportHeaders]);
             $data = $response->getBody()->getContents();
         }
+    }
+
+    /**
+     * Opens a streamed blob/file download from the JMAP server.
+     */
+    public function downloadStream(string $account, string $identifier, string $type = 'application/octet-stream', string $name = 'file.bin'): StreamInterface
+    {
+        // evaluate if client is connected
+        if (!$this->_SessionConnected) {
+            $this->connect();
+        }
+
+        // replace command options
+        $location = $this->_ServiceDownloadLocation;
+        $location = str_replace('{accountId}', $account, $location);
+        $location = str_replace('{blobId}', $identifier, $location);
+        $location = str_replace('{type}', $type, $location);
+        $location = str_replace('{name}', $name, $location);
+
+        // modify specific headers
+        $transportHeaders = $this->_transportHeaders;
+        unset(
+            $transportHeaders['Content-Type'],
+            $transportHeaders['Accept']
+        );
+
+        $clientOptions = $this->_transportOptions;
+        $clientOptions['handler'] = new CurlHandler();
+        $clientOptions['version'] = self::TRANSPORT_VERSION_1_1;
+
+        if ($this->_client !== null) {
+            $cookies = $this->_client->getConfig('cookies');
+            if ($cookies !== null) {
+                $clientOptions['cookies'] = $cookies;
+            }
+        }
+
+        $client = new GuzzleHttpClient($clientOptions);
+
+        $response = $client->request('GET', $location, [
+            'headers' => $transportHeaders,
+            'stream' => true,
+            'version' => self::TRANSPORT_VERSION_1_1,
+        ]);
+
+        return $response->getBody();
     }
 
     /**
