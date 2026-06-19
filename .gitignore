@@ -2,6 +2,9 @@
 /vendor/
 /node_modules/
 
+# Development directories
+.ideas/
+
 # IDE directories
 .vscode/
 
