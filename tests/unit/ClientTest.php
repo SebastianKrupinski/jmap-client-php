@@ -63,20 +63,4 @@ class ClientTest extends TestCase
         $client->setHost('example.com:443');
         $this->assertInstanceOf(Client::class, $client);
     }
-
-    /**
-     * Test that Client can configure transport verification
-     */
-    public function testClientCanConfigureTransportVerification(): void
-    {
-        $client = new Client();
-
-        // Test enabling verification
-        $client->configureTransportVerification(true);
-        $this->assertInstanceOf(Client::class, $client);
-
-        // Test disabling verification
-        $client->configureTransportVerification(false);
-        $this->assertInstanceOf(Client::class, $client);
-    }
 }

@@ -9,11 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient;
 
-use GuzzleHttp\Client as GuzzleHttpClient;
-use GuzzleHttp\Cookie\CookieJar;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Handler\CurlHandler;
-use GuzzleHttp\HandlerStack;
+use Http\Discovery\Psr17FactoryDiscovery;
+use Http\Discovery\Psr18ClientDiscovery;
 use InvalidArgumentException;
 use JmapClient\Authentication\Basic;
 use JmapClient\Authentication\Bearer;
@@ -31,8 +28,12 @@ use JmapClient\Session\Account;
 use JmapClient\Session\AccountCollection;
 use JmapClient\Session\CapabilityCollection;
 use JmapClient\Session\Session;
-use Psr\Http\Message\RequestInterface;
+use JmapClient\Transport\CookieJar;
+use JmapClient\Transport\Transport;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -40,10 +41,6 @@ use Psr\Http\Message\StreamInterface;
  */
 class Client
 {
-    // Transport Versions
-    public const TRANSPORT_VERSION_1 = '1.0';
-    public const TRANSPORT_VERSION_1_1 = '1.1';
-    public const TRANSPORT_VERSION_2 = '2.0';
     // Transport Modes
     public const TRANSPORT_MODE_STANDARD = 'http';
     public const TRANSPORT_MODE_SECURE = 'https';
@@ -57,24 +54,13 @@ class Client
         'Content-Type' => 'application/json; charset=utf-8',
         'Accept' => 'application/json',
     ];
-    // Transport Options
-    protected array $_transportOptions = [
-        'version' => self::TRANSPORT_VERSION_2,
-        'timeout' => 30,
-        'expect' => false,
-        'verify' => true,
-        'allow_redirects' => false,
-        'cookies' => false,
-        'decode_content' => true,
-        'http_errors' => true,
-        'proxy' => [],
-        'curl' => [
-            CURLOPT_SSL_VERIFYPEER => 1,
-            CURLOPT_SSL_VERIFYHOST => 2,
-        ],
-    ];
-    // Transport Client
-    protected ?GuzzleHttpClient $_client;
+    protected bool $_transportHttpErrors = true;
+    // Transport - PSR-18 client and PSR-17 factories (injected or discovered)
+    protected ?ClientInterface $_transportClient;
+    protected ?RequestFactoryInterface $_requestFactory;
+    protected ?StreamFactoryInterface $_streamFactory;
+    // Transport - request chokepoint built from the client and factories
+    protected ?Transport $_transport = null;
     // Transport Cookie
     protected ?string $_transportCookieJar = null;
     protected $_transportCookieStoreRetrieve = null;
@@ -82,17 +68,13 @@ class Client
     // Transport Request Retention
     protected bool $_transportRequestHeaderFlag = false;
     protected bool $_transportRequestBodyFlag = false;
-    protected array $_transportRequestHeaderData = [];
-    protected string $_transportRequestBodyData = '';
     // Transport Response Retention
     protected bool $_transportResponseHeaderFlag = false;
     protected bool $_transportResponseBodyFlag = false;
-    protected array $_transportResponseHeaderData = [];
-    protected string $_transportResponseBodyData = '';
-    protected int $_transportResponseCode = 0;
     // Transport Logging
     protected bool $_transportLogState = false;
-    protected string $_transportLogLocation = '/tmp/php-jmap.log';
+    // Empty means defer to the system temp dir
+    protected string $_transportLogLocation = '';
     // Transport Redirect Max
     protected int $_transportRedirectAttempts = 3;
     // Service Host
@@ -111,8 +93,15 @@ class Client
 
     public function __construct(
         string $host = '',
-        ?IAuthentication $authentication = null
+        ?IAuthentication $authentication = null,
+        ?ClientInterface $transportClient = null,
+        ?RequestFactoryInterface $requestFactory = null,
+        ?StreamFactoryInterface $streamFactory = null,
     ) {
+        // store injected transport client and factories
+        $this->_transportClient = $transportClient;
+        $this->_requestFactory = $requestFactory;
+        $this->_streamFactory = $streamFactory;
         // set service host
         if (!empty($host)) {
             $this->setHost($host);
@@ -121,24 +110,6 @@ class Client
         if (isset($authentication)) {
             $this->setAuthentication($authentication);
         }
-    }
-
-    /**
-     * Constructs and configures a new Guzzle HTTP client instance with transport options
-     */
-    public function constructClient(array $overrides = []): GuzzleHttpClient
-    {
-        $options = $this->_transportOptions;
-
-        $options = array_replace($options, $overrides);
-
-        if ($this->_transportLogState || $this->_transportResponseHeaderFlag || $this->_transportResponseBodyFlag || $this->_transportRequestHeaderFlag || $this->_transportRequestBodyFlag) {
-            $stack = HandlerStack::create();
-            $stack->push($this->transmissionListener(), 'logger');
-            $options['handler'] = $stack;
-        }
-
-        return new GuzzleHttpClient($options);
     }
 
     /**
@@ -166,11 +137,30 @@ class Client
     }
 
     /**
-     * Configures the HTTP protocol version used for transport
+     * Sets the PSR-18 HTTP client used for all requests
      */
-    public function configureTransportVersion(int $value): void
+    public function configureTransportClient(ClientInterface $client): void
     {
-        $this->_transportOptions['version'] = $value;
+        $this->_transportClient = $client;
+        $this->_transport = null;
+    }
+
+    /**
+     * Sets the PSR-17 request factory
+     */
+    public function configureRequestFactory(RequestFactoryInterface $factory): void
+    {
+        $this->_requestFactory = $factory;
+        $this->_transport = null;
+    }
+
+    /**
+     * Sets the PSR-17 stream factory
+     */
+    public function configureStreamFactory(StreamFactoryInterface $factory): void
+    {
+        $this->_streamFactory = $factory;
+        $this->_transport = null;
     }
 
     /**
@@ -186,20 +176,12 @@ class Client
     }
 
     /**
-     * Configures custom transport options for the HTTP client
+     * Enables or disables throwing on HTTP error status codes (>= 400)
      */
-    public function configureTransportOptions(array $options): void
+    public function configureTransportErrors(bool $value): void
     {
-        $this->_transportOptions = array_replace($this->_transportOptions, $options);
-    }
-
-    /**
-     * Configures SSL/TLS certificate verification for transport
-     */
-    public function configureTransportVerification(bool $value): void
-    {
-        $this->_transportOptions['curl'][CURLOPT_SSL_VERIFYPEER] = $value ? 1 : 0;
-        $this->_transportOptions['curl'][CURLOPT_SSL_VERIFYHOST] = $value ? 2 : 0;
+        $this->_transportHttpErrors = $value;
+        $this->_transport?->httpErrors($value);
     }
 
     /**
@@ -208,6 +190,7 @@ class Client
     public function configureTransportLogState(bool $value): void
     {
         $this->_transportLogState = $value;
+        $this->_transport?->logState($value);
     }
 
     /**
@@ -216,6 +199,7 @@ class Client
     public function configureTransportLogLocation(string $value): void
     {
         $this->_transportLogLocation = $value;
+        $this->_transport?->logLocation($value);
     }
 
     /**
@@ -224,6 +208,7 @@ class Client
     public function retainTransportRequestHeader(bool $value): void
     {
         $this->_transportRequestHeaderFlag = $value;
+        $this->_transport?->retainRequestHeader($value);
     }
 
     /**
@@ -232,6 +217,7 @@ class Client
     public function retainTransportRequestBody(bool $value): void
     {
         $this->_transportRequestBodyFlag = $value;
+        $this->_transport?->retainRequestBody($value);
     }
 
     /**
@@ -240,6 +226,7 @@ class Client
     public function retainTransportResponseHeader(bool $value): void
     {
         $this->_transportResponseHeaderFlag = $value;
+        $this->_transport?->retainResponseHeader($value);
     }
 
     /**
@@ -248,6 +235,7 @@ class Client
     public function retainTransportResponseBody(bool $value): void
     {
         $this->_transportResponseBodyFlag = $value;
+        $this->_transport?->retainResponseBody($value);
     }
 
     /**
@@ -255,15 +243,15 @@ class Client
      */
     public function discloseTransportRequestHeader(): array
     {
-        return $this->_transportRequestHeaderData;
+        return $this->_transport?->requestHeaderData() ?? [];
     }
 
     /**
      * Returns the last retained request body that was sent
      */
-    public function discloseTransportRequestBody(): string
+    public function discloseTransportRequestBody(): string|null
     {
-        return $this->_transportRequestBodyData;
+        return $this->_transport?->requestBodyData() ?? null;
     }
 
     /**
@@ -271,7 +259,7 @@ class Client
      */
     public function discloseTransportResponseCode(): int
     {
-        return $this->_transportResponseCode;
+        return $this->_transport?->responseCode() ?? 0;
     }
 
     /**
@@ -279,15 +267,15 @@ class Client
      */
     public function discloseTransportResponseHeader(): array
     {
-        return $this->_transportResponseHeaderData;
+        return $this->_transport?->responseHeaderData() ?? [];
     }
 
     /**
      * Returns the last retained response body that was received
      */
-    public function discloseTransportResponseBody(): string
+    public function discloseTransportResponseBody(): string|null
     {
-        return $this->_transportResponseBodyData;
+        return $this->_transport?->responseBodyData() ?? null;
     }
 
     /**
@@ -301,7 +289,7 @@ class Client
     /**
      * Gets the current User-Agent header value
      */
-    public function getTransportAgent(): string
+    public function getTransportAgent(): string|null
     {
         return $this->_transportHeaders['User-Agent'];
     }
@@ -320,7 +308,7 @@ class Client
     public function setHost(string $value): void
     {
         $this->_ServiceHost = $value;
-        $this->_client = null;
+        $this->_transport = null;
     }
 
     /**
@@ -337,7 +325,7 @@ class Client
     public function setDiscoveryPath(string $value): void
     {
         $this->_ServiceDiscoveryPath = $value;
-        $this->_client = null;
+        $this->_transport = null;
     }
 
     /**
@@ -421,7 +409,7 @@ class Client
         $this->_ServiceAuthentication = $value;
         // destroy existing client will need to be initialized again
         if ($reset) {
-            $this->_client = null;
+            $this->_transport = null;
         }
         // set service no authentication
         if ($this->_ServiceAuthentication instanceof None) {
@@ -493,18 +481,10 @@ class Client
     {
         $location = $this->_transportMode . $this->_ServiceHost . $this->_ServiceDiscoveryPath;
 
-        $client = $this->constructClient([
-            'base_uri' => $this->_transportMode . $this->_ServiceHost,
-            'allow_redirects' => true,
-        ]);
-        $headers = $this->_transportHeaders;
         // perform transmit and receive
-        $response = $client->request('GET', $location, ['headers' => $headers]);
-        $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
+        $response = $this->transceive('GET', $location, $this->_transportHeaders, null, ['allow_redirects' => true]);
 
-        $this->_client = $client;
-
-        return $responseData;
+        return json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -531,18 +511,15 @@ class Client
         }
 
         $clientHeaders = $this->_transportHeaders;
-        $clientOptions = $this->_transportOptions;
-        $clientOptions['allow_redirects'] = true;
+        $clientOptions = ['allow_redirects' => true];
 
         if ($authentication instanceof IAuthenticationCookie) {
-            $clientOptions['cookies'] = new CookieJar();
+            $this->transport()->setCookieJar(new CookieJar());
         }
-
-        $client = $this->constructClient($clientOptions);
 
         /*===== perform initial transaction =====*/
         $requestData = json_encode((object)['type' => 'start']);
-        $response = $client->request('POST', $location, ['headers' => $clientHeaders, 'body' => $requestData]);
+        $response = $this->transceive('POST', $location, $clientHeaders, $requestData, $clientOptions);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         // determine if login id was returned in initial request and fail if not
         if (!isset($responseData['loginId'])) {
@@ -556,7 +533,7 @@ class Client
             'username' => $this->_ServiceAuthentication->getId(),
             'loginId' => $serviceLoginId,
         ]);
-        $response = $client->request('POST', $location, ['headers' => $clientHeaders, 'body' => $requestData]);
+        $response = $this->transceive('POST', $location, $clientHeaders, $requestData, $clientOptions);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
         // determine if login id was returned in initial request and fail if not
         if (!isset($responseData['loginId'])) {
@@ -571,14 +548,13 @@ class Client
             'remember' => false,
             'loginId' => $serviceLoginId,
         ]);
-        $response = $client->request('POST', $location, ['headers' => $clientHeaders, 'body' => $requestData]);
+        $response = $this->transceive('POST', $location, $clientHeaders, $requestData, $clientOptions);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
 
-        $this->_client = $client;
-
         if ($authentication instanceof IAuthenticationCookie && is_callable($authentication->getCookieStoreDeposit())) {
-            $test = $authentication->getCookieStoreDeposit();
-            $test($authentication->getCookieStoreId(), $client->getConfig('cookies')->toArray());
+            $deposit = $authentication->getCookieStoreDeposit();
+            $jar = $this->transport()->getCookieJar();
+            $deposit($authentication->getCookieStoreId(), $jar !== null ? $jar->toArray() : []);
         }
 
         return $responseData;
@@ -603,12 +579,7 @@ class Client
         if (empty($cookieData)) {
             return [];
         }
-        $cookieJar = new CookieJar(false, $cookieData);
-
-        $client = $this->constructClient([
-            'allow_redirects' => true,
-            'cookies' => $cookieJar,
-        ]);
+        $this->transport()->setCookieJar(CookieJar::fromArray($cookieData));
 
         if (!empty($authentication->getCookieAuthenticationLocation())) {
             $location = $this->_transportMode . $this->_ServiceHost . $authentication->getCookieAuthenticationLocation();
@@ -619,10 +590,8 @@ class Client
         $headers = $this->_transportHeaders;
         unset($headers['Authentication']);
 
-        $response = $client->request('GET', $location, ['headers' => $headers]);
+        $response = $this->transceive('GET', $location, $headers, null, ['allow_redirects' => true]);
         $responseData = json_decode($response->getBody()->getContents(), true, 512, JSON_THROW_ON_ERROR);
-
-        $this->_client = $client;
 
         if ($responseData[0]) {
             return $responseData[0];
@@ -645,10 +614,7 @@ class Client
         }
         $authenticate = $this->_ServiceAuthentication->authenticate();
 
-        $client = $this->constructClient();
-        $session = $authenticate($client);
-        $this->_client = $client;
-        return $session;
+        return $authenticate($this->transport());
     }
 
     /**
@@ -656,6 +622,11 @@ class Client
      */
     public function perform(RequestBundle|array $commands): ResponseBundle
     {
+        // evaluate if client is connected
+        if (!$this->_SessionConnected) {
+            $this->connect();
+        }
+
         // evaluate if command(s) was passed as a request bundled
         if ($commands instanceof RequestBundle) {
             $requests = $commands;
@@ -668,41 +639,54 @@ class Client
         $data = $requests->jsonEncode();
 
         // transmit and receive
-        $data = $this->transceive($this->_ServiceCommandLocation, $data);
+        $data = $this->transceive('POST', $this->_ServiceCommandLocation, $this->_transportHeaders, $data)->getBody()->getContents();
 
         // deserialize response
         $responses = new ResponseBundle();
-        if ($data !== null) {
+        if ($data !== '') {
             $responses->jsonDecode($data);
         }
 
-        // return response
         return $responses;
     }
 
     /**
-     * Sends a request to the JMAP server and receives the response
+     * Transmits a request and returns the response.
+     *
+     * @param array<string, string> $headers
+     * @param string|resource|StreamInterface|null $body
+     * @param array{allow_redirects?: bool, sink?: resource} $options
+     *
+     * @throws RequestException When the response status is >= 400 and error handling is enabled.
+     * @throws TransportException When the underlying client cannot deliver the request.
      */
-    public function transceive(string $uri, string $data): null|string
+    public function transceive(string $method, string $uri, array $headers = [], $body = null, array $options = []): ResponseInterface
     {
-        // evaluate if client is connected
-        if (!$this->_SessionConnected) {
-            $this->connect();
+        return $this->transport()->transceive($method, $uri, $headers, $body, $options);
+    }
+
+    private function transport(): Transport
+    {
+        if ($this->_transport === null) {
+            $transport = new Transport(
+                $this->_transportClient ?? Psr18ClientDiscovery::find(),
+                $this->_requestFactory ?? Psr17FactoryDiscovery::findRequestFactory(),
+                $this->_streamFactory ?? Psr17FactoryDiscovery::findStreamFactory(),
+            );
+            $transport->httpErrors($this->_transportHttpErrors);
+            $transport->maxRedirects($this->_transportRedirectAttempts);
+            $transport->retainRequestHeader($this->_transportRequestHeaderFlag);
+            $transport->retainRequestBody($this->_transportRequestBodyFlag);
+            $transport->retainResponseHeader($this->_transportResponseHeaderFlag);
+            $transport->retainResponseBody($this->_transportResponseBodyFlag);
+            $transport->logState($this->_transportLogState);
+            if ($this->_transportLogLocation !== '') {
+                $transport->logLocation($this->_transportLogLocation);
+            }
+            $this->_transport = $transport;
         }
 
-        // reset requests
-        $this->_transportRequestHeaderData = [];
-        $this->_transportRequestBodyData = '';
-        // reset responses
-        $this->_transportResponseCode = 0;
-        $this->_transportResponseHeaderData = [];
-        $this->_transportResponseBodyData = '';
-
-        // execute request
-        $response = $this->_client->request('POST', $uri, ['headers' => $this->_transportHeaders, 'body' => $data]);
-        $data = $response->getBody()->getContents();
-
-        return $data;
+        return $this->_transport;
     }
 
     /**
@@ -737,11 +721,10 @@ class Client
         // determine data destination and set receiving options
         if (is_resource($data)) {
             // execute request and write to resource stream
-            $response = $this->_client->request('GET', $location, ['headers' => $transportHeaders, 'sink' => $data]);
+            $this->transceive('GET', $location, $transportHeaders, null, ['sink' => $data]);
         } else {
             // execute request and capture response body
-            $response = $this->_client->request('GET', $location, ['headers' => $transportHeaders]);
-            $data = $response->getBody()->getContents();
+            $data = $this->transceive('GET', $location, $transportHeaders)->getBody()->getContents();
         }
     }
 
@@ -769,26 +752,7 @@ class Client
             $transportHeaders['Accept']
         );
 
-        $clientOptions = $this->_transportOptions;
-        $clientOptions['handler'] = new CurlHandler();
-        $clientOptions['version'] = self::TRANSPORT_VERSION_1_1;
-
-        if ($this->_client !== null) {
-            $cookies = $this->_client->getConfig('cookies');
-            if ($cookies !== null) {
-                $clientOptions['cookies'] = $cookies;
-            }
-        }
-
-        $client = new GuzzleHttpClient($clientOptions);
-
-        $response = $client->request('GET', $location, [
-            'headers' => $transportHeaders,
-            'stream' => true,
-            'version' => self::TRANSPORT_VERSION_1_1,
-        ]);
-
-        return $response->getBody();
+        return $this->transceive('GET', $location, $transportHeaders, null, ['stream' => true])->getBody();
     }
 
     /**
@@ -814,208 +778,7 @@ class Client
         $transportHeaders['Content-Type'] = $type;
 
         // execute request
-        $response = $this->_client->request('POST', $location, ['headers' => $transportHeaders, 'body' => $data]);
-        $responseBody = $response->getBody()->getContents();
-
-        return $responseBody;
-    }
-
-    /**
-     * Creates a middleware function that logs and retains request/response transmission data
-     */
-    private function transmissionListener(): callable
-    {
-        return function (callable $handler) {
-            return function (RequestInterface $request, array $options) use ($handler) {
-                // generate unique transaction ID for pairing request/response
-                $transactionId = bin2hex(random_bytes(8));
-
-                // retain request headers
-                if ($this->_transportRequestHeaderFlag) {
-                    $this->_transportRequestHeaderData = $request->getHeaders();
-                }
-                // Optionally retain/log request body or URI
-                if ($this->_transportRequestBodyFlag || $this->_transportLogState) {
-                    $requestMessage = null;
-                    $requestContentType = null;
-                    $isStreamBody = is_resource($options['body'] ?? null);
-                    if ($isStreamBody) {
-                        $requestMessage = 'resource stream';
-                    } else {
-                        $body = $request->getBody();
-                        $requestBody = '';
-                        if ($body !== null) {
-                            try {
-                                $requestBody = $body->getContents();
-                                if ($body->isSeekable()) {
-                                    $body->rewind();
-                                }
-                            } catch (\Throwable $e) {
-                                $requestBody = '';
-                            }
-                        }
-                        if ($requestBody !== '') {
-                            $requestMessage = $requestBody;
-                            $requestContentType = $request->getHeaderLine('Content-Type');
-                        }
-                    }
-                    if ($this->_transportRequestBodyFlag && $requestMessage !== null) {
-                        $this->_transportRequestBodyData = $requestMessage;
-                    }
-                    if ($this->_transportLogState) {
-                        $this->transmissionLogger('request', $requestMessage, null, $request->getMethod(), (string)$request->getUri(), $requestContentType, $transactionId);
-                    }
-                }
-
-                return $handler($request, $options)->then(
-                    function (ResponseInterface $response) use ($request, $options, $transactionId) {
-                        // retain response code
-                        $this->_transportResponseCode = $response->getStatusCode();
-                        // retain response header
-                        if ($this->_transportResponseHeaderFlag) {
-                            $this->_transportResponseHeaderData = $response->getHeaders();
-                        }
-                        // retain or log response body
-                        if ($this->_transportResponseBodyFlag || $this->_transportLogState) {
-                            $responseMessage = null;
-                            $responseContentType = null;
-                            $body = $response->getBody();
-                            $responseBody = '';
-                            try {
-                                $responseBody = $body->getContents();
-                                if ($body->isSeekable()) {
-                                    $body->rewind();
-                                }
-                            } catch (\Throwable $e) {
-                                $responseBody = '';
-                            }
-
-                            if ($responseBody === '' && is_resource($options['sink'] ?? null)) {
-                                $responseMessage = 'resource stream';
-                            } elseif ($responseBody !== '') {
-                                $responseMessage = $responseBody;
-                                $responseContentType = $response->getHeaderLine('Content-Type');
-                            }
-                            if ($this->_transportResponseBodyFlag && $responseMessage !== null) {
-                                $this->_transportResponseBodyData = $responseMessage;
-                            }
-                            if ($this->_transportLogState) {
-                                $this->transmissionLogger('response', $responseMessage, $response->getStatusCode(), $request->getMethod(), (string)$request->getUri(), $responseContentType, $transactionId);
-                            }
-                        }
-
-                        return $response;
-                    },
-                    function ($reason) use ($request, $options, $transactionId) {
-                        // Attempt to capture details even on HTTP exception
-                        if ($reason instanceof RequestException && $reason->hasResponse()) {
-                            $response = $reason->getResponse();
-                            if ($response instanceof ResponseInterface) {
-                                // retain response code
-                                $this->_transportResponseCode = $response->getStatusCode();
-                                // retain response header
-                                if ($this->_transportResponseHeaderFlag) {
-                                    $this->_transportResponseHeaderData = $response->getHeaders();
-                                }
-                                // retain or log response body
-                                if ($this->_transportResponseBodyFlag || $this->_transportLogState) {
-                                    $responseMessage = null;
-                                    $responseContentType = null;
-                                    $body = $response->getBody();
-                                    $responseBody = '';
-                                    try {
-                                        $responseBody = $body->getContents();
-                                        if ($body->isSeekable()) {
-                                            $body->rewind();
-                                        }
-                                    } catch (\Throwable $e) {
-                                        $responseBody = '';
-                                    }
-                                    if ($responseBody !== '') {
-                                        $responseMessage = $responseBody;
-                                        $responseContentType = $response->getHeaderLine('Content-Type');
-                                    }
-                                    if ($this->_transportResponseBodyFlag && $responseMessage !== null) {
-                                        $this->_transportResponseBodyData = $responseBody;
-                                    }
-                                    if ($this->_transportLogState) {
-                                        $this->transmissionLogger('response', $responseMessage, $response->getStatusCode(), $request->getMethod(), (string)$request->getUri(), $responseContentType, $transactionId);
-                                    }
-                                }
-                            }
-                        }
-                        throw $reason;
-                    }
-                );
-            };
-        };
-    }
-
-    /**
-     * Writes transmission log entries to the configured log file location
-     */
-    private function transmissionLogger(string $type, ?string $message, ?int $statusCode = null, ?string $method = null, ?string $url = null, ?string $contentType = null, ?string $transactionId = null): void
-    {
-        // evaluate if logging is enabled
-        if (!$this->_transportLogState) {
-            return;
-        }
-
-        // build log entry with date and type
-        $logData = [
-            'date' => date('Y-m-d H:i:s.') . gettimeofday()['usec'],
-            'type' => $type,
-        ];
-
-        // add transaction ID for pairing request/response
-        if ($transactionId !== null) {
-            $logData['transaction'] = $transactionId;
-        }
-
-        // add method and URL for both request and response
-        if ($method !== null) {
-            $logData['method'] = $method;
-        }
-        if ($url !== null) {
-            $logData['url'] = $url;
-        }
-
-        // add status code for response
-        if ($statusCode !== null) {
-            $logData['status'] = $statusCode;
-        }
-
-        // add the message content if present
-        if ($message !== null && $message !== '') {
-            // check if content type indicates JSON
-            $isJson = false;
-            if ($contentType !== null && (
-                strpos($contentType, 'application/json') !== false ||
-                strpos($contentType, 'application/jmap+json') !== false
-            )) {
-                $isJson = true;
-            }
-
-            // if it's JSON content type, try to decode and keep as object/array for prettier logging
-            if ($isJson) {
-                $decoded = json_decode($message, true);
-                if ($decoded !== null) {
-                    $logData['data'] = $decoded;
-                } else {
-                    // fallback if JSON decode fails
-                    $logData['data'] = $message;
-                }
-            } else {
-                // for non-JSON, store as string
-                $logData['data'] = $message;
-            }
-        }
-
-        // encode to JSON and write to log file
-        $logEntry = json_encode($logData, JSON_UNESCAPED_SLASHES) . PHP_EOL;
-
-        // write to log file
-        file_put_contents($this->_transportLogLocation, $logEntry, FILE_APPEND);
+        return $this->transceive('POST', $location, $transportHeaders, $data)->getBody()->getContents();
     }
 
     /**

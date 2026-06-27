@@ -22,14 +22,18 @@ The library is built with PHP 8.0+ strict typing in mind, ensuring robust type s
 
 - **PHP** >= 8.0
 - **ext-json** - JSON extension for PHP
-- **Guzzle HTTP Client** >= 7.0
+- A **PSR-18** HTTP client and **PSR-17** HTTP factories. The library depends
+  only on the PSR interfaces (`psr/http-client`, `psr/http-factory`,
+  `psr/http-message`) and is not tied to any specific implementation. When no
+  client/factories are injected, an installed implementation is auto-discovered
+  via [`php-http/discovery`](https://github.com/php-http/discovery).
 
 ## Installation
 
-Install the library using Composer:
+Install the library, plus any PSR-18 client (Guzzle is used here as an example):
 
 ```bash
-composer require sebastiankrupinski/jmap-client-php
+composer require sebastiankrupinski/jmap-client-php guzzlehttp/guzzle
 ```
 
 Or, if you're manually managing dependencies in your `composer.json`:
@@ -37,7 +41,7 @@ Or, if you're manually managing dependencies in your `composer.json`:
 ```json
 {
     "require": {
-        "sebastiankrupinski/jmap-client-php": "^1.0",
+        "sebastiankrupinski/jmap-client-php": "^2.0",
         "guzzlehttp/guzzle": "^7.0"
     }
 }
@@ -48,6 +52,24 @@ Then run:
 ```bash
 composer install
 ```
+
+### Injecting a specific HTTP client
+
+To use a particular PSR-18 client and PSR-17 factories (for example Nextcloud's
+HTTP client so that SSRF protection, DNS pinning and proxy configuration apply),
+pass them to the constructor or via setters:
+
+```php
+$client = new Client('jmap.example.com:443', $authentication, $psr18Client, $requestFactory, $streamFactory);
+// or
+$client->setHttpClient($psr18Client);
+$client->setRequestFactory($requestFactory);
+$client->setStreamFactory($streamFactory);
+```
+
+> **Note:** TLS verification and proxy settings must be configured on the
+> injected client; `configureTransportVerification()` is deprecated and no longer
+> applies per request.
 
 ## Quick Start
 
