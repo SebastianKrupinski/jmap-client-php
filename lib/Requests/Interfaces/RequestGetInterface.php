@@ -40,4 +40,13 @@ interface RequestGetInterface
      * @return self
      */
     public function property(string ...$name): static;
+
+    /**
+     * Set which properties to fetch from another request result
+     *
+     * @param Request $request The request to reference
+     * @param string $selector The path to extract property names from
+     * @return self
+     */
+    public function propertyFromRequest(Request $request, string $selector): static;
 }
