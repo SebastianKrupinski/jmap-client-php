@@ -24,6 +24,7 @@ class ResponseClasses
         'AddressBook' => 'JmapClient\Responses\Contacts\AddressBookParameters',
         'ContactCard' => 'JmapClient\Responses\Contacts\ContactParameters',
         'FileNode' => 'JmapClient\Responses\Files\NodeParameters',
+        'Quota' => 'JmapClient\Responses\Quota\QuotaParameters',
     ];
 
     private static array $commands = [
@@ -100,6 +101,11 @@ class ResponseClasses
         'FileNode/changes' => 'JmapClient\Responses\Files\NodeChanges',
         'FileNode/query' => 'JmapClient\Responses\Files\NodeQuery',
         'FileNode/queryChanges' => 'JmapClient\Responses\Files\NodeQueryChanges',
+        // Quota
+        'Quota/get' => 'JmapClient\Responses\Quota\QuotaGet',
+        'Quota/changes' => 'JmapClient\Responses\Quota\QuotaChanges',
+        'Quota/query' => 'JmapClient\Responses\Quota\QuotaQuery',
+        'Quota/queryChanges' => 'JmapClient\Responses\Quota\QuotaQueryChanges',
     ];
 
     public static function listCommand(): array
