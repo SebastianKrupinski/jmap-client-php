@@ -62,7 +62,8 @@ class Client
     // Transport - request chokepoint built from the client and factories
     protected ?Transport $_transport = null;
     // Transport Cookie
-    protected ?string $_transportCookieJar = null;
+    protected bool $_transportCookiesEnabled = false;
+    protected ?CookieJar $_transportCookieJar = null;
     protected $_transportCookieStoreRetrieve = null;
     protected $_transportCookieStoreDeposit =  null;
     // Transport Request Retention
@@ -182,6 +183,16 @@ class Client
     {
         $this->_transportHttpErrors = $value;
         $this->_transport?->httpErrors($value);
+    }
+
+    /**
+     * Enables or disables an in-memory cookie jar carried across all requests.
+     */
+    public function configureTransportCookies(bool $value): void
+    {
+        $this->_transportCookiesEnabled = $value;
+        $this->_transportCookieJar = $value ? ($this->_transportCookieJar ?? new CookieJar()) : null;
+        $this->_transport?->setCookieJar($this->_transportCookieJar);
     }
 
     /**
@@ -682,6 +693,10 @@ class Client
             $transport->logState($this->_transportLogState);
             if ($this->_transportLogLocation !== '') {
                 $transport->logLocation($this->_transportLogLocation);
+            }
+            if ($this->_transportCookiesEnabled) {
+                $this->_transportCookieJar ??= new CookieJar();
+                $transport->setCookieJar($this->_transportCookieJar);
             }
             $this->_transport = $transport;
         }
