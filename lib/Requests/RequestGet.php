@@ -41,4 +41,14 @@ class RequestGet extends Request implements RequestGetInterface
 
         return $this;
     }
+
+    public function propertyFromRequest(Request $request, string $selector): static
+    {
+        $this->_command['#properties'] = new \stdClass();
+        $this->_command['#properties']->resultOf = $request->getIdentifier();
+        $this->_command['#properties']->name = $request->getClass() . '/' . $request->getMethod();
+        $this->_command['#properties']->path = $selector;
+
+        return $this;
+    }
 }
