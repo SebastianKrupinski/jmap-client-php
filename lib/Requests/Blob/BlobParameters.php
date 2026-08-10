@@ -26,13 +26,13 @@ class BlobParameters extends RequestParameters
 
     public function dataPlain(string $value): static
     {
-        $this->parameterStructured('data', 'data:asText', $value);
+        $this->parameterCollection('data', (object) ['data:asText' => $value]);
         return $this;
     }
 
     public function dataEncoded(string $value): static
     {
-        $this->parameterStructured('data', 'data:asBase64', $value);
+        $this->parameterCollection('data', (object) ['data:asBase64' => $value]);
         return $this;
     }
 }
