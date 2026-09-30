@@ -72,6 +72,15 @@ final class Session
     }
 
     /**
+     * Get the core capability limits
+     */
+    public function coreCapability(): ?CoreCapability
+    {
+        $capability = $this->capability(CoreCapability::ID);
+        return $capability !== null ? new CoreCapability($capability) : null;
+    }
+
+    /**
      * Get all accounts
      */
     public function accounts(): AccountCollection
