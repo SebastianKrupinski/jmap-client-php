@@ -359,6 +359,31 @@ if ($capabilities !== null) {
 }
 ```
 
+### Quotas (RFC 9425)
+
+```php
+use JmapClient\Requests\Quota\QuotaGet;
+
+if ($client->sessionCapable('quota')) {
+    $account = $client->sessionAccountDefault('quota');
+    $request = new QuotaGet($account->id());
+
+    foreach ($client->perform([$request])->first()->objects() as $quota) {
+        echo sprintf(
+            "%s: %d of %d %s used\n",
+            $quota->name(),
+            $quota->used(),
+            $quota->hardLimit(),
+            $quota->resource(),
+        );
+    }
+}
+```
+
+The quota extension also supports `QuotaChanges`, `QuotaQuery`, and
+`QuotaQueryChanges`. Query filters cover `name`, `scope`, `resource`, and
+`type`; sorting is available for `name` and `used`.
+
 ### Session Information
 
 ```php
