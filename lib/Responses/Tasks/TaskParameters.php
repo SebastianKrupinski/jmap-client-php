@@ -18,7 +18,11 @@ class TaskParameters extends ResponseParameters
 
     public function in(): array|null
     {
-        return array_keys($this->parameter('taskListId'));
+        $value = $this->parameter('taskListId');
+        if ($value !== null) {
+            return array_keys($value);
+        }
+        return null;
     }
 
     public function id(): string|null
