@@ -19,9 +19,12 @@ class EventNotificationTriggerRelativeParameters extends ResponseParameters
         return 'relative';
     }
 
+    /**
+     * start or end, "start" when omitted (RFC 8984 4.5.2)
+     */
     public function anchor(): string
     {
-        return $this->parameter('relativeTo');
+        return $this->parameter('relativeTo') ?? 'start';
     }
 
     public function offset(): DateInterval
