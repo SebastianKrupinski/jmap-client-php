@@ -400,4 +400,16 @@ class MailParametersTest extends TestCase
     {
         $this->assertNull($this->mail->keyword('missing-label'));
     }
+
+    public function testInNumericIds(): void
+    {
+        $mail = new MailParameters(json_decode('{"mailboxIds":{"1":true,"b":true}}', true));
+
+        $this->assertSame(['1', 'b'], $mail->in());
+    }
+
+    public function testInMissing(): void
+    {
+        $this->assertSame([], (new MailParameters([]))->in());
+    }
 }

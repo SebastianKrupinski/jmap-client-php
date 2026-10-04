@@ -18,11 +18,7 @@ class EventParameters extends EventCommonParameters
 
     public function in(): array|null
     {
-        $value = $this->parameter('calendarIds');
-        if ($value !== null) {
-            return array_keys($value);
-        }
-        return null;
+        return $this->parameterKeys('calendarIds');
     }
 
     public function id(): string|null
