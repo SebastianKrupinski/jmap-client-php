@@ -25,4 +25,9 @@ class EventMutationParameters extends EventCommonParameters
     {
         return $this->parameter('recurrenceIdTimeZone');
     }
+
+    public function excluded(): bool
+    {
+        return $this->parameter('excluded') === true;
+    }
 }
