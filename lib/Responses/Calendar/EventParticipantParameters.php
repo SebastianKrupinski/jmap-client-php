@@ -33,6 +33,11 @@ class EventParticipantParameters extends ResponseParameters
         return $this->parameter('email');
     }
 
+    public function calendarAddress(): string|null
+    {
+        return $this->parameter('calendarAddress');
+    }
+
     public function status(): string|null
     {
         return $this->parameter('participationStatus');
