@@ -18,11 +18,7 @@ class ContactParameters extends ResponseParameters
 
     public function in(): array|null
     {
-        $value = $this->parameter('addressbookIds');
-        if ($value !== null) {
-            return array_keys($value);
-        }
-        return null;
+        return $this->parameterKeys('addressbookIds');
     }
 
     public function id(): string|null
@@ -185,8 +181,8 @@ class ContactParameters extends ResponseParameters
 
     public function tags(): array|null
     {
-        $value = $this->parameter('keywords');
-        return $value ? array_keys((array)$value) : null;
+        $value = $this->parameterKeys('keywords');
+        return $value !== [] ? $value : null;
     }
 
     public function notes(): array|null

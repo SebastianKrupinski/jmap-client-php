@@ -31,7 +31,7 @@ class MailParameters extends ResponseParameters
 
     public function in(): array
     {
-        return array_keys($this->parameter('mailboxIds')) ?? [];
+        return $this->parameterKeys('mailboxIds') ?? [];
     }
 
     public function id(): string|null

@@ -27,4 +27,11 @@ class TaskParametersTest extends TestCase
     {
         $this->assertNull((new TaskParameters([]))->in());
     }
+
+    public function testInNumericIds(): void
+    {
+        $parameters = new TaskParameters(json_decode('{"taskListId":{"1":true}}', true));
+
+        $this->assertSame(['1'], $parameters->in());
+    }
 }

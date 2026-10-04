@@ -27,4 +27,11 @@ class EventParametersTest extends TestCase
     {
         $this->assertNull((new EventParameters([]))->in());
     }
+
+    public function testInNumericIds(): void
+    {
+        $parameters = new EventParameters(json_decode('{"calendarIds":{"1":true,"b":true}}', true));
+
+        $this->assertSame(['1', 'b'], $parameters->in());
+    }
 }
