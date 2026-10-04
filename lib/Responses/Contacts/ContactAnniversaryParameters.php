@@ -24,13 +24,21 @@ class ContactAnniversaryParameters extends ResponseParameters
         if ($date === null) {
             return $date;
         }
-        if ($date->{'@type'} === 'Timestamp') {
+        // PartialDate is the default type, a Timestamp must declare its type
+        if (($date['@type'] ?? null) === 'Timestamp') {
             return new ContactDateStampParameters($date);
         }
-        if ($date->{'@type'} === 'PartialDate') {
-            return new ContactDatePartialParameters($date);
-        }
+        return new ContactDatePartialParameters($date);
+    }
 
-        return null;
+    public function kind(): string|null
+    {
+        return $this->parameter('kind');
+    }
+
+    public function place(): ContactAddressParameters|null
+    {
+        $place = $this->parameter('place');
+        return $place !== null ? new ContactAddressParameters($place) : null;
     }
 }
