@@ -49,6 +49,12 @@ class EventParticipantParameters extends RequestParameters
         return $this;
     }
 
+    public function calendarAddress(string $value): static
+    {
+        $this->parameter('calendarAddress', $value);
+        return $this;
+    }
+
     public function send(string $protocol, string $value): static
     {
         $this->parameterStructured('sendTo', $protocol, $value);

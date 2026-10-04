@@ -93,9 +93,16 @@ class EventRecurrenceRuleParameters extends RequestParameters
         return $this;
     }
 
-    public function byMonthOfYear(int ...$value): static
+    /**
+     * Months are strings in JSCalendar, "1" to "12" with an "L" suffix for leap months (RFC 8984 4.3.3)
+     */
+    public function byMonthOfYear(int|string ...$value): static
     {
-        $this->parameter('byMonth', $value);
+        $months = [];
+        foreach ($value as $month) {
+            $months[] = (string)$month;
+        }
+        $this->parameter('byMonth', $months);
         return $this;
     }
 
