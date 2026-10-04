@@ -21,10 +21,7 @@ class ContactDateStampParameters extends ResponseParameters
 
     public function value(): DateTimeImmutable|null
     {
-        $date = $this->parameter('value');
-        if ($date === null) {
-            return new DateTimeImmutable($date);
-        }
-        return null;
+        $date = $this->parameter('utc');
+        return $date !== null ? new DateTimeImmutable($date) : null;
     }
 }

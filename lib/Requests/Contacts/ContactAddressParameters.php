@@ -50,6 +50,16 @@ class ContactAddressParameters extends RequestParameters
         }
     }
 
+    public function context(string ...$value): static
+    {
+        $collection = [];
+        foreach ($value as $entry) {
+            $collection[$entry] = true;
+        }
+        $this->parameter('contexts', (object)$collection);
+        return $this;
+    }
+
     public function separator(string $value): static
     {
         $this->parameter('defaultSeparator', $value);
