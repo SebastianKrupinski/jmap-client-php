@@ -28,6 +28,11 @@ class ContactAddressParameters extends ResponseParameters
         return $components;
     }
 
+    public function context(): array
+    {
+        return array_keys((array)($this->parameter('contexts') ?? []));
+    }
+
     public function separator(): string|null
     {
         return $this->parameter('defaultSeparator');
@@ -40,7 +45,7 @@ class ContactAddressParameters extends ResponseParameters
 
     public function country(): string|null
     {
-        return $this->parameter('country');
+        return $this->parameter('countryCode');
     }
 
     public function coordinates(): string|null
