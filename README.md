@@ -248,6 +248,47 @@ foreach ($response->objects() as $message) {
 }
 ```
 
+#### Retrieving Every Message in a Large Mailbox
+
+Servers cap the number of ids a query returns and the number of objects a get accepts.
+The `Traverser` follows the query pages and splits the gets to fit the server limits, yielding one page at a time.
+
+```php
+use JmapClient\Traversal\Traverser;
+use JmapClient\Requests\Mail\MailChanges;
+use JmapClient\Requests\Mail\MailGet;
+use JmapClient\Requests\Mail\MailQuery;
+
+$traverser = new Traverser($client);
+
+$query = new MailQuery($account->id());
+$query->filter()->in($inbox->id());
+$get = new MailGet($account->id());
+$get->property('id', 'subject');
+
+// requests are templates, they are cloned for every call and never modified
+$result = $traverser->queryAndFetch($query, $get);
+
+foreach ($result->pages() as $messages) {
+    foreach ($messages as $message) {
+        echo $message->subject() . "\n";
+    }
+}
+
+// object state captured before the query, use it to retrieve later changes
+$state = $result->state();
+
+$changes = $traverser->changes(new MailChanges($account->id()), $state);
+foreach ($changes->pages() as $page) {
+    // $page->created(), $page->updated(), $page->deleted()
+}
+// state after the last page, only available once every page was iterated
+$state = $changes->state();
+```
+
+`query()` returns pages of ids only and `fetch()` retrieves objects for a known list of ids.
+A `QueryChangedException` is thrown when the query result changes while paging, and a `MethodException` when the server rejects a call.
+
 ### Working with Contacts
 
 #### Fetching Address Books
