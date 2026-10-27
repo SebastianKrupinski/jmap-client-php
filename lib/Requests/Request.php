@@ -66,6 +66,42 @@ class Request implements \JsonSerializable
         $this->_command = & $this->_request[self::REQUEST_COMMAND];
     }
 
+    /**
+     * Copies the command so the clone can be modified independently, and assigns the clone a new identifier
+     */
+    public function __clone()
+    {
+        $this->_request = self::copy($this->_request);
+        $this->_command = & $this->_request[self::REQUEST_COMMAND];
+        $this->setIdentifier(uniqid());
+    }
+
+    /**
+     * Deep copies arrays and stdClass objects, breaking any references held by filter, sort or parameter objects
+     */
+    private static function copy(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            $copy = [];
+            foreach ($value as $key => $entry) {
+                $copy[$key] = self::copy($entry);
+            }
+            return $copy;
+        }
+        if ($value instanceof \stdClass) {
+            $copy = new \stdClass();
+            foreach (get_object_vars($value) as $key => $entry) {
+                $copy->$key = self::copy($entry);
+            }
+            return $copy;
+        }
+        if (is_object($value)) {
+            return clone $value;
+        }
+
+        return $value;
+    }
+
     public function jsonSerialize(): array
     {
         return $this->_request;
