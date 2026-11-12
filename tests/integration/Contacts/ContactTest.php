@@ -469,15 +469,17 @@ class ContactTest extends TestCase
 
     public function testContactQueryWithSorting(): void
     {
-        // construct create requests for two contacts with different surnames
+        // construct create requests for two contacts
         $data1 = $this->generateContactData('minimal');
         [$r0, $id1] = $this->buildContactRequest($this->addressBookId, $data1);
 
         $data2 = $this->generateContactData('with_email');
         [$r1, $id2] = $this->buildContactRequest($this->addressBookId, $data2);
 
-        // transceive
-        $this->client->perform([$r0, $r1]);
+        // transceive separately, a second apart, so the created timestamps differ
+        $this->client->perform([$r0]);
+        sleep(1);
+        $this->client->perform([$r1]);
 
         // construct ascending sort query
         $rq0 = new ContactQueryRequest($this->account->id());

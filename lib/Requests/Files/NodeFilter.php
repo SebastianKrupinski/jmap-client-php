@@ -18,16 +18,22 @@ class NodeFilter extends RequestFilter
     public function in(string | null $value): static
     {
         if (is_null($value) || $value === 'root') {
-            $this->condition('isTopLevel', $value);
+            $this->condition('isTopLevel', true);
         } else {
             $this->condition('parentId', $value);
         }
         return $this;
     }
 
-    public function contains(string $value): static
+    public function descendantOf(string $value): static
     {
         $this->condition('ancestorId', $value);
+        return $this;
+    }
+
+    public function ancestorOf(string $value): static
+    {
+        $this->condition('descendantId', $value);
         return $this;
     }
 
@@ -85,9 +91,9 @@ class NodeFilter extends RequestFilter
 
     // Property Filters
 
-    public function is(bool $value): static
+    public function kind(NodeKind $value): static
     {
-        $this->condition('hasType', $value);
+        $this->condition('nodeType', $value->value);
         return $this;
     }
 
@@ -117,19 +123,19 @@ class NodeFilter extends RequestFilter
 
     public function formatIs(string $value): static
     {
-        $this->condition('type', $value);
+        $this->condition('mediaType', $value);
         return $this;
     }
 
     public function formatMatches(string $value): static
     {
-        $this->condition('typeMatch', $value);
+        $this->condition('mediaTypeMatch', $value);
         return $this;
     }
 
     public function hasRole(string $value): static
     {
-        $this->condition('hasRole', $value);
+        $this->condition('role', $value);
         return $this;
     }
 

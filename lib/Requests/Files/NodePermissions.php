@@ -21,7 +21,25 @@ class NodePermissions extends RequestPermissions
 
     public function write(bool $value): static
     {
-        $this->parameter('mayWrite', $value);
+        $this->parameter('mayModifyContent', $value);
+        return $this;
+    }
+
+    public function add(bool $value): static
+    {
+        $this->parameter('mayAddChildren', $value);
+        return $this;
+    }
+
+    public function rename(bool $value): static
+    {
+        $this->parameter('mayRename', $value);
+        return $this;
+    }
+
+    public function delete(bool $value): static
+    {
+        $this->parameter('mayDelete', $value);
         return $this;
     }
 

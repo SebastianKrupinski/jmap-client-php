@@ -6,12 +6,12 @@ A fully-typed JMAP (JSON Meta Application Protocol) client library for PHP.
 
 This project provides a type-safe, object-oriented PHP client library for interacting with JMAP servers. JMAP is a modern, JSON-based protocol for accessing email, calendar, and contact data, designed to be more efficient and flexible than traditional protocols like IMAP and CalDAV.
 
-The library is built with PHP 8.0+ strict typing in mind, ensuring robust type safety and excellent IDE support throughout your codebase.
+The library is built with PHP 8.1+ strict typing in mind, ensuring robust type safety and excellent IDE support throughout your codebase.
 
 ## Features
 
 - **Broad JMAP Coverage** - Request and response types for core, mail, contacts, calendar, files, and tasks workflows
-- **Type-Safe** - Built with PHP 8.0+ strict types for better code quality and IDE support
+- **Type-Safe** - Built with PHP 8.1+ strict types for better code quality and IDE support
 - **Multiple Authentication Methods** - Support for Basic auth, bearer tokens, JSON login flows, cookie-backed sessions, and custom authentication schemes
 - **Session Management** - Automatic session discovery, account lookup, and capability negotiation
 - **Request Bundling** - Compose related JMAP method calls into a single round trip
@@ -20,7 +20,7 @@ The library is built with PHP 8.0+ strict typing in mind, ensuring robust type s
 
 ## Requirements
 
-- **PHP** >= 8.0
+- **PHP** >= 8.1
 - **ext-json** - JSON extension for PHP
 - A **PSR-18** HTTP client and **PSR-17** HTTP factories. The library depends
   only on the PSR interfaces (`psr/http-client`, `psr/http-factory`,

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Files;
 
+use JmapClient\Requests\Files\NodeKind;
 use JmapClient\Responses\ResponseParameters;
 
 class NodeParameters extends ResponseParameters
@@ -16,6 +17,12 @@ class NodeParameters extends ResponseParameters
     public function id(): string|null
     {
         return $this->parameter('id');
+    }
+
+    public function kind(): NodeKind|null
+    {
+        $value = $this->parameter('@type');
+        return is_string($value) ? NodeKind::tryFrom($value) : null;
     }
 
     public function in(): string|null
@@ -40,7 +47,12 @@ class NodeParameters extends ResponseParameters
 
     public function type(): string|null
     {
-        return $this->parameter('type');
+        return $this->parameter('mediaType');
+    }
+
+    public function target(): array|null
+    {
+        return $this->parameter('target');
     }
 
     public function role(): string|null
@@ -56,6 +68,11 @@ class NodeParameters extends ResponseParameters
     public function modified(): string|null
     {
         return $this->parameter('modified');
+    }
+
+    public function changed(): string|null
+    {
+        return $this->parameter('changed');
     }
 
     public function accessed(): string|null

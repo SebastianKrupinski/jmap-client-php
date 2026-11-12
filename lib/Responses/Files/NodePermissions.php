@@ -18,9 +18,24 @@ class NodePermissions extends ResponsePermissions
         return $this->parameter('mayRead');
     }
 
+    public function add(): bool|null
+    {
+        return $this->parameter('mayAddChildren');
+    }
+
+    public function rename(): bool|null
+    {
+        return $this->parameter('mayRename');
+    }
+
+    public function delete(): bool|null
+    {
+        return $this->parameter('mayDelete');
+    }
+
     public function write(): bool|null
     {
-        return $this->parameter('mayWrite');
+        return $this->parameter('mayModifyContent');
     }
 
     public function share(): bool|null

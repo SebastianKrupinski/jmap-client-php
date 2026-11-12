@@ -98,6 +98,7 @@ class ResponseClasses
         // FileNode
         'FileNode/get' => 'JmapClient\Responses\Files\NodeGet',
         'FileNode/set' => 'JmapClient\Responses\Files\NodeSet',
+        'FileNode/copy' => 'JmapClient\Responses\Files\NodeCopy',
         'FileNode/changes' => 'JmapClient\Responses\Files\NodeChanges',
         'FileNode/query' => 'JmapClient\Responses\Files\NodeQuery',
         'FileNode/queryChanges' => 'JmapClient\Responses\Files\NodeQueryChanges',

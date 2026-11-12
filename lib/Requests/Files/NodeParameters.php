@@ -14,11 +14,12 @@ use JmapClient\Requests\RequestParameters;
 class NodeParameters extends RequestParameters
 {
     private const PARAMETER_LIST = [
+        '@type',
         'parentId',
         'blobId',
-        'size',
         'name',
-        'type',
+        'mediaType',
+        'target',
         'role',
         'created',
         'modified',
@@ -26,11 +27,18 @@ class NodeParameters extends RequestParameters
         'executable',
         'isSubscribed',
         'shareWith',
+        'metadata',
     ];
 
     public function parametersRaw(array $value): static
     {
         $this->_parameters = (object) array_intersect_key($value, array_flip(self::PARAMETER_LIST));
+        return $this;
+    }
+
+    public function kind(NodeKind $value): static
+    {
+        $this->parameter('@type', $value->value);
         return $this;
     }
 
@@ -52,15 +60,15 @@ class NodeParameters extends RequestParameters
         return $this;
     }
 
-    public function size(int|null $value): static
+    public function type(string|null $value): static
     {
-        $this->parameter('size', $value);
+        $this->parameter('mediaType', $value);
         return $this;
     }
 
-    public function type(string|null $value): static
+    public function target(array $value): static
     {
-        $this->parameter('type', $value);
+        $this->parameter('target', $value);
         return $this;
     }
 
@@ -102,10 +110,13 @@ class NodeParameters extends RequestParameters
 
     public function sharees(string $id, ?NodePermissions $permissions = null): NodePermissions
     {
-        if (!isset($this->_parameters->shareWith?->$id)) {
-            $this->parameterStructured('shareWith', $id, $permissions ?? new \stdClass());
-        } else {
+        if (!isset($this->_parameters->shareWith) || !is_object($this->_parameters->shareWith)) {
+            $this->_parameters->shareWith = new \stdClass();
+        }
+        if ($permissions !== null) {
             $permissions->bind($this->_parameters->shareWith->$id);
+        } elseif (!isset($this->_parameters->shareWith->$id)) {
+            $this->_parameters->shareWith->$id = new \stdClass();
         }
         return new NodePermissions($this->_parameters->shareWith->$id);
     }
