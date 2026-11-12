@@ -378,6 +378,72 @@ class NodeTest extends TestCase
         $this->assertSame(NodeKind::Directory, $node->kind());
     }
 
+    public function testNodeCopyBetweenAccounts(): void
+    {
+        // connect as the second user, who owns the source node
+        $owner = ClientFactory::instance('service2');
+        $owner->connect();
+        $ownerAccount = $owner->sessionAccountDefault('filenode');
+        $this->assertNotNull($ownerAccount, 'Second user has no FileNode account');
+
+        // construct create request for a directory shared read only with the first user
+        $sourceId = uniqid();
+        $r0 = new NodeSetRequest($ownerAccount->id());
+        $p0 = $r0->create($sourceId);
+        $p0->kind(NodeKind::Directory);
+        $p0->label('Parent File Node ' . time());
+        $p0->sharees($this->account->id())->read(true);
+
+        // transceive
+        $bundle = $owner->perform([$r0]);
+        $result = $bundle->first()->createSuccess($sourceId);
+        $this->assertNotNull($result, json_encode($bundle->first()->createFailure($sourceId)));
+        $sourceId = $result['id'];
+
+        try {
+            // reconnect as the first user, so the session lists the shared account
+            $client = ClientFactory::instance('service1');
+            $client->connect();
+            $sharedAccount = $client->sessionAccounts()?->account($ownerAccount->id());
+            $this->assertNotNull($sharedAccount, 'Shared account is not listed in the session of the first user');
+            $this->assertFalse($sharedAccount->personal());
+
+            // construct copy request from the shared account into the personal account
+            $copyId = uniqid();
+            $copyLabel = 'Test File Node Copy ' . time();
+            $r1 = new NodeCopyRequest($this->account->id());
+            $r1->sourceAccount($sharedAccount->id());
+            $r1->copy($copyId, $sourceId)->label($copyLabel);
+
+            // transceive
+            $bundle = $client->perform([$r1]);
+
+            // verify copy response
+            $this->assertEquals(1, $bundle->tally());
+            $response = $bundle->first();
+            $this->assertInstanceOf(NodeCopyResponse::class, $response, $response instanceof ResponseException ? $response->type() . ': ' . $response->description() : '');
+            $this->assertEquals($sharedAccount->id(), $response->sourceAccount());
+            $this->assertEquals($this->account->id(), $response->account());
+            $result = $response->createSuccess($copyId);
+            $this->assertNotNull($result, json_encode($response->createFailure($copyId)));
+            $this->assertArrayHasKey('id', $result);
+
+            // verify the copy exists in the personal account with the new name
+            $r2 = new NodeGetRequest($this->account->id());
+            $r2->target($result['id']);
+            $bundle = $client->perform([$r2]);
+            $node = $bundle->first()->object(0);
+            $this->assertEquals($copyLabel, $node->label());
+            $this->assertSame(NodeKind::Directory, $node->kind());
+        } finally {
+            // remove the source node from the second user's account
+            $r3 = new NodeSetRequest($ownerAccount->id());
+            $r3->destroyRecursive(true);
+            $r3->delete($sourceId);
+            $owner->perform([$r3]);
+        }
+    }
+
     public function testNodeGetSpecific(): void
     {
         // construct create request

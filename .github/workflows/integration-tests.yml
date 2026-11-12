@@ -7,8 +7,9 @@ on:
 
 env:
   STALWART_ADMIN_PWD: "secretpassword"
-  # Must satisfy Stalwart's default zxcvbn password policy and match tests/resources/services.json
+  # Must satisfy Stalwart's default zxcvbn password policy and match tests/resources/services.json (service1, service2)
   STALWART_USER_PWD: "violet-harbor-cactus-lantern"
+  STALWART_USER2_PWD: "amber-glacier-pocket-thunder"
 
 jobs:
   integration:
@@ -65,12 +66,20 @@ jobs:
           wait_for http://localhost:8080/healthz/ready
 
           domain_id=$(jmap '["x:Domain/query", {"filter": {"name": "example1.com"}}, "0"]' | jq -er '.ids[0]')
-          jmap "$(jq -nc --arg domain "$domain_id" --arg pwd "$STALWART_USER_PWD" '["x:Account/set", {"create": {"u1": {
-            "@type": "User",
-            "name": "user1",
-            "domainId": $domain,
-            "credentials": {"0": {"@type": "Password", "secret": $pwd}}
-          }}}, "0"]')"
+          jmap "$(jq -nc --arg domain "$domain_id" --arg pwd1 "$STALWART_USER_PWD" --arg pwd2 "$STALWART_USER2_PWD" '["x:Account/set", {"create": {
+            "u1": {
+              "@type": "User",
+              "name": "user1",
+              "domainId": $domain,
+              "credentials": {"0": {"@type": "Password", "secret": $pwd1}}
+            },
+            "u2": {
+              "@type": "User",
+              "name": "user2",
+              "domainId": $domain,
+              "credentials": {"0": {"@type": "Password", "secret": $pwd2}}
+            }
+          }}, "0"]')"
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2

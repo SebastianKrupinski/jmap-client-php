@@ -7,5 +7,14 @@
         "authentication": "basic",
         "identifier": "user1@example1.com",
         "secret": "violet-harbor-cactus-lantern"
+    },
+    "service2": {
+        "protocol": "http",
+        "host": "localhost",
+        "port": 8080,
+        "security": 0,
+        "authentication": "basic",
+        "identifier": "user2@example1.com",
+        "secret": "amber-glacier-pocket-thunder"
     }
 }
