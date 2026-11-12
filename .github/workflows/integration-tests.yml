@@ -5,13 +5,23 @@ on:
     branches: ["main"]
   workflow_dispatch:
 
+env:
+  STALWART_ADMIN_PWD: "secretpassword"
+  # Must satisfy Stalwart's default zxcvbn password policy and match tests/resources/services.json
+  STALWART_USER_PWD: "violet-harbor-cactus-lantern"
+
 jobs:
   integration:
     runs-on: ubuntu-latest
 
     services:
       stalwart:
-        image: stalwartlabs/stalwart:v0.15.5
+        image: stalwartlabs/stalwart:v1.1.0
+        env:
+          STALWART_RECOVERY_ADMIN: admin:${{ env.STALWART_ADMIN_PWD }}
+          # Base URL of the published JMAP discovery URLs (apiUrl/downloadUrl/uploadUrl),
+          # otherwise https://<defaultHostname> on port 443
+          STALWART_PUBLIC_URL: http://localhost:8080
         ports:
           - 8080:8080
 
@@ -26,52 +36,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Wait for Stalwart and capture admin password
-        id: stalwart
+      - name: Provision Stalwart
+        env:
+          STALWART_CONTAINER: ${{ job.services.stalwart.id }}
         run: |
-          container_id='${{ job.services.stalwart.id }}'
-          service_hostname=$(docker inspect -f '{{ .Config.Hostname }}' "$container_id")
+          set -euo pipefail
+          jmap() {
+            jq -nc --argjson call "$1" '{using: ["urn:ietf:params:jmap:core", "urn:stalwart:jmap"], methodCalls: [$call]}' \
+              | curl -sSf -u "admin:$STALWART_ADMIN_PWD" -H 'Content-Type: application/json' -d @- http://localhost:8080/jmap/ \
+              | jq -e '.methodResponses[0] | if .[0] == "error" or ((.[1].notCreated // .[1].notUpdated // {}) | length > 0) then error(tojson) else .[1] end'
+          }
+          wait_for() {
+            timeout 120 sh -c "until curl -sf '$1' > /dev/null; do sleep 2; done"
+          }
 
-          for attempt in $(seq 1 30); do
-            if curl -sf -m 5 http://localhost:8080/login >/dev/null 2>&1; then
-              break
-            fi
+          # A fresh server starts in bootstrap mode and only accepts the Bootstrap object
+          wait_for http://localhost:8080/healthz/live
+          jmap '["x:Bootstrap/set", {"update": {"singleton": {
+            "defaultHostname": "mail.example1.com",
+            "defaultDomain": "example1.com",
+            "requestTlsCertificate": false,
+            "generateDkimKeys": false,
+            "tracer": {"@type": "Stdout"}
+          }}}, "0"]'
 
-            if [ "$attempt" -eq 30 ]; then
-              echo "Stalwart did not become ready in time." >&2
-              docker logs "$container_id" >&2
-              exit 1
-            fi
+          # The configuration written by the bootstrap is only loaded on restart
+          docker restart "$STALWART_CONTAINER"
+          wait_for http://localhost:8080/healthz/ready
 
-            sleep 2
-          done
-
-          admin_password=$(docker logs "$container_id" 2>&1 | sed -n "s/.*with password '\([^']*\)'.*/\1/p" | tail -n 1)
-
-          if [ -z "$admin_password" ]; then
-            echo "Unable to extract Stalwart admin password from service logs." >&2
-            docker logs "$container_id" >&2
-            exit 1
-          fi
-
-          echo "admin_password=$admin_password" >> "$GITHUB_OUTPUT"
-          echo "service_hostname=$service_hostname" >> "$GITHUB_OUTPUT"
-
-      - name: Create domain and account in Stalwart
-        run: |
-          curl --retry 10 --retry-delay 3 --retry-connrefused -sf -X POST http://localhost:8080/api/principal \
-            -u "admin:${{ steps.stalwart.outputs.admin_password }}" \
-            -H 'Content-Type: application/json' \
-            -d '{"type":"domain","name":"example1.com","description":"Test domain"}'
-          curl -sf -X POST http://localhost:8080/api/principal \
-            -u "admin:${{ steps.stalwart.outputs.admin_password }}" \
-            -H 'Content-Type: application/json' \
-            -d '{"type":"individual","name":"user1@example1.com","secrets":["Password1234"],"emails":["user1@example1.com"],"roles":["user"],"description":"Test User 1"}'
-
-      - name: Add test hostnames to /etc/hosts
-        run: |
-          echo "127.0.0.1 example1.com" | sudo tee -a /etc/hosts
-          echo "127.0.0.1 ${{ steps.stalwart.outputs.service_hostname }}" | sudo tee -a /etc/hosts
+          domain_id=$(jmap '["x:Domain/query", {"filter": {"name": "example1.com"}}, "0"]' | jq -er '.ids[0]')
+          jmap "$(jq -nc --arg domain "$domain_id" --arg pwd "$STALWART_USER_PWD" '["x:Account/set", {"create": {"u1": {
+            "@type": "User",
+            "name": "user1",
+            "domainId": $domain,
+            "credentials": {"0": {"@type": "Password", "secret": $pwd}}
+          }}}, "0"]')"
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
@@ -82,9 +81,13 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
-        
+
       - name: Run integration tests
         run: composer test:integration
+
+      - name: Print Stalwart logs
+        if: ${{ failure() }}
+        run: docker logs ${{ job.services.stalwart.id }}
 
   integration-test:
     runs-on: ubuntu-latest
