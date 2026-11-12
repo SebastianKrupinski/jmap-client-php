@@ -17,6 +17,7 @@ use JmapClient\Requests\Mail\MailSubmissionGet as MailSubmissionGetRequest;
 use JmapClient\Requests\Mail\MailSubmissionSet as MailSubmissionSetRequest;
 use JmapClient\Requests\Mail\MailSubmissionUndoStatus;
 use JmapClient\Responses\Mail\MailSubmissionGet as MailSubmissionGetResponse;
+use JmapClient\Responses\Mail\MailSubmissionParameters;
 use JmapClient\Responses\ResponseException;
 use JmapClient\Session\Account;
 use JmapClient\Tests\Integration\ClientFactory;
@@ -55,7 +56,12 @@ class MailSubmissionTest extends TestCase
         }
     }
 
-    public function testMailSubmissionReadsSubmissionProperties(): void
+    /**
+     * Create the sending identity, a mailbox and a message to the same user so delivery stays local
+     *
+     * @return string the message id
+     */
+    private function createMessage(): string
     {
         // construct create requests for the sending identity and a mailbox to hold the message
         $identityId = uniqid();
@@ -76,7 +82,7 @@ class MailSubmissionTest extends TestCase
         $this->assertNotNull($result, json_encode($bundle->response(1)->createFailure($mailboxId)));
         $this->mailboxId = $result['id'];
 
-        // construct create request for the message, sent to the same user so delivery stays local
+        // construct create request for the message
         $emailId = uniqid();
         $r2 = new MailSetRequest($this->account->id());
         $p2 = $r2->create($emailId);
@@ -90,30 +96,45 @@ class MailSubmissionTest extends TestCase
         $bundle = $this->client->perform([$r2]);
         $result = $bundle->first()->createSuccess($emailId);
         $this->assertNotNull($result, json_encode($bundle->first()->createFailure($emailId)));
-        $emailId = $result['id'];
+        return $result['id'];
+    }
 
-        // construct submission request with an explicit envelope
+    /**
+     * Submit the message and return the submission id
+     *
+     * @param array<string,string|null> $parameters SMTP MAIL FROM parameters
+     */
+    private function submit(string $emailId, array $parameters = []): string
+    {
         $submissionId = uniqid();
-        $r3 = new MailSubmissionSetRequest($this->account->id());
-        $p3 = $r3->create($submissionId);
-        $p3->identity($this->identityId);
-        $p3->message($emailId);
-        $p3->from($this->address);
-        $p3->to([$this->address]);
+        $r0 = new MailSubmissionSetRequest($this->account->id());
+        $p0 = $r0->create($submissionId);
+        $p0->identity($this->identityId);
+        $p0->message($emailId);
+        $p0->from($this->address, $parameters);
+        $p0->to([$this->address]);
 
-        // transceive
-        $bundle = $this->client->perform([$r3]);
+        $bundle = $this->client->perform([$r0]);
         $response = $bundle->first();
         $this->assertNotInstanceOf(ResponseException::class, $response, $response instanceof ResponseException ? $response->type() . ': ' . $response->description() : '');
         $result = $response->createSuccess($submissionId);
         $this->assertNotNull($result, json_encode($response->createFailure($submissionId)));
+        return $result['id'];
+    }
 
-        // fetch the submission
-        $r4 = new MailSubmissionGetRequest($this->account->id());
-        $r4->target($result['id']);
-        $bundle = $this->client->perform([$r4]);
+    private function fetch(string $submissionId): MailSubmissionParameters
+    {
+        $r0 = new MailSubmissionGetRequest($this->account->id());
+        $r0->target($submissionId);
+        $bundle = $this->client->perform([$r0]);
         $this->assertInstanceOf(MailSubmissionGetResponse::class, $bundle->first());
-        $submission = $bundle->first()->object(0);
+        return $bundle->first()->object(0);
+    }
+
+    public function testMailSubmissionReadsSubmissionProperties(): void
+    {
+        $emailId = $this->createMessage();
+        $submission = $this->fetch($this->submit($emailId));
 
         // verify the submission properties
         $this->assertSame($this->identityId, $submission->identity());
@@ -125,5 +146,24 @@ class MailSubmissionTest extends TestCase
         $this->assertInstanceOf(MailSubmissionUndoStatus::class, $submission->undoStatus());
         $this->assertIsArray($submission->dsnBlobs());
         $this->assertIsArray($submission->mdnBlobs());
+    }
+
+    public function testMailSubmissionCancel(): void
+    {
+        // hold the message in the queue for an hour, so it can still be canceled
+        $submissionId = $this->submit($this->createMessage(), ['HOLDFOR' => '3600']);
+        $this->assertSame(MailSubmissionUndoStatus::Pending, $this->fetch($submissionId)->undoStatus());
+
+        // construct cancel request
+        $r0 = new MailSubmissionSetRequest($this->account->id());
+        $r0->update($submissionId)->cancel();
+
+        // transceive
+        $bundle = $this->client->perform([$r0]);
+        $response = $bundle->first();
+        $this->assertNotNull($response->updateSuccess($submissionId), json_encode($response->updateFailure($submissionId)));
+
+        // verify the submission is canceled
+        $this->assertSame(MailSubmissionUndoStatus::Canceled, $this->fetch($submissionId)->undoStatus());
     }
 }

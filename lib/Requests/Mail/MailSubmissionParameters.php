@@ -30,9 +30,13 @@ class MailSubmissionParameters extends RequestParameters
         return $this;
     }
 
-    public function from(string $value): static
+    public function from(string $value, array $parameters = []): static
     {
-        $this->parameterStructured('envelope', 'mailFrom', (object) ['email' => $value]);
+        $address = ['email' => $value];
+        if ($parameters !== []) {
+            $address['parameters'] = (object) $parameters;
+        }
+        $this->parameterStructured('envelope', 'mailFrom', (object) $address);
         return $this;
     }
 
@@ -43,6 +47,12 @@ class MailSubmissionParameters extends RequestParameters
             $recipients[] = ((object) ['email' => $entry]);
         }
         $this->parameterStructured('envelope', 'rcptTo', $recipients);
+        return $this;
+    }
+
+    public function cancel(): static
+    {
+        $this->parameter('undoStatus', MailSubmissionUndoStatus::Canceled->value);
         return $this;
     }
 }
