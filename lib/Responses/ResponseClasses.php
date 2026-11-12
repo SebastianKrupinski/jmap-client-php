@@ -52,6 +52,7 @@ class ResponseClasses
         // Mail Entity
         'Email/get' => 'JmapClient\Responses\Mail\MailGet',
         'Email/set' => 'JmapClient\Responses\Mail\MailSet',
+        'Email/copy' => 'JmapClient\Responses\Mail\MailCopy',
         'Email/changes' => 'JmapClient\Responses\Mail\MailChanges',
         'Email/query' => 'JmapClient\Responses\Mail\MailQuery',
         'Email/queryChanges' => 'JmapClient\Responses\Mail\MailQueryChanges',
@@ -72,6 +73,7 @@ class ResponseClasses
         // Contact Entity
         'ContactCard/get' => 'JmapClient\Responses\Contacts\ContactGet',
         'ContactCard/set' => 'JmapClient\Responses\Contacts\ContactSet',
+        'ContactCard/copy' => 'JmapClient\Responses\Contacts\ContactCopy',
         'ContactCard/changes' => 'JmapClient\Responses\Contacts\ContactChanges',
         'ContactCard/query' => 'JmapClient\Responses\Contacts\ContactQuery',
         'ContactCard/queryChanges' => 'JmapClient\Responses\Contacts\ContactQueryChanges',
@@ -82,6 +84,7 @@ class ResponseClasses
         // Calendar Entity
         'CalendarEvent/get' => 'JmapClient\Responses\Calendar\EventGet',
         'CalendarEvent/set' => 'JmapClient\Responses\Calendar\EventSet',
+        'CalendarEvent/copy' => 'JmapClient\Responses\Calendar\EventCopy',
         'CalendarEvent/changes' => 'JmapClient\Responses\Calendar\EventChanges',
         'CalendarEvent/query' => 'JmapClient\Responses\Calendar\EventQuery',
         'CalendarEvent/queryChanges' => 'JmapClient\Responses\Calendar\EventQueryChanges',
