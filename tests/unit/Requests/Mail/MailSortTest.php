@@ -40,4 +40,15 @@ class MailSortTest extends TestCase
             ['property' => 'hasKeyword', 'isAscending' => false, 'keyword' => '$seen'],
         ], $this->sort($request));
     }
+
+    public function testThreadKeywordSortsSendKeyword(): void
+    {
+        $request = new MailQuery('account-1', 'query-1');
+        $request->sort()->threadKeywordAll('$seen', true)->threadKeywordSome('$flagged');
+
+        $this->assertSame([
+            ['property' => 'allInThreadHaveKeyword', 'isAscending' => true, 'keyword' => '$seen'],
+            ['property' => 'someInThreadHaveKeyword', 'isAscending' => false, 'keyword' => '$flagged'],
+        ], $this->sort($request));
+    }
 }

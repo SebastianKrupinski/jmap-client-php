@@ -54,4 +54,16 @@ class MailSort extends RequestSort
         $this->condition('hasKeyword', $value, $keyword);
         return $this;
     }
+
+    public function threadKeywordAll(string $keyword, bool $value = false): static
+    {
+        $this->condition('allInThreadHaveKeyword', $value, $keyword);
+        return $this;
+    }
+
+    public function threadKeywordSome(string $keyword, bool $value = false): static
+    {
+        $this->condition('someInThreadHaveKeyword', $value, $keyword);
+        return $this;
+    }
 }

@@ -77,13 +77,40 @@ class MailFilter extends RequestFilter
 
     public function keywordPresent(string $value): static
     {
-        $this->condition('before', $value);
+        $this->condition('hasKeyword', $value);
         return $this;
     }
 
     public function keywordAbsent(string $value): static
     {
-        $this->condition('after', $value);
+        $this->condition('notKeyword', $value);
+        return $this;
+    }
+
+    public function threadKeywordAll(string $value): static
+    {
+        $this->condition('allInThreadHaveKeyword', $value);
+        return $this;
+    }
+
+    public function threadKeywordSome(string $value): static
+    {
+        $this->condition('someInThreadHaveKeyword', $value);
+        return $this;
+    }
+
+    public function threadKeywordNone(string $value): static
+    {
+        $this->condition('noneInThreadHaveKeyword', $value);
+        return $this;
+    }
+
+    /**
+     * Emails that have the header, and when a value is given, whose header value contains it
+     */
+    public function header(string $name, ?string $value = null): static
+    {
+        $this->condition('header', $value === null ? [$name] : [$name, $value]);
         return $this;
     }
 

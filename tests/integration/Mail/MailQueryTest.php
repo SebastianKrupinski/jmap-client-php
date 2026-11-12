@@ -74,12 +74,8 @@ class MailQueryTest extends TestCase
         return $result['id'];
     }
 
-    private function queryByKeyword(bool $ascending): array
+    private function query(MailQueryRequest $r0): array
     {
-        $r0 = new MailQueryRequest($this->account->id());
-        $r0->filter()->in($this->mailboxId);
-        $r0->sort()->keyword('$flagged', $ascending);
-
         $bundle = $this->client->perform([$r0]);
         $response = $bundle->first();
         $this->assertInstanceOf(
@@ -90,14 +86,64 @@ class MailQueryTest extends TestCase
         return $response->list();
     }
 
-    public function testMailQuerySortByKeyword(): void
+    private function sortedQuery(string $sort, bool $ascending): MailQueryRequest
+    {
+        $r0 = new MailQueryRequest($this->account->id());
+        $r0->filter()->in($this->mailboxId);
+        $r0->sort()->$sort('$flagged', $ascending);
+        return $r0;
+    }
+
+    private function filteredQuery(string $filter): MailQueryRequest
+    {
+        $r0 = new MailQueryRequest($this->account->id());
+        $r0->filter()->in($this->mailboxId)->$filter('$flagged');
+        return $r0;
+    }
+
+    public static function sortProvider(): array
+    {
+        return [
+            'keyword' => ['keyword'],
+            'all in thread have keyword' => ['threadKeywordAll'],
+            'some in thread have keyword' => ['threadKeywordSome'],
+        ];
+    }
+
+    /**
+     * @dataProvider sortProvider
+     */
+    public function testMailQuerySortByKeyword(string $sort): void
     {
         $plainId = $this->createMail('Plain Mail ' . time(), false);
         $flaggedId = $this->createMail('Flagged Mail ' . time(), true);
 
         // emails with the keyword sort after those without it when ascending
-        $this->assertSame([$plainId, $flaggedId], $this->queryByKeyword(true));
+        $this->assertSame([$plainId, $flaggedId], $this->query($this->sortedQuery($sort, true)));
         // and before them when descending
-        $this->assertSame([$flaggedId, $plainId], $this->queryByKeyword(false));
+        $this->assertSame([$flaggedId, $plainId], $this->query($this->sortedQuery($sort, false)));
+    }
+
+    public static function filterProvider(): array
+    {
+        return [
+            'has keyword' => ['keywordPresent', true],
+            'not keyword' => ['keywordAbsent', false],
+            'all in thread have keyword' => ['threadKeywordAll', true],
+            'some in thread have keyword' => ['threadKeywordSome', true],
+            'none in thread have keyword' => ['threadKeywordNone', false],
+        ];
+    }
+
+    /**
+     * @dataProvider filterProvider
+     */
+    public function testMailQueryFilterByKeyword(string $filter, bool $matchesFlagged): void
+    {
+        $plainId = $this->createMail('Plain Mail ' . time(), false);
+        $flaggedId = $this->createMail('Flagged Mail ' . time(), true);
+
+        // each email is its own thread, so the thread filters match like the email filters
+        $this->assertSame([$matchesFlagged ? $flaggedId : $plainId], $this->query($this->filteredQuery($filter)));
     }
 }
