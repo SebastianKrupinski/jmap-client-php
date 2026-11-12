@@ -9,13 +9,17 @@ declare(strict_types=1);
 namespace JmapClient\Tests\Integration\Files;
 
 use JmapClient\Client;
+use JmapClient\Requests\Files\NodeCopy as NodeCopyRequest;
 use JmapClient\Requests\Files\NodeGet as NodeGetRequest;
+use JmapClient\Requests\Files\NodeKind;
 use JmapClient\Requests\Files\NodeQuery as NodeQueryRequest;
 use JmapClient\Requests\Files\NodeSet as NodeSetRequest;
+use JmapClient\Responses\Files\NodeCopy as NodeCopyResponse;
 use JmapClient\Responses\Files\NodeGet as NodeGetResponse;
 use JmapClient\Responses\Files\NodeParameters;
 use JmapClient\Responses\Files\NodeQuery as NodeQueryResponse;
 use JmapClient\Responses\Files\NodeSet as NodeSetResponse;
+use JmapClient\Responses\ResponseException;
 use JmapClient\Session\Account;
 use JmapClient\Tests\Integration\ClientFactory;
 use PHPUnit\Framework\TestCase;
@@ -47,13 +51,13 @@ class NodeTest extends TestCase
         $commands = [];
         // construct deletion requests
         foreach ($response->objects() as $node) {
-            if (str_starts_with($node->label(), 'Test File Node ') ||
-                str_starts_with($node->label(), 'Modified File Node ') ||
-                str_starts_with($node->label(), 'To Delete File Node ') ||
-                str_starts_with($node->label(), 'Parent File Node ') ||
-                str_starts_with($node->label(), 'Child File Node ')) {
+            if (str_starts_with((string) $node->label(), 'Test File Node ') ||
+                str_starts_with((string) $node->label(), 'Modified File Node ') ||
+                str_starts_with((string) $node->label(), 'To Delete File Node ') ||
+                str_starts_with((string) $node->label(), 'Parent File Node ') ||
+                str_starts_with((string) $node->label(), 'Child File Node ')) {
                 $rq = new NodeSetRequest($this->account->id());
-                $rq->destroyChildren(true);
+                $rq->destroyRecursive(true);
                 $rq->delete($node->id());
                 $commands[] = $rq;
             }
@@ -70,6 +74,7 @@ class NodeTest extends TestCase
         $createId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($createId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Test File Node ' . time());
 
         // transceive
@@ -95,6 +100,7 @@ class NodeTest extends TestCase
         $nodeId = uniqid();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($nodeId);
+        $p1->kind(NodeKind::File);
         $p1->label('Test File Node ' . time());
         $p1->type('text/plain');
         $p1->blob($blobId);
@@ -122,6 +128,7 @@ class NodeTest extends TestCase
         $nodeId = uniqid();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($nodeId);
+        $p1->kind(NodeKind::File);
         $p1->label('Test File Node ' . time());
         $p1->type('application/octet-stream');
         $p1->blob($blobId);
@@ -149,6 +156,7 @@ class NodeTest extends TestCase
         $nodeLabel = 'Test File Node ' . time();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($nodeId);
+        $p1->kind(NodeKind::File);
         $p1->label($nodeLabel);
         $p1->type('text/plain');
         $p1->blob($blobId);
@@ -160,7 +168,7 @@ class NodeTest extends TestCase
         // fetch the node and verify blob properties — request non-default fields explicitly
         $r2 = new NodeGetRequest($this->account->id());
         $r2->target($nodeId);
-        $r2->property('id', 'name', 'blobId', 'type', 'size');
+        $r2->property('id', 'name', 'blobId', 'mediaType', 'size');
 
         // transceive
         $bundle = $this->client->perform([$r2]);
@@ -183,6 +191,7 @@ class NodeTest extends TestCase
         $nodeId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($nodeId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Test File Node ' . time());
 
         // transceive
@@ -219,6 +228,7 @@ class NodeTest extends TestCase
         $nodeId = uniqid();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($nodeId);
+        $p1->kind(NodeKind::File);
         $p1->label('Test File Node ' . time());
         $p1->type('text/plain');
         $p1->blob($initialBlobId);
@@ -252,6 +262,7 @@ class NodeTest extends TestCase
         $nodeId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($nodeId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('To Delete File Node ' . time());
 
         // transceive
@@ -276,12 +287,13 @@ class NodeTest extends TestCase
         $this->assertArrayHasKey('id', $result);
     }
 
-    public function testNodeSetDestroyChildren(): void
+    public function testNodeSetDestroyRecursive(): void
     {
         // construct parent create request
         $parentId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($parentId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Parent File Node ' . time());
 
         // transceive
@@ -295,6 +307,7 @@ class NodeTest extends TestCase
         $childId = uniqid();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($childId);
+        $p1->kind(NodeKind::Directory);
         $p1->label('Child File Node ' . time());
         $p1->in($parentId);
 
@@ -304,9 +317,9 @@ class NodeTest extends TestCase
         $result = $bundle->first()->createSuccess($childId);
         $this->assertNotNull($result);
 
-        // delete parent with destroyChildren enabled
+        // delete parent with destroyRecursive enabled
         $r2 = new NodeSetRequest($this->account->id());
-        $r2->destroyChildren(true);
+        $r2->destroyRecursive(true);
         $r2->delete($parentId);
 
         // transceive
@@ -320,6 +333,51 @@ class NodeTest extends TestCase
         $this->assertArrayHasKey('id', $result);
     }
 
+    public function testNodeCopy(): void
+    {
+        // construct create request for the directory to copy
+        $sourceId = uniqid();
+        $r0 = new NodeSetRequest($this->account->id());
+        $p0 = $r0->create($sourceId);
+        $p0->kind(NodeKind::Directory);
+        $p0->label('Parent File Node ' . time());
+
+        // transceive
+        $bundle = $this->client->perform([$r0]);
+        $sourceId = $bundle->first()->createSuccess($sourceId)['id'];
+
+        // construct copy request within the same account under a new name
+        $copyId = uniqid();
+        $copyLabel = 'Test File Node Copy ' . time();
+        $r1 = new NodeCopyRequest($this->account->id());
+        $r1->copy($copyId, $sourceId)->label($copyLabel);
+
+        // transceive
+        $bundle = $this->client->perform([$r1]);
+
+        // draft-ietf-jmap-filenode allows copying within one account, some servers only copy between accounts
+        $response = $bundle->first();
+        if ($response instanceof ResponseException && $response->type() === ResponseException::INVALID_ARGUMENTS) {
+            $this->markTestSkipped('Server does not support FileNode/copy within one account: ' . $response->description());
+        }
+
+        // verify copy response
+        $this->assertEquals(1, $bundle->tally());
+        $this->assertInstanceOf(NodeCopyResponse::class, $bundle->first());
+        $result = $bundle->first()->createSuccess($copyId);
+        $this->assertNotNull($result, json_encode($bundle->first()->createFailure($copyId)));
+        $this->assertArrayHasKey('id', $result);
+        $this->assertNotEquals($sourceId, $result['id']);
+
+        // verify the copy exists with the new name
+        $r2 = new NodeGetRequest($this->account->id());
+        $r2->target($result['id']);
+        $bundle = $this->client->perform([$r2]);
+        $node = $bundle->first()->object(0);
+        $this->assertEquals($copyLabel, $node->label());
+        $this->assertSame(NodeKind::Directory, $node->kind());
+    }
+
     public function testNodeGetSpecific(): void
     {
         // construct create request
@@ -327,6 +385,7 @@ class NodeTest extends TestCase
         $nodeLabel = 'Test File Node ' . time();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($nodeId);
+        $p0->kind(NodeKind::Directory);
         $p0->label($nodeLabel);
 
         // transceive
@@ -358,6 +417,7 @@ class NodeTest extends TestCase
         $createId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($createId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Test File Node ' . time());
 
         // transceive
@@ -386,6 +446,7 @@ class NodeTest extends TestCase
         $createId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($createId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Test File Node ' . time());
 
         // transceive
@@ -438,6 +499,7 @@ class NodeTest extends TestCase
         $parentId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($parentId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Parent File Node ' . time());
 
         // transceive
@@ -448,6 +510,7 @@ class NodeTest extends TestCase
         $childId = uniqid();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($childId);
+        $p1->kind(NodeKind::Directory);
         $p1->label('Child File Node ' . time());
         $p1->in($parentId);
 
@@ -479,6 +542,7 @@ class NodeTest extends TestCase
         $parentId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($parentId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Parent File Node ' . time());
 
         // transceive
@@ -490,6 +554,7 @@ class NodeTest extends TestCase
         $childId = uniqid();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($childId);
+        $p1->kind(NodeKind::Directory);
         $p1->label($childLabel);
         $p1->in($parentId);
 
@@ -499,7 +564,7 @@ class NodeTest extends TestCase
 
         // construct query request scoped to parent with exact label filter
         $r2 = new NodeQueryRequest($this->account->id());
-        $r2->filter()->in($parentId)->label($childLabel);
+        $r2->filter()->in($parentId)->labelIs($childLabel);
 
         // transceive
         $bundle = $this->client->perform([$r2]);
@@ -522,6 +587,7 @@ class NodeTest extends TestCase
         $parentId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($parentId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Parent File Node ' . time());
 
         // transceive
@@ -530,7 +596,7 @@ class NodeTest extends TestCase
 
         // construct query request scoped to parent with non-matching label
         $r1 = new NodeQueryRequest($this->account->id());
-        $r1->filter()->in($parentId)->label('This File Node Does Not Exist ' . uniqid());
+        $r1->filter()->in($parentId)->labelIs('This File Node Does Not Exist ' . uniqid());
 
         // transceive
         $bundle = $this->client->perform([$r1]);
@@ -551,6 +617,7 @@ class NodeTest extends TestCase
         $grandparentId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($grandparentId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Parent File Node ' . time());
 
         // transceive
@@ -561,6 +628,7 @@ class NodeTest extends TestCase
         $parentId = uniqid();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($parentId);
+        $p1->kind(NodeKind::Directory);
         $p1->label('Child File Node ' . time());
         $p1->in($grandparentId);
 
@@ -572,6 +640,7 @@ class NodeTest extends TestCase
         $grandchildId = uniqid();
         $r2 = new NodeSetRequest($this->account->id());
         $p2 = $r2->create($grandchildId);
+        $p2->kind(NodeKind::Directory);
         $p2->label('Child File Node ' . time());
         $p2->in($parentId);
 
@@ -602,6 +671,7 @@ class NodeTest extends TestCase
         $parentId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($parentId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Parent File Node ' . time());
 
         // transceive
@@ -612,6 +682,7 @@ class NodeTest extends TestCase
         $childId = uniqid();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($childId);
+        $p1->kind(NodeKind::Directory);
         $p1->label('Child File Node ' . time());
         $p1->in($parentId);
 
@@ -644,6 +715,7 @@ class NodeTest extends TestCase
         $parentId = uniqid();
         $r0 = new NodeSetRequest($this->account->id());
         $p0 = $r0->create($parentId);
+        $p0->kind(NodeKind::Directory);
         $p0->label('Parent File Node ' . time());
 
         // transceive
@@ -654,6 +726,7 @@ class NodeTest extends TestCase
         $child1Id = uniqid();
         $r1 = new NodeSetRequest($this->account->id());
         $p1 = $r1->create($child1Id);
+        $p1->kind(NodeKind::Directory);
         $p1->label('Child File Node AAA');
         $p1->in($parentId);
 
@@ -663,6 +736,7 @@ class NodeTest extends TestCase
         $child2Id = uniqid();
         $r2 = new NodeSetRequest($this->account->id());
         $p2 = $r2->create($child2Id);
+        $p2->kind(NodeKind::Directory);
         $p2->label('Child File Node ZZZ');
         $p2->in($parentId);
 

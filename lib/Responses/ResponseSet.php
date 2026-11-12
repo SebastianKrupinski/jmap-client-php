@@ -39,7 +39,11 @@ class ResponseSet extends Response
     public function updateSuccess(string $id): ?array
     {
         if (isset($this->_response[self::RESPONSE_OBJECT]['updated'])) {
-            return array_key_exists($id, $this->_response[self::RESPONSE_OBJECT]['updated']) ? $this->_response[self::RESPONSE_OBJECT]['updated'][$id] ?? ['id' => $id] : null;
+            if (!array_key_exists($id, $this->_response[self::RESPONSE_OBJECT]['updated'])) {
+                return null;
+            }
+            // servers may return null, an empty object or only the changed server-set properties
+            return ['id' => $id] + (array) ($this->_response[self::RESPONSE_OBJECT]['updated'][$id] ?? []);
         }
         return null;
     }

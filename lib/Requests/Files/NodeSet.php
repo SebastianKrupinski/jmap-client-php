@@ -48,7 +48,7 @@ class NodeSet extends RequestSet
         return parent::patch($id, $object);
     }
 
-    public function destroyChildren(bool $value): static
+    public function destroyRecursive(bool $value): static
     {
         $this->_command['onDestroyRemoveChildren'] = $value;
         return $this;
@@ -57,6 +57,12 @@ class NodeSet extends RequestSet
     public function onExists(string|null $value): static
     {
         $this->_command['onExists'] = $value;
+        return $this;
+    }
+
+    public function compareCaseInsensitively(bool $value): static
+    {
+        $this->_command['compareCaseInsensitively'] = $value;
         return $this;
     }
 }

@@ -15,13 +15,37 @@ class NodeSort extends RequestSort
 {
     public function type(bool $value = true): static
     {
-        $this->condition('type', $value, null, null);
+        $this->condition('mediaType', $value, null, null);
         return $this;
     }
 
-    public function hasType(bool $value = true): static
+    public function kind(bool $value = true): static
     {
-        $this->condition('hasType', $value, null, null);
+        $this->condition('nodeType', $value, null, null);
+        return $this;
+    }
+
+    public function label(bool $value = true): static
+    {
+        $this->condition('name', $value, null, null);
+        return $this;
+    }
+
+    public function created(bool $value = true): static
+    {
+        $this->condition('created', $value, null, null);
+        return $this;
+    }
+
+    public function modified(bool $value = true): static
+    {
+        $this->condition('modified', $value, null, null);
+        return $this;
+    }
+
+    public function size(bool $value = true): static
+    {
+        $this->condition('size', $value, null, null);
         return $this;
     }
 

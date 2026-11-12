@@ -6,6 +6,6 @@
         "security": 0,
         "authentication": "basic",
         "identifier": "user1@example1.com",
-        "secret": "Password1234"
+        "secret": "violet-harbor-cactus-lantern"
     }
 }
