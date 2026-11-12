@@ -49,9 +49,9 @@ class MailSort extends RequestSort
         return $this;
     }
 
-    public function keyword(bool $value = false): static
+    public function keyword(string $keyword, bool $value = false): static
     {
-        $this->condition('hasKeyword', $value);
+        $this->condition('hasKeyword', $value, $keyword);
         return $this;
     }
 }
