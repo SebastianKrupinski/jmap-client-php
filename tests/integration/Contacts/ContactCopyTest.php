@@ -120,6 +120,6 @@ class ContactCopyTest extends TestCase
         $bundle = $this->client->perform([$r4]);
         $contact = $bundle->first()->object(0);
         $this->assertEquals($fullName, $contact->name()?->full());
-        $this->assertArrayHasKey($this->addressBookId, $contact->in());
+        $this->assertContains($this->addressBookId, (array) $contact->in());
     }
 }

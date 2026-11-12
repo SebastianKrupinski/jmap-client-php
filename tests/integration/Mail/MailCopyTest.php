@@ -124,7 +124,7 @@ class MailCopyTest extends TestCase
         $bundle = $this->client->perform([$r4]);
         $mail = $bundle->first()->object(0);
         $this->assertEquals($subject, $mail->subject());
-        $this->assertArrayHasKey($this->mailboxId, $mail->in());
+        $this->assertContains($this->mailboxId, $mail->in());
         $this->assertTrue($mail->flagged());
     }
 }

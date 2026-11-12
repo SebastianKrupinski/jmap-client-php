@@ -125,6 +125,6 @@ class EventCopyTest extends TestCase
         $bundle = $this->client->perform([$r4]);
         $event = $bundle->first()->object(0);
         $this->assertEquals($label, $event->label());
-        $this->assertArrayHasKey($this->calendarId, $event->in());
+        $this->assertContains($this->calendarId, (array) $event->in());
     }
 }

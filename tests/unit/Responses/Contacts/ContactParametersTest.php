@@ -16,7 +16,7 @@ class ContactParametersTest extends TestCase
 {
     public function testInNumericIds(): void
     {
-        $contact = new ContactParameters(json_decode('{"addressbookIds":{"1":true,"b":true}}', true));
+        $contact = new ContactParameters(json_decode('{"addressBookIds":{"1":true,"b":true}}', true));
 
         $this->assertSame(['1', 'b'], $contact->in());
     }
