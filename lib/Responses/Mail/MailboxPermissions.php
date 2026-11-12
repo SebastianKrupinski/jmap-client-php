@@ -57,4 +57,9 @@ class MailboxPermissions extends ResponsePermissions
     {
         return $this->parameter('maySubmit');
     }
+
+    public function share(): bool|null
+    {
+        return $this->parameter('mayShare');
+    }
 }
