@@ -14,10 +14,12 @@ use JmapClient\Requests\Mail\MailboxSet as MailboxSetRequest;
 use JmapClient\Requests\Mail\MailIdentitySet as MailIdentitySetRequest;
 use JmapClient\Requests\Mail\MailSet as MailSetRequest;
 use JmapClient\Requests\Mail\MailSubmissionGet as MailSubmissionGetRequest;
+use JmapClient\Requests\Mail\MailSubmissionQuery as MailSubmissionQueryRequest;
 use JmapClient\Requests\Mail\MailSubmissionSet as MailSubmissionSetRequest;
 use JmapClient\Requests\Mail\MailSubmissionUndoStatus;
 use JmapClient\Responses\Mail\MailSubmissionGet as MailSubmissionGetResponse;
 use JmapClient\Responses\Mail\MailSubmissionParameters;
+use JmapClient\Responses\Mail\MailSubmissionQuery as MailSubmissionQueryResponse;
 use JmapClient\Responses\ResponseException;
 use JmapClient\Session\Account;
 use JmapClient\Tests\Integration\ClientFactory;
@@ -165,5 +167,41 @@ class MailSubmissionTest extends TestCase
 
         // verify the submission is canceled
         $this->assertSame(MailSubmissionUndoStatus::Canceled, $this->fetch($submissionId)->undoStatus());
+    }
+
+    private function query(callable $filter): array
+    {
+        $r0 = new MailSubmissionQueryRequest($this->account->id());
+        $filter($r0->filter());
+        $bundle = $this->client->perform([$r0]);
+        $response = $bundle->first();
+        $this->assertInstanceOf(
+            MailSubmissionQueryResponse::class,
+            $response,
+            $response instanceof ResponseException ? $response->type() . ': ' . $response->description() : ''
+        );
+        return $response->list();
+    }
+
+    public function testMailSubmissionQueryFilters(): void
+    {
+        $emailId = $this->createMessage();
+        $submissionId = $this->submit($emailId, ['HOLDFOR' => '3600']);
+        $threadId = $this->fetch($submissionId)->thread();
+
+        // each id filter finds the submission
+        $this->assertContains($submissionId, $this->query(fn ($f) => $f->messages($emailId)));
+        $this->assertContains($submissionId, $this->query(fn ($f) => $f->identities($this->identityId)));
+        $this->assertContains($submissionId, $this->query(fn ($f) => $f->threads($threadId)));
+        $this->assertContains($submissionId, $this->query(fn ($f) => $f->messages($emailId)->undoStatus(MailSubmissionUndoStatus::Pending)));
+
+        // and filters that do not match leave it out
+        $this->assertNotContains($submissionId, $this->query(fn ($f) => $f->messages($emailId)->undoStatus(MailSubmissionUndoStatus::Canceled)));
+        $this->assertNotContains($submissionId, $this->query(fn ($f) => $f->messages('nonexistent')));
+
+        // cancel the held message so it is not delivered after the test
+        $r0 = new MailSubmissionSetRequest($this->account->id());
+        $r0->update($submissionId)->cancel();
+        $this->client->perform([$r0]);
     }
 }
