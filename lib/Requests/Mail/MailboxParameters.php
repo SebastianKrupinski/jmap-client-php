@@ -13,7 +13,7 @@ use JmapClient\Requests\RequestParameters;
 
 class MailboxParameters extends RequestParameters
 {
-    private const PARAMETER_LIST = ['parentId', 'name', 'role', 'sortOrder', 'isSubscribed'];
+    private const PARAMETER_LIST = ['parentId', 'name', 'role', 'sortOrder', 'isSubscribed', 'shareWith'];
 
     public function parametersRaw(array $value): static
     {
@@ -49,5 +49,18 @@ class MailboxParameters extends RequestParameters
     {
         $this->parameter('isSubscribed', $value);
         return $this;
+    }
+
+    public function sharees(string $id, ?MailboxPermissions $permissions = null): MailboxPermissions
+    {
+        if (!isset($this->_parameters->shareWith) || !is_object($this->_parameters->shareWith)) {
+            $this->_parameters->shareWith = new \stdClass();
+        }
+        if ($permissions !== null) {
+            $permissions->bind($this->_parameters->shareWith->$id);
+        } elseif (!isset($this->_parameters->shareWith->$id)) {
+            $this->_parameters->shareWith->$id = new \stdClass();
+        }
+        return new MailboxPermissions($this->_parameters->shareWith->$id);
     }
 }

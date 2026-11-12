@@ -18,7 +18,7 @@ class ContactParameters extends ResponseParameters
 
     public function in(): array|null
     {
-        return $this->parameterKeys('addressbookIds');
+        return $this->parameterKeys('addressBookIds');
     }
 
     public function id(): string|null

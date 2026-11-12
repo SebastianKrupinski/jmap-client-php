@@ -41,6 +41,11 @@ class MailboxParameters extends ResponseParameters
         }
         return new MailboxPermissions((array) $rights);
     }
+    public function sharees(): array|null
+    {
+        return $this->parameter('shareWith');
+    }
+
     public function subscribed(): bool|null
     {
         return $this->parameter('isSubscribed');
