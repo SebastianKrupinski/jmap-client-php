@@ -45,10 +45,13 @@ class AddressBookParameters extends RequestParameters
 
     public function sharees(string $id, ?AddressBookPermissions $permissions = null): AddressBookPermissions
     {
-        if (!isset($this->_parameters->shareWith?->$id)) {
-            $this->parameterStructured('shareWith', $id, $permissions ?? new \stdClass());
-        } else {
+        if (!isset($this->_parameters->shareWith) || !is_object($this->_parameters->shareWith)) {
+            $this->_parameters->shareWith = new \stdClass();
+        }
+        if ($permissions !== null) {
             $permissions->bind($this->_parameters->shareWith->$id);
+        } elseif (!isset($this->_parameters->shareWith->$id)) {
+            $this->_parameters->shareWith->$id = new \stdClass();
         }
         return new AddressBookPermissions($this->_parameters->shareWith->$id);
     }
