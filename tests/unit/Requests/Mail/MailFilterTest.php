@@ -9,6 +9,9 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Requests\Mail;
 
+use DateTime;
+use DateTimeImmutable;
+use DateTimeZone;
 use JmapClient\Requests\Mail\MailQuery;
 use JmapClient\Requests\RequestBundle;
 use PHPUnit\Framework\TestCase;
@@ -53,5 +56,18 @@ class MailFilterTest extends TestCase
         $request->filter()->header('Subject', 'invoice');
 
         $this->assertSame(['header' => ['Subject', 'invoice']], $this->filter($request));
+    }
+
+    public function testReceivedDatesAreConvertedToUtc(): void
+    {
+        $request = new MailQuery('account-1', 'query-1');
+        $request->filter()
+            ->receivedAfter(new DateTimeImmutable('2026-11-01 00:00:00', new DateTimeZone('America/Toronto')))
+            ->receivedBefore(new DateTime('2026-11-12 12:00:00', new DateTimeZone('Europe/Warsaw')));
+
+        $this->assertSame([
+            'after' => '2026-11-01T04:00:00Z',
+            'before' => '2026-11-12T11:00:00Z',
+        ], $this->filter($request));
     }
 }

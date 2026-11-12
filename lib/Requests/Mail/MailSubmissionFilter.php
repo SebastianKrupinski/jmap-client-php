@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Mail;
 
 use DateTimeInterface;
-use DateTimeZone;
 use JmapClient\Requests\RequestFilter;
 
 class MailSubmissionFilter extends RequestFilter
@@ -41,18 +40,13 @@ class MailSubmissionFilter extends RequestFilter
 
     public function sendBefore(DateTimeInterface $value): static
     {
-        $this->condition('before', $this->utc($value));
+        $this->condition('before', $this->utcDate($value));
         return $this;
     }
 
     public function sendAfter(DateTimeInterface $value): static
     {
-        $this->condition('after', $this->utc($value));
+        $this->condition('after', $this->utcDate($value));
         return $this;
-    }
-
-    private function utc(DateTimeInterface $value): string
-    {
-        return \DateTimeImmutable::createFromInterface($value)->setTimezone(new DateTimeZone('UTC'))->format(self::DATE_FORMAT_UTC);
     }
 }

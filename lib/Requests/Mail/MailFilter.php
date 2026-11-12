@@ -9,8 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Mail;
 
-use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
 use JmapClient\Requests\RequestFilter;
 
 class MailFilter extends RequestFilter
@@ -114,15 +113,15 @@ class MailFilter extends RequestFilter
         return $this;
     }
 
-    public function receivedBefore(DateTime|DateTimeImmutable $value): static
+    public function receivedBefore(DateTimeInterface $value): static
     {
-        $this->condition('before', $value->format(self::DATE_FORMAT_UTC));
+        $this->condition('before', $this->utcDate($value));
         return $this;
     }
 
-    public function receivedAfter(DateTime|DateTimeImmutable $value): static
+    public function receivedAfter(DateTimeInterface $value): static
     {
-        $this->condition('after', $value->format(self::DATE_FORMAT_UTC));
+        $this->condition('after', $this->utcDate($value));
         return $this;
     }
 

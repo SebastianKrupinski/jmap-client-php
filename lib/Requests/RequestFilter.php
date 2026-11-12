@@ -27,4 +27,9 @@ class RequestFilter
 
         return $this;
     }
+
+    protected function utcDate(\DateTimeInterface $value): string
+    {
+        return \DateTimeImmutable::createFromInterface($value)->setTimezone(new \DateTimeZone('UTC'))->format(self::DATE_FORMAT_UTC);
+    }
 }
