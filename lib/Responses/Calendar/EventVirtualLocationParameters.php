@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Calendar;
 
+use JmapClient\Enums\Calendar\EventVirtualFeature;
 use JmapClient\Responses\ResponseParameters;
 
 class EventVirtualLocationParameters extends ResponseParameters
@@ -28,8 +29,16 @@ class EventVirtualLocationParameters extends ResponseParameters
         return $this->parameter('uri');
     }
 
+    /**
+     * @return array<int,EventVirtualFeature|string>|null features, a feature this library does not know is returned as a string
+     */
     public function attributes(): array|null
     {
-        return $this->parameter('features');
+        $features = $this->parameter('features');
+        if ($features === null) {
+            return null;
+        }
+        $features = array_keys(array_filter((array) $features));
+        return array_map(fn ($feature) => EventVirtualFeature::tryFrom((string) $feature) ?? (string) $feature, $features);
     }
 }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Calendar;
 
 use DateTimeInterface;
+use JmapClient\Enums\Calendar\EventMethod;
 use JmapClient\Requests\RequestDate;
 
 /**
@@ -74,9 +75,9 @@ class EventParameters extends EventCommonParameters
      * @param string $value The method value
      * @return self Returns the current instance for method chaining
      */
-    public function method(string $value): static
+    public function method(EventMethod $value): static
     {
-        $this->parameter('method', $value);
+        $this->parameter('method', $value->value);
         return $this;
     }
 

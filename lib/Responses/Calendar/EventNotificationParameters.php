@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Calendar;
 
 use DateTimeImmutable;
+use JmapClient\Enums\Calendar\EventAlertAction;
 use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
@@ -20,9 +21,10 @@ class EventNotificationParameters extends ResponseParameters
         return $this->parameter('@type');
     }
 
-    public function action(): string|null
+    public function action(): EventAlertAction|string|null
     {
-        return $this->parameter('action');
+        $value = $this->parameter('action');
+        return is_string($value) ? (EventAlertAction::tryFrom($value) ?? $value) : null;
     }
 
     public function trigger(): mixed

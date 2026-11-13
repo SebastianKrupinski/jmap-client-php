@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Calendar;
 
 use DateInterval;
+use JmapClient\Enums\Calendar\EventRelativeTo;
 use JmapClient\Responses\ResponseParameters;
 
 class EventNotificationTriggerRelativeParameters extends ResponseParameters
@@ -22,9 +23,10 @@ class EventNotificationTriggerRelativeParameters extends ResponseParameters
     /**
      * start or end, "start" when omitted (RFC 8984 4.5.2)
      */
-    public function anchor(): string
+    public function anchor(): EventRelativeTo
     {
-        return $this->parameter('relativeTo') ?? 'start';
+        $value = $this->parameter('relativeTo');
+        return (is_string($value) ? EventRelativeTo::tryFrom($value) : null) ?? EventRelativeTo::Start;
     }
 
     public function offset(): DateInterval

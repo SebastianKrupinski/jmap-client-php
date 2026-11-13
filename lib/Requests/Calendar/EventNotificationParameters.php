@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Calendar;
 
 use DateTimeInterface;
+use JmapClient\Enums\Calendar\EventAlertAction;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
@@ -27,9 +28,9 @@ class EventNotificationParameters extends RequestParameters
         return $this;
     }
 
-    public function action(string $value): static
+    public function action(EventAlertAction|string $value): static
     {
-        $this->parameter('action', $value);
+        $this->parameter('action', $value instanceof EventAlertAction ? $value->value : $value);
         return $this;
     }
 

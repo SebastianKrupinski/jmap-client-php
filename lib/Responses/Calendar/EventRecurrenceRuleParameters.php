@@ -10,14 +10,16 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Calendar;
 
 use DateTimeImmutable;
+use JmapClient\Enums\Calendar\EventFrequency;
 use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class EventRecurrenceRuleParameters extends ResponseParameters
 {
-    public function frequency(): string|null
+    public function frequency(): EventFrequency|null
     {
-        return $this->parameter('frequency');
+        $value = $this->parameter('frequency');
+        return is_string($value) ? EventFrequency::tryFrom($value) : null;
     }
 
     public function interval(): int

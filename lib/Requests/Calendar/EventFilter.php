@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Calendar;
 
 use DateTimeInterface;
+use JmapClient\Enums\Calendar\EventParticipationStatus;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestFilter;
 
@@ -75,9 +76,9 @@ class EventFilter extends RequestFilter
         return $this;
     }
 
-    public function participation(string $value): static
+    public function participation(EventParticipationStatus|string $value): static
     {
-        $this->condition('participationStatus', $value);
+        $this->condition('participationStatus', $value instanceof EventParticipationStatus ? $value->value : $value);
         return $this;
     }
 }

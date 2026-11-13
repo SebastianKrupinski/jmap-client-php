@@ -9,13 +9,17 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Calendar;
 
+use JmapClient\Enums\Calendar\EventParticipantKind;
+use JmapClient\Enums\Calendar\EventParticipantRole;
+use JmapClient\Enums\Calendar\EventParticipationStatus;
 use JmapClient\Responses\ResponseParameters;
 
 class EventParticipantParameters extends ResponseParameters
 {
-    public function kind(): string|null
+    public function kind(): EventParticipantKind|string|null
     {
-        return $this->parameter('kind');
+        $value = $this->parameter('kind');
+        return is_string($value) ? (EventParticipantKind::tryFrom($value) ?? $value) : null;
     }
 
     public function name(): string|null
@@ -38,9 +42,10 @@ class EventParticipantParameters extends ResponseParameters
         return $this->parameter('calendarAddress');
     }
 
-    public function status(): string|null
+    public function status(): EventParticipationStatus|string|null
     {
-        return $this->parameter('participationStatus');
+        $value = $this->parameter('participationStatus');
+        return is_string($value) ? (EventParticipationStatus::tryFrom($value) ?? $value) : null;
     }
 
     public function comment(): string|null
@@ -48,8 +53,12 @@ class EventParticipantParameters extends ResponseParameters
         return $this->parameter('participationComment');
     }
 
+    /**
+     * @return array<int,EventParticipantRole|string> roles, a role this library does not know is returned as a string
+     */
     public function roles(): array
     {
-        return $this->parameter('roles') ?? [];
+        $roles = array_keys(array_filter((array) ($this->parameter('roles') ?? [])));
+        return array_map(fn ($role) => EventParticipantRole::tryFrom((string) $role) ?? (string) $role, $roles);
     }
 }

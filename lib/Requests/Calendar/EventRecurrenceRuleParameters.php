@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Calendar;
 
 use DateTimeInterface;
+use JmapClient\Enums\Calendar\EventFrequency;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
@@ -27,9 +28,9 @@ class EventRecurrenceRuleParameters extends RequestParameters
         return $this;
     }
 
-    public function frequency(string $value): static
+    public function frequency(EventFrequency $value): static
     {
-        $this->parameter('frequency', $value);
+        $this->parameter('frequency', $value->value);
         return $this;
     }
 
