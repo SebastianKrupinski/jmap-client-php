@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactAnniversaryKind;
 use JmapClient\Responses\Contacts\ContactAddressParameters;
 use JmapClient\Responses\Contacts\ContactAnniversaryParameters;
 use JmapClient\Responses\Contacts\ContactDatePartialParameters;
@@ -49,7 +50,7 @@ class ContactAnniversaryParametersTest extends TestCase
     {
         $anniversary = new ContactAnniversaryParameters(['kind' => 'birth']);
 
-        $this->assertSame('birth', $anniversary->kind());
+        $this->assertSame(ContactAnniversaryKind::Birth, $anniversary->kind());
     }
 
     public function testPlace(): void

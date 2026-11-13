@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Contacts;
 
 use DateTimeImmutable;
+use JmapClient\Enums\Contacts\ContactKind;
 use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
@@ -57,9 +58,10 @@ class ContactParameters extends ResponseParameters
         return $this->parameter('prodId');
     }
 
-    public function kind(): string|null
+    public function kind(): ContactKind|string|null
     {
-        return $this->parameter('kind') ?? 'individual';
+        $value = $this->parameter('kind');
+        return is_string($value) ? (ContactKind::tryFrom($value) ?? $value) : ContactKind::Individual;
     }
 
     public function language(): string|null

@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Quota;
 
+use JmapClient\Enums\Quota\QuotaResource;
+use JmapClient\Enums\Quota\QuotaScope;
 use JmapClient\Requests\RequestFilter;
 
 class QuotaFilter extends RequestFilter
@@ -20,16 +22,16 @@ class QuotaFilter extends RequestFilter
         return $this;
     }
 
-    public function scope(string $value): static
+    public function scope(QuotaScope $value): static
     {
-        $this->condition('scope', $value);
+        $this->condition('scope', $value->value);
 
         return $this;
     }
 
-    public function resource(string $value): static
+    public function resource(QuotaResource $value): static
     {
-        $this->condition('resourceType', $value);
+        $this->condition('resourceType', $value->value);
 
         return $this;
     }

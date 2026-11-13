@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Calendar;
 
 use DateTimeImmutable;
+use JmapClient\Enums\Calendar\EventMethod;
 use JmapClient\Responses\ResponseDate;
 
 class EventParameters extends EventCommonParameters
@@ -31,9 +32,10 @@ class EventParameters extends EventCommonParameters
         return $this->parameter('uid');
     }
 
-    public function method(): string|null
+    public function method(): EventMethod|null
     {
-        return $this->parameter('method');
+        $value = $this->parameter('method');
+        return is_string($value) ? EventMethod::tryFrom($value) : null;
     }
 
     public function created(): DateTimeImmutable|null

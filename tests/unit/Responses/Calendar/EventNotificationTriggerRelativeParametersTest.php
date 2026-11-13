@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Responses\Calendar;
 
+use JmapClient\Enums\Calendar\EventRelativeTo;
 use JmapClient\Responses\Calendar\EventNotificationTriggerRelativeParameters;
 use PHPUnit\Framework\TestCase;
 
@@ -18,13 +19,13 @@ class EventNotificationTriggerRelativeParametersTest extends TestCase
     {
         $trigger = new EventNotificationTriggerRelativeParameters(['relativeTo' => 'end', 'offset' => 'PT5M']);
 
-        $this->assertSame('end', $trigger->anchor());
+        $this->assertSame(EventRelativeTo::End, $trigger->anchor());
     }
 
     public function testAnchorDefault(): void
     {
         $trigger = new EventNotificationTriggerRelativeParameters(['offset' => '-PT15M']);
 
-        $this->assertSame('start', $trigger->anchor());
+        $this->assertSame(EventRelativeTo::Start, $trigger->anchor());
     }
 }

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Calendar;
 
+use JmapClient\Enums\Calendar\EventWeekday;
 use JmapClient\Requests\RequestParameters;
 
 class EventRecurrenceDayParameters extends RequestParameters
@@ -25,9 +26,9 @@ class EventRecurrenceDayParameters extends RequestParameters
         return $this;
     }
 
-    public function day(string $value): static
+    public function day(EventWeekday $value): static
     {
-        $this->parameter('day', $value);
+        $this->parameter('day', $value->value);
         return $this;
     }
 

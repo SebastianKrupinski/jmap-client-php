@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Mail;
 
 use DateTimeInterface;
+use JmapClient\Enums\Mail\MailKeyword;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
@@ -168,49 +169,49 @@ class MailParameters extends RequestParameters
         return $this;
     }
 
-    public function keyword(string $name, bool $value = true): static
+    public function keyword(MailKeyword|string $name, bool $value = true): static
     {
-        $this->parameterStructured('keywords', $name, $value);
+        $this->parameterStructured('keywords', $name instanceof MailKeyword ? $name->value : $name, $value);
         return $this;
     }
 
     public function draft(bool $value = true): static
     {
-        return $this->keyword('$draft', $value);
+        return $this->keyword(MailKeyword::Draft, $value);
     }
 
     public function seen(bool $value = true): static
     {
-        return $this->keyword('$seen', $value);
+        return $this->keyword(MailKeyword::Seen, $value);
     }
 
     public function flagged(bool $value = true): static
     {
-        return $this->keyword('$flagged', $value);
+        return $this->keyword(MailKeyword::Flagged, $value);
     }
 
     public function answered(bool $value = true): static
     {
-        return $this->keyword('$answered', $value);
+        return $this->keyword(MailKeyword::Answered, $value);
     }
 
     public function forwarded(bool $value = true): static
     {
-        return $this->keyword('$forwarded', $value);
+        return $this->keyword(MailKeyword::Forwarded, $value);
     }
 
     public function phishing(bool $value = true): static
     {
-        return $this->keyword('$phishing', $value);
+        return $this->keyword(MailKeyword::Phishing, $value);
     }
 
     public function junk(bool $value = true): static
     {
-        return $this->keyword('$junk', $value);
+        return $this->keyword(MailKeyword::Junk, $value);
     }
 
     public function notjunk(bool $value = true): static
     {
-        return $this->keyword('$notjunk', $value);
+        return $this->keyword(MailKeyword::NotJunk, $value);
     }
 }

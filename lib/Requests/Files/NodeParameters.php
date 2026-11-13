@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Files;
 
 use DateTimeInterface;
+use JmapClient\Enums\Files\NodeKind;
+use JmapClient\Enums\Files\NodeRole;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
@@ -74,9 +76,9 @@ class NodeParameters extends RequestParameters
         return $this;
     }
 
-    public function role(string|null $value): static
+    public function role(NodeRole|string|null $value): static
     {
-        $this->parameter('role', $value);
+        $this->parameter('role', $value instanceof NodeRole ? $value->value : $value);
         return $this;
     }
 

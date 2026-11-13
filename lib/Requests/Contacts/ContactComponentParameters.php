@@ -9,13 +9,15 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Contacts;
 
+use JmapClient\Enums\Contacts\ContactAddressComponentKind;
+use JmapClient\Enums\Contacts\ContactNameComponentKind;
 use JmapClient\Requests\RequestParameters;
 
 class ContactComponentParameters extends RequestParameters
 {
-    public function kind(string $value): static
+    public function kind(ContactNameComponentKind|ContactAddressComponentKind|string $value): static
     {
-        $this->parameter('kind', $value);
+        $this->parameter('kind', $value instanceof \BackedEnum ? $value->value : $value);
         return $this;
     }
 

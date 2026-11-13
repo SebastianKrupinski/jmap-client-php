@@ -11,6 +11,9 @@ namespace JmapClient\Tests\Integration\Calendar;
 use DateTime;
 use DateTimeZone;
 use JmapClient\Client;
+use JmapClient\Enums\Calendar\EventFrequency;
+use JmapClient\Enums\Calendar\EventParticipantRole;
+use JmapClient\Enums\Calendar\EventWeekday;
 use JmapClient\Requests\Calendar\CalendarSet as CalendarSetRequest;
 use JmapClient\Requests\Calendar\EventGet as EventGetRequest;
 use JmapClient\Requests\Calendar\EventQuery as EventQueryRequest;
@@ -111,7 +114,7 @@ class EventTest extends TestCase
                 'timeless' => false,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'daily',
+                    'precision' => EventFrequency::Daily,
                     'interval' => 1,
                     'iterations' => 10,
                 ],
@@ -124,10 +127,10 @@ class EventTest extends TestCase
                 'timeless' => false,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'weekly',
+                    'precision' => EventFrequency::Weekly,
                     'interval' => 1,
                     'iterations' => 8,
-                    'onDayOfWeek' => ['MO'],
+                    'onDayOfWeek' => [EventWeekday::Monday],
                 ],
             ],
             'recurring_part_day_monthly_absolute' => [
@@ -138,7 +141,7 @@ class EventTest extends TestCase
                 'timeless' => false,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'monthly',
+                    'precision' => EventFrequency::Monthly,
                     'interval' => 1,
                     'iterations' => 6,
                     'onDayOfMonth' => [15],
@@ -152,10 +155,10 @@ class EventTest extends TestCase
                 'timeless' => false,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'monthly',
+                    'precision' => EventFrequency::Monthly,
                     'interval' => 1,
                     'iterations' => 6,
-                    'onDayOfWeek' => ['MO'],
+                    'onDayOfWeek' => [EventWeekday::Monday],
                     'onPosition' => [2],
                 ],
             ],
@@ -167,7 +170,7 @@ class EventTest extends TestCase
                 'timeless' => false,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'yearly',
+                    'precision' => EventFrequency::Yearly,
                     'interval' => 1,
                     'iterations' => 3,
                     'onMonthOfYear' => [6],
@@ -181,10 +184,10 @@ class EventTest extends TestCase
                 'timeless' => false,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'yearly',
+                    'precision' => EventFrequency::Yearly,
                     'interval' => 1,
                     'iterations' => 3,
-                    'onDayOfWeek' => ['WE'],
+                    'onDayOfWeek' => [EventWeekday::Wednesday],
                     'onPosition' => [3],
                     'onMonthOfYear' => [5],
                 ],
@@ -197,7 +200,7 @@ class EventTest extends TestCase
                 'timeless' => true,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'daily',
+                    'precision' => EventFrequency::Daily,
                     'interval' => 1,
                     'iterations' => 5,
                 ],
@@ -210,10 +213,10 @@ class EventTest extends TestCase
                 'timeless' => true,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'weekly',
+                    'precision' => EventFrequency::Weekly,
                     'interval' => 1,
                     'iterations' => 8,
-                    'onDayOfWeek' => ['FR'],
+                    'onDayOfWeek' => [EventWeekday::Friday],
                 ],
             ],
             'recurring_full_day_monthly_absolute' => [
@@ -224,7 +227,7 @@ class EventTest extends TestCase
                 'timeless' => true,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'monthly',
+                    'precision' => EventFrequency::Monthly,
                     'interval' => 1,
                     'iterations' => 6,
                     'onDayOfMonth' => [15],
@@ -238,10 +241,10 @@ class EventTest extends TestCase
                 'timeless' => true,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'monthly',
+                    'precision' => EventFrequency::Monthly,
                     'interval' => 1,
                     'iterations' => 6,
-                    'onDayOfWeek' => ['MO'],
+                    'onDayOfWeek' => [EventWeekday::Monday],
                     'onPosition' => [2],
                 ],
             ],
@@ -253,7 +256,7 @@ class EventTest extends TestCase
                 'timeless' => true,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'yearly',
+                    'precision' => EventFrequency::Yearly,
                     'interval' => 1,
                     'iterations' => 3,
                     'onMonthOfYear' => [6],
@@ -267,10 +270,10 @@ class EventTest extends TestCase
                 'timeless' => true,
                 'participants' => null,
                 'recurrence' => [
-                    'precision' => 'yearly',
+                    'precision' => EventFrequency::Yearly,
                     'interval' => 1,
                     'iterations' => 3,
-                    'onDayOfWeek' => ['WE'],
+                    'onDayOfWeek' => [EventWeekday::Wednesday],
                     'onPosition' => [3],
                     'onMonthOfYear' => [5],
                 ],
@@ -318,7 +321,7 @@ class EventTest extends TestCase
             $participant = $p->participants('participant-1');
             $participant->name('Test Participant');
             $participant->address('mailto:test@example.com');
-            $participant->roles('attendee');
+            $participant->roles(EventParticipantRole::Attendee);
         }
 
         if ($data['recurrence'] !== null) {

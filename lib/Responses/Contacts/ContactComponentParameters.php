@@ -9,13 +9,16 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactAddressComponentKind;
+use JmapClient\Enums\Contacts\ContactNameComponentKind;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactComponentParameters extends ResponseParameters
 {
-    public function kind(): string|null
+    public function kind(): ContactNameComponentKind|ContactAddressComponentKind|string|null
     {
-        return $this->parameter('kind');
+        $value = $this->parameter('kind');
+        return is_string($value) ? (ContactNameComponentKind::tryFrom($value) ?? ContactAddressComponentKind::tryFrom($value) ?? $value) : null;
     }
 
     public function value(): string|null

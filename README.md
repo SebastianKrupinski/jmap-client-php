@@ -415,7 +415,7 @@ if ($client->sessionCapable('quota')) {
             $quota->name(),
             $quota->used(),
             $quota->hardLimit(),
-            $quota->resource(),
+            $quota->resource()?->value,
         );
     }
 }

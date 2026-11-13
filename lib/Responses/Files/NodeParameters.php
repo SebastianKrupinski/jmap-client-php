@@ -10,7 +10,8 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Files;
 
 use DateTimeImmutable;
-use JmapClient\Requests\Files\NodeKind;
+use JmapClient\Enums\Files\NodeKind;
+use JmapClient\Enums\Files\NodeRole;
 use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
@@ -57,9 +58,10 @@ class NodeParameters extends ResponseParameters
         return $this->parameter('target');
     }
 
-    public function role(): string|null
+    public function role(): NodeRole|string|null
     {
-        return $this->parameter('role');
+        $value = $this->parameter('role');
+        return is_string($value) ? (NodeRole::tryFrom($value) ?? $value) : null;
     }
 
     public function created(): DateTimeImmutable|null

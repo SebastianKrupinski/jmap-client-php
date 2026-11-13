@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Contacts;
 
 use DateTimeInterface;
+use JmapClient\Enums\Contacts\ContactKind;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestFilter;
 
@@ -29,9 +30,9 @@ class ContactFilter extends RequestFilter
         return $this;
     }
 
-    public function kind(string $value): static
+    public function kind(ContactKind|string $value): static
     {
-        $this->condition('kind', $value);
+        $this->condition('kind', $value instanceof ContactKind ? $value->value : $value);
 
         return $this;
     }

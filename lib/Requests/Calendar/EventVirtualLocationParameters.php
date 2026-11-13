@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Calendar;
 
+use JmapClient\Enums\Calendar\EventVirtualFeature;
 use JmapClient\Requests\RequestParameters;
 
 class EventVirtualLocationParameters extends RequestParameters
@@ -43,10 +44,10 @@ class EventVirtualLocationParameters extends RequestParameters
         return $this;
     }
 
-    public function attributes(string ...$value): static
+    public function attributes(EventVirtualFeature|string ...$value): static
     {
         foreach ($value as $entry) {
-            $collection[$entry] = true;
+            $collection[$entry instanceof EventVirtualFeature ? $entry->value : $entry] = true;
         }
         $this->parameter('features', (object)$collection);
         return $this;

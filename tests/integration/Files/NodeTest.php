@@ -9,9 +9,9 @@ declare(strict_types=1);
 namespace JmapClient\Tests\Integration\Files;
 
 use JmapClient\Client;
+use JmapClient\Enums\Files\NodeKind;
 use JmapClient\Requests\Files\NodeCopy as NodeCopyRequest;
 use JmapClient\Requests\Files\NodeGet as NodeGetRequest;
-use JmapClient\Requests\Files\NodeKind;
 use JmapClient\Requests\Files\NodeQuery as NodeQueryRequest;
 use JmapClient\Requests\Files\NodeSet as NodeSetRequest;
 use JmapClient\Responses\Files\NodeCopy as NodeCopyResponse;

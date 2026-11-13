@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Files;
 
+use JmapClient\Enums\Files\NodeOnExists;
 use JmapClient\Requests\RequestCopy;
 
 /**
@@ -33,9 +34,9 @@ class NodeCopy extends RequestCopy
         return $this;
     }
 
-    public function onExists(string|null $value): static
+    public function onExists(NodeOnExists|null $value): static
     {
-        $this->_command['onExists'] = $value;
+        $this->_command['onExists'] = $value?->value;
         return $this;
     }
 

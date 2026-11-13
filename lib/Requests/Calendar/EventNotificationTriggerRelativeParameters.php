@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Calendar;
 
 use DateInterval;
+use JmapClient\Enums\Calendar\EventRelativeTo;
 use JmapClient\Requests\RequestParameters;
 
 class EventNotificationTriggerRelativeParameters extends RequestParameters
@@ -26,9 +27,9 @@ class EventNotificationTriggerRelativeParameters extends RequestParameters
         return $this;
     }
 
-    public function anchor(string $value): static
+    public function anchor(EventRelativeTo $value): static
     {
-        $this->parameter('relativeTo', $value);
+        $this->parameter('relativeTo', $value->value);
         return $this;
     }
 

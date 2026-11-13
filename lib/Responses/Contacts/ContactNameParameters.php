@@ -27,7 +27,7 @@ class ContactNameParameters extends ResponseParameters
     {
         $collection = $this->parameter('components') ?? [];
         foreach ($collection as $key => $data) {
-            $collection[$key] = new ContactComponentParameters($data);
+            $collection[$key] = new ContactNameComponentParameters($data);
         }
 
         return $collection;

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Calendar;
 
+use JmapClient\Enums\Calendar\EventRelativeTo;
 use JmapClient\Responses\ResponseParameters;
 
 class EventPhysicalLocationParameters extends ResponseParameters
@@ -43,8 +44,9 @@ class EventPhysicalLocationParameters extends ResponseParameters
         return $this->parameter('links');
     }
 
-    public function relative(): string|null
+    public function relative(): EventRelativeTo|string|null
     {
-        return $this->parameter('relativeTo');
+        $value = $this->parameter('relativeTo');
+        return is_string($value) ? (EventRelativeTo::tryFrom($value) ?? $value) : null;
     }
 }

@@ -11,6 +11,8 @@ namespace JmapClient\Requests\Calendar;
 
 use DateInterval;
 use DateTimeInterface;
+use JmapClient\Enums\Calendar\EventAvailability;
+use JmapClient\Enums\Calendar\EventPrivacy;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
@@ -81,15 +83,15 @@ class EventCommonParameters extends RequestParameters
         return $this;
     }
 
-    public function privacy(string $value): static
+    public function privacy(EventPrivacy|string $value): static
     {
-        $this->parameter('privacy', $value);
+        $this->parameter('privacy', $value instanceof EventPrivacy ? $value->value : $value);
         return $this;
     }
 
-    public function availability(string $value): static
+    public function availability(EventAvailability|string $value): static
     {
-        $this->parameter('freeBusyStatus', $value);
+        $this->parameter('freeBusyStatus', $value instanceof EventAvailability ? $value->value : $value);
         return $this;
     }
 

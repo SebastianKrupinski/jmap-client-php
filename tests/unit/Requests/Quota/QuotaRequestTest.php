@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Requests\Quota;
 
+use JmapClient\Enums\Quota\QuotaResource;
+use JmapClient\Enums\Quota\QuotaScope;
 use JmapClient\Requests\Quota\QuotaChanges;
 use JmapClient\Requests\Quota\QuotaGet;
 use JmapClient\Requests\Quota\QuotaQuery;
@@ -73,8 +75,8 @@ class QuotaRequestTest extends TestCase
         $request = new QuotaQuery('account-1', 'query-1');
         $request->filter()
             ->name('example')
-            ->scope('account')
-            ->resource('octets')
+            ->scope(QuotaScope::Account)
+            ->resource(QuotaResource::Octets)
             ->type('Email');
         $request->sort()->name()->used(false);
 
@@ -95,7 +97,7 @@ class QuotaRequestTest extends TestCase
     public function testQueryChangesUsesQuotaQueryTypes(): void
     {
         $request = new QuotaQueryChanges('account-1', 'query-changes-1');
-        $request->filter()->scope('domain');
+        $request->filter()->scope(QuotaScope::Domain);
         $request->sort()->used();
         $request->state('query-state-1')->limitRelative(10)->limitAbsolute('quota-1')->tally(true);
 

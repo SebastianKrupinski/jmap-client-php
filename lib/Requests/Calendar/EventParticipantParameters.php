@@ -9,6 +9,10 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Calendar;
 
+use JmapClient\Enums\Calendar\EventParticipantKind;
+use JmapClient\Enums\Calendar\EventParticipantRole;
+use JmapClient\Enums\Calendar\EventParticipationStatus;
+use JmapClient\Enums\Calendar\EventSendProtocol;
 use JmapClient\Requests\RequestParameters;
 
 class EventParticipantParameters extends RequestParameters
@@ -25,9 +29,9 @@ class EventParticipantParameters extends RequestParameters
         return $this;
     }
 
-    public function kind(string $value): static
+    public function kind(EventParticipantKind|string $value): static
     {
-        $this->parameter('kind', $value);
+        $this->parameter('kind', $value instanceof EventParticipantKind ? $value->value : $value);
         return $this;
     }
 
@@ -55,15 +59,15 @@ class EventParticipantParameters extends RequestParameters
         return $this;
     }
 
-    public function send(string $protocol, string $value): static
+    public function send(EventSendProtocol|string $protocol, string $value): static
     {
-        $this->parameterStructured('sendTo', $protocol, $value);
+        $this->parameterStructured('sendTo', $protocol instanceof EventSendProtocol ? $protocol->value : $protocol, $value);
         return $this;
     }
 
-    public function status(string $value): static
+    public function status(EventParticipationStatus|string $value): static
     {
-        $this->parameter('participationStatus', $value);
+        $this->parameter('participationStatus', $value instanceof EventParticipationStatus ? $value->value : $value);
         return $this;
     }
 
@@ -73,13 +77,13 @@ class EventParticipantParameters extends RequestParameters
         return $this;
     }
 
-    public function roles(string ...$values): static
+    public function roles(EventParticipantRole|string ...$values): static
     {
         if ($values === []) {
             return $this;
         }
         foreach ($values as $value) {
-            $collection[$value] = true;
+            $collection[$value instanceof EventParticipantRole ? $value->value : $value] = true;
         }
         $this->parameter('roles', (object)$collection);
         return $this;

@@ -9,9 +9,11 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Requests\Files;
 
+use JmapClient\Enums\Files\NodeKind;
+use JmapClient\Enums\Files\NodeOnExists;
+use JmapClient\Enums\Files\NodeRole;
 use JmapClient\Requests\Files\NodeCopy;
 use JmapClient\Requests\Files\NodeGet;
-use JmapClient\Requests\Files\NodeKind;
 use JmapClient\Requests\Files\NodePermissions;
 use JmapClient\Requests\Files\NodeQuery;
 use JmapClient\Requests\Files\NodeSet;
@@ -44,7 +46,7 @@ class NodeRequestTest extends TestCase
     public function testSetCreatesNodesWithTypeAndMediaType(): void
     {
         $request = new NodeSet('account-1', 'set-1');
-        $request->compareCaseInsensitively(true)->onExists('rename');
+        $request->compareCaseInsensitively(true)->onExists(NodeOnExists::Rename);
         $request->create('c1')->kind(NodeKind::File)->label('a.txt')->type('text/plain')->blob('blob-1');
         $request->create('c2')->kind(NodeKind::SymLink)->label('link')->target(['', 'docs', 'a.txt']);
         $request->create('c3')->kind(NodeKind::Directory)->label('shared')
@@ -135,7 +137,7 @@ class NodeRequestTest extends TestCase
             ->destroySource(true)
             ->destroySourceState('destroy-state')
             ->destroyRecursive(true)
-            ->onExists('replace')
+            ->onExists(NodeOnExists::Replace)
             ->compareCaseInsensitively(false);
         $request->copy('k1', 'node-1');
 
@@ -162,5 +164,30 @@ class NodeRequestTest extends TestCase
 
         $this->assertSame(['k1'], array_keys($this->calls($request)[0][1]['create']));
         $this->assertSame(['k1', 'k2'], array_keys($this->calls($clone)[0][1]['create']));
+    }
+
+    public function testRoleAcceptsEnumAndCustomString(): void
+    {
+        $request = new NodeSet('account-1', 'set-1');
+        $request->create('c1')->kind(NodeKind::Directory)->label('Docs')->role(NodeRole::Documents);
+        $request->create('c2')->kind(NodeKind::Directory)->label('Scans')->role('x-scans');
+        $request->update('node-1')->role(null);
+        $query = new NodeQuery('account-1', 'query-1');
+        $query->filter()->hasRole(NodeRole::Trash);
+
+        [$set, $filter] = $this->calls($request, $query);
+
+        $this->assertSame('documents', $set[1]['create']['c1']['role']);
+        $this->assertSame('x-scans', $set[1]['create']['c2']['role']);
+        $this->assertNull($set[1]['update']['node-1']['role']);
+        $this->assertSame(['role' => 'trash'], $filter[1]['filter']);
+    }
+
+    public function testOnExistsCanBeCleared(): void
+    {
+        $request = new NodeSet('account-1', 'set-1');
+        $request->onExists(NodeOnExists::Replace)->onExists(null);
+
+        $this->assertNull($this->calls($request)[0][1]['onExists']);
     }
 }

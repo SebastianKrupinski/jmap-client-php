@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Quota;
 
+use JmapClient\Enums\Quota\QuotaResource;
+use JmapClient\Enums\Quota\QuotaScope;
 use JmapClient\Responses\ResponseParameters;
 
 class QuotaParameters extends ResponseParameters
@@ -18,9 +20,10 @@ class QuotaParameters extends ResponseParameters
         return $this->parameter('id');
     }
 
-    public function resource(): string|null
+    public function resource(): QuotaResource|null
     {
-        return $this->parameter('resourceType');
+        $value = $this->parameter('resourceType');
+        return is_string($value) ? QuotaResource::tryFrom($value) : null;
     }
 
     public function used(): int|null
@@ -43,9 +46,10 @@ class QuotaParameters extends ResponseParameters
         return $this->parameter('hardLimit');
     }
 
-    public function scope(): string|null
+    public function scope(): QuotaScope|null
     {
-        return $this->parameter('scope');
+        $value = $this->parameter('scope');
+        return is_string($value) ? QuotaScope::tryFrom($value) : null;
     }
 
     public function name(): string|null

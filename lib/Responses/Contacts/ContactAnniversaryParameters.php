@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactAnniversaryKind;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactAnniversaryParameters extends ResponseParameters
@@ -31,9 +32,10 @@ class ContactAnniversaryParameters extends ResponseParameters
         return new ContactDatePartialParameters($date);
     }
 
-    public function kind(): string|null
+    public function kind(): ContactAnniversaryKind|string|null
     {
-        return $this->parameter('kind');
+        $value = $this->parameter('kind');
+        return is_string($value) ? (ContactAnniversaryKind::tryFrom($value) ?? $value) : null;
     }
 
     public function place(): ContactAddressParameters|null

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Responses\Mail;
 
-use JmapClient\Requests\Mail\MailSubmissionUndoStatus;
+use JmapClient\Enums\Mail\MailSubmissionUndoStatus;
 use JmapClient\Responses\Mail\MailSubmissionParameters;
 use PHPUnit\Framework\TestCase;
 

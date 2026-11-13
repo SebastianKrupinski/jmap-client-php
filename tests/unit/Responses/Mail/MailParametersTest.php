@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Tests\Unit\Responses\Mail;
 
 use DateTimeImmutable;
+use JmapClient\Enums\Mail\MailHeaderForm;
 use JmapClient\Responses\Mail\MailParameters;
 use JmapClient\Responses\Mail\MailPart;
 use PHPUnit\Framework\TestCase;
@@ -156,12 +157,12 @@ class MailParametersTest extends TestCase
 
     public function testHeaderSupportsCustomForm(): void
     {
-        $this->assertSame($this->response['header:Received:asText'], $this->mail->header('Received', 'asText'));
+        $this->assertSame($this->response['header:Received:asText'], $this->mail->header('Received', MailHeaderForm::Text));
     }
 
     public function testHeaderSupportsAllValues(): void
     {
-        $this->assertSame($this->response['header:X-Test:asRaw:all'], $this->mail->header('X-Test', 'asRaw', true));
+        $this->assertSame($this->response['header:X-Test:asRaw:all'], $this->mail->header('X-Test', MailHeaderForm::Raw, true));
     }
 
     public function testMessageId(): void

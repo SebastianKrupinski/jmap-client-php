@@ -12,6 +12,8 @@ namespace JmapClient\Responses\Calendar;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
+use JmapClient\Enums\Calendar\EventAvailability;
+use JmapClient\Enums\Calendar\EventPrivacy;
 use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
@@ -78,14 +80,16 @@ class EventCommonParameters extends ResponseParameters
         return (int)$this->parameter('priority') ?? null;
     }
 
-    public function privacy(): string|null
+    public function privacy(): EventPrivacy|string|null
     {
-        return $this->parameter('privacy') ?? null;
+        $value = $this->parameter('privacy');
+        return is_string($value) ? (EventPrivacy::tryFrom($value) ?? $value) : null;
     }
 
-    public function availability(): string|null
+    public function availability(): EventAvailability|string|null
     {
-        return $this->parameter('freeBusyStatus') ?? null;
+        $value = $this->parameter('freeBusyStatus');
+        return is_string($value) ? (EventAvailability::tryFrom($value) ?? $value) : null;
     }
 
     public function replies(): array

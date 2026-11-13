@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Mail;
 
 use DateTimeInterface;
+use JmapClient\Enums\Mail\MailKeyword;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestFilter;
 
@@ -75,33 +76,33 @@ class MailFilter extends RequestFilter
         return $this;
     }
 
-    public function keywordPresent(string $value): static
+    public function keywordPresent(MailKeyword|string $value): static
     {
-        $this->condition('hasKeyword', $value);
+        $this->condition('hasKeyword', $value instanceof MailKeyword ? $value->value : $value);
         return $this;
     }
 
-    public function keywordAbsent(string $value): static
+    public function keywordAbsent(MailKeyword|string $value): static
     {
-        $this->condition('notKeyword', $value);
+        $this->condition('notKeyword', $value instanceof MailKeyword ? $value->value : $value);
         return $this;
     }
 
-    public function threadKeywordAll(string $value): static
+    public function threadKeywordAll(MailKeyword|string $value): static
     {
-        $this->condition('allInThreadHaveKeyword', $value);
+        $this->condition('allInThreadHaveKeyword', $value instanceof MailKeyword ? $value->value : $value);
         return $this;
     }
 
-    public function threadKeywordSome(string $value): static
+    public function threadKeywordSome(MailKeyword|string $value): static
     {
-        $this->condition('someInThreadHaveKeyword', $value);
+        $this->condition('someInThreadHaveKeyword', $value instanceof MailKeyword ? $value->value : $value);
         return $this;
     }
 
-    public function threadKeywordNone(string $value): static
+    public function threadKeywordNone(MailKeyword|string $value): static
     {
-        $this->condition('noneInThreadHaveKeyword', $value);
+        $this->condition('noneInThreadHaveKeyword', $value instanceof MailKeyword ? $value->value : $value);
         return $this;
     }
 

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Mail;
 
+use JmapClient\Enums\Mail\MailSubmissionUndoStatus;
 use JmapClient\Requests\RequestParameters;
 
 class MailSubmissionParameters extends RequestParameters

@@ -9,9 +9,11 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Responses\Files;
 
-use JmapClient\Requests\Files\NodeKind;
+use JmapClient\Enums\Files\NodeKind;
+use JmapClient\Enums\Files\NodeRole;
 use JmapClient\Responses\Files\NodeCopy;
 use JmapClient\Responses\Files\NodeGet;
+use JmapClient\Responses\Files\NodeParameters;
 use JmapClient\Responses\ResponseBundle;
 use PHPUnit\Framework\TestCase;
 
@@ -136,5 +138,12 @@ class NodeResponseTest extends TestCase
         $this->assertSame('invalidProperties', $response->createFailure('k2')['type']);
         $this->assertSame(['node-3'], $response->deleteSuccesses());
         $this->assertTrue($response->failures());
+    }
+
+    public function testRoleReturnsEnumOrCustomString(): void
+    {
+        $this->assertSame(NodeRole::Home, (new NodeParameters(['role' => 'home']))->role());
+        $this->assertSame('x-scans', (new NodeParameters(['role' => 'x-scans']))->role());
+        $this->assertNull((new NodeParameters(['role' => null]))->role());
     }
 }
