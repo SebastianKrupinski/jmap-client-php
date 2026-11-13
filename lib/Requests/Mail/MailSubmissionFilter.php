@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Mail;
 
 use DateTimeInterface;
+use JmapClient\Enums\Mail\MailSubmissionUndoStatus;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestFilter;
 

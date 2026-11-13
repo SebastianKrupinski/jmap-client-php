@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Mail;
 
 use DateTimeImmutable;
+use JmapClient\Enums\Mail\MailHeaderForm;
+use JmapClient\Enums\Mail\MailKeyword;
 use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
@@ -56,9 +58,9 @@ class MailParameters extends ResponseParameters
         return $this->parameter('size');
     }
 
-    public function header(string $name, string $form = 'asRaw', bool $all = false): mixed
+    public function header(string $name, MailHeaderForm $form = MailHeaderForm::Raw, bool $all = false): mixed
     {
-        $property = sprintf('header:%s:%s', $name, $form);
+        $property = sprintf('header:%s:%s', $name, $form->value);
         if ($all) {
             $property .= ':all';
         }
@@ -205,50 +207,51 @@ class MailParameters extends ResponseParameters
         return (array) ($this->parameter('keywords') ?? []);
     }
 
-    public function keyword(string $name): bool|null
+    public function keyword(MailKeyword|string $name): bool|null
     {
+        $name = $name instanceof MailKeyword ? $name->value : $name;
         $keywords = $this->keywords();
         return array_key_exists($name, $keywords) ? $keywords[$name] : null;
     }
 
     public function draft(): bool|null
     {
-        return $this->keyword('$draft');
+        return $this->keyword(MailKeyword::Draft);
     }
 
     public function seen(): bool|null
     {
-        return $this->keyword('$seen');
+        return $this->keyword(MailKeyword::Seen);
     }
 
     public function flagged(): bool|null
     {
-        return $this->keyword('$flagged');
+        return $this->keyword(MailKeyword::Flagged);
     }
 
     public function answered(): bool|null
     {
-        return $this->keyword('$answered');
+        return $this->keyword(MailKeyword::Answered);
     }
 
     public function forwarded(): bool|null
     {
-        return $this->keyword('$forwarded');
+        return $this->keyword(MailKeyword::Forwarded);
     }
 
     public function phishing(): bool|null
     {
-        return $this->keyword('$phishing');
+        return $this->keyword(MailKeyword::Phishing);
     }
 
     public function junk(): bool|null
     {
-        return $this->keyword('$junk');
+        return $this->keyword(MailKeyword::Junk);
     }
 
     public function notjunk(): bool|null
     {
-        return $this->keyword('$notjunk');
+        return $this->keyword(MailKeyword::NotJunk);
     }
 
     private function extractText(MailPart|null $structure, array $bodyValues): array

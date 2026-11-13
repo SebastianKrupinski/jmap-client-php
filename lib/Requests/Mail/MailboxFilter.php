@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Mail;
 
+use JmapClient\Enums\Mail\MailboxRole;
 use JmapClient\Requests\RequestFilter;
 
 class MailboxFilter extends RequestFilter
@@ -25,9 +26,9 @@ class MailboxFilter extends RequestFilter
         return $this;
     }
 
-    public function role(string $value): static
+    public function role(MailboxRole|string $value): static
     {
-        $this->condition('role', $value);
+        $this->condition('role', $value instanceof MailboxRole ? $value->value : $value);
         return $this;
     }
 

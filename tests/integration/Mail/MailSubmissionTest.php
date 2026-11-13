@@ -10,13 +10,13 @@ declare(strict_types=1);
 namespace JmapClient\Tests\Integration\Mail;
 
 use JmapClient\Client;
+use JmapClient\Enums\Mail\MailSubmissionUndoStatus;
 use JmapClient\Requests\Mail\MailboxSet as MailboxSetRequest;
 use JmapClient\Requests\Mail\MailIdentitySet as MailIdentitySetRequest;
 use JmapClient\Requests\Mail\MailSet as MailSetRequest;
 use JmapClient\Requests\Mail\MailSubmissionGet as MailSubmissionGetRequest;
 use JmapClient\Requests\Mail\MailSubmissionQuery as MailSubmissionQueryRequest;
 use JmapClient\Requests\Mail\MailSubmissionSet as MailSubmissionSetRequest;
-use JmapClient\Requests\Mail\MailSubmissionUndoStatus;
 use JmapClient\Responses\Mail\MailSubmissionGet as MailSubmissionGetResponse;
 use JmapClient\Responses\Mail\MailSubmissionParameters;
 use JmapClient\Responses\Mail\MailSubmissionQuery as MailSubmissionQueryResponse;

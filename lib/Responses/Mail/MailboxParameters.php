@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Mail;
 
+use JmapClient\Enums\Mail\MailboxRole;
 use JmapClient\Responses\ResponseParameters;
 
 class MailboxParameters extends ResponseParameters
@@ -25,10 +26,12 @@ class MailboxParameters extends ResponseParameters
     {
         return $this->parameter('name');
     }
-    public function role(): string|null
+    public function role(): MailboxRole|string|null
     {
-        return $this->parameter('role');
+        $value = $this->parameter('role');
+        return is_string($value) ? (MailboxRole::tryFrom($value) ?? $value) : null;
     }
+
     public function priority(): int|null
     {
         return $this->parameter('sortOrder');

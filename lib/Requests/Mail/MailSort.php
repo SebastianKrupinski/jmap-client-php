@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Mail;
 
+use JmapClient\Enums\Mail\MailKeyword;
 use JmapClient\Requests\RequestSort;
 
 class MailSort extends RequestSort
@@ -49,21 +50,21 @@ class MailSort extends RequestSort
         return $this;
     }
 
-    public function keyword(string $keyword, bool $value = false): static
+    public function keyword(MailKeyword|string $keyword, bool $value = false): static
     {
-        $this->condition('hasKeyword', $value, $keyword);
+        $this->condition('hasKeyword', $value, $keyword instanceof MailKeyword ? $keyword->value : $keyword);
         return $this;
     }
 
-    public function threadKeywordAll(string $keyword, bool $value = false): static
+    public function threadKeywordAll(MailKeyword|string $keyword, bool $value = false): static
     {
-        $this->condition('allInThreadHaveKeyword', $value, $keyword);
+        $this->condition('allInThreadHaveKeyword', $value, $keyword instanceof MailKeyword ? $keyword->value : $keyword);
         return $this;
     }
 
-    public function threadKeywordSome(string $keyword, bool $value = false): static
+    public function threadKeywordSome(MailKeyword|string $keyword, bool $value = false): static
     {
-        $this->condition('someInThreadHaveKeyword', $value, $keyword);
+        $this->condition('someInThreadHaveKeyword', $value, $keyword instanceof MailKeyword ? $keyword->value : $keyword);
         return $this;
     }
 }

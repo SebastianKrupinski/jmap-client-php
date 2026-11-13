@@ -11,9 +11,9 @@ namespace JmapClient\Tests\Unit\Requests\Mail;
 
 use DateTimeImmutable;
 use DateTimeZone;
+use JmapClient\Enums\Mail\MailSubmissionUndoStatus;
 use JmapClient\Requests\Mail\MailSubmissionQuery;
 use JmapClient\Requests\Mail\MailSubmissionSet;
-use JmapClient\Requests\Mail\MailSubmissionUndoStatus;
 use JmapClient\Requests\RequestBundle;
 use PHPUnit\Framework\TestCase;
 

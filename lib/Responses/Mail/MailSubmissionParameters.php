@@ -10,7 +10,9 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Mail;
 
 use DateTimeImmutable;
-use JmapClient\Requests\Mail\MailSubmissionUndoStatus;
+use JmapClient\Enums\Mail\MailDeliveryStatus;
+use JmapClient\Enums\Mail\MailDisplayStatus;
+use JmapClient\Enums\Mail\MailSubmissionUndoStatus;
 use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
@@ -74,6 +76,18 @@ class MailSubmissionParameters extends ResponseParameters
     public function delivery(string $recipient): array|null
     {
         return $this->parameter('deliveryStatus')[$recipient] ?? null;
+    }
+
+    public function delivered(string $recipient): MailDeliveryStatus|null
+    {
+        $value = $this->delivery($recipient)['delivered'] ?? null;
+        return is_string($value) ? MailDeliveryStatus::tryFrom($value) : null;
+    }
+
+    public function displayed(string $recipient): MailDisplayStatus|null
+    {
+        $value = $this->delivery($recipient)['displayed'] ?? null;
+        return is_string($value) ? MailDisplayStatus::tryFrom($value) : null;
     }
 
     public function dsnBlobs(): array

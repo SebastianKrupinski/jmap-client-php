@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Mail;
 
+use JmapClient\Enums\Mail\MailboxRole;
 use JmapClient\Requests\RequestParameters;
 
 class MailboxParameters extends RequestParameters
@@ -33,9 +34,9 @@ class MailboxParameters extends RequestParameters
         return $this;
     }
 
-    public function role(string|null $value): static
+    public function role(MailboxRole|string|null $value): static
     {
-        $this->parameter('role', $value);
+        $this->parameter('role', $value instanceof MailboxRole ? $value->value : $value);
         return $this;
     }
 
