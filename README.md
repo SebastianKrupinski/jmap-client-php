@@ -10,7 +10,7 @@ The library is built with PHP 8.1+ strict typing in mind, ensuring robust type s
 
 ## Features
 
-- **Broad JMAP Coverage** - Request and response types for core, mail, contacts, calendar, files, and tasks workflows
+- **Broad JMAP Coverage** - Request and response types for core, mail, contacts, calendar, files, tasks, quota and sieve workflows
 - **Type-Safe** - Built with PHP 8.1+ strict types for better code quality and IDE support
 - **Multiple Authentication Methods** - Support for Basic auth, bearer tokens, JSON login flows, cookie-backed sessions, and custom authentication schemes
 - **Session Management** - Automatic session discovery, account lookup, and capability negotiation
@@ -424,6 +424,39 @@ if ($client->sessionCapable('quota')) {
 The quota extension also supports `QuotaChanges`, `QuotaQuery`, and
 `QuotaQueryChanges`. Query filters cover `name`, `scope`, `resource`, and
 `type`; sorting is available for `name` and `used`.
+
+### Sieve Scripts (RFC 9661)
+
+Script content is stored as a blob, so it is uploaded first and then referenced
+by the script.
+
+```php
+use JmapClient\Requests\Sieve\ScriptSet;
+use JmapClient\Requests\Sieve\ScriptValidate;
+
+$account = $client->sessionAccountDefault('sieve');
+$script = "require [\"fileinto\"];\nif header :contains \"subject\" \"[news]\" { fileinto \"News\"; }\n";
+$blobId = json_decode($client->upload($account->id(), 'application/sieve', $script), true)['blobId'];
+
+// check the script before storing it
+$validate = new ScriptValidate($account->id());
+$validate->blob($blobId);
+$result = $client->perform([$validate])->first();
+if (!$result->valid()) {
+    echo $result->errorDescription();
+}
+
+// store the script and make it the active one
+$set = new ScriptSet($account->id());
+$set->create('c1')->label('Filters')->blob($blobId);
+$set->activate('#c1');
+$client->perform([$set]);
+```
+
+The sieve extension also supports `ScriptGet`, `ScriptChanges`, `ScriptQuery`,
+and `ScriptQueryChanges`. `ScriptSet::deactivate()` turns off the active
+script, and an active script has to be deactivated before it can be deleted.
+Query filters and sorting cover `label` and `active`.
 
 ### Session Information
 
