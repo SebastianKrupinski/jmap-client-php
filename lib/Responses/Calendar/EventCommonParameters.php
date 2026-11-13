@@ -12,6 +12,7 @@ namespace JmapClient\Responses\Calendar;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class EventCommonParameters extends ResponseParameters
@@ -30,10 +31,9 @@ class EventCommonParameters extends ResponseParameters
 
     /* Scheduling Properties */
 
-    public function starts(): DateTimeInterface|null
+    public function starts(): DateTimeImmutable|null
     {
-        $value = $this->parameter('start');
-        return ($value) ? new DateTimeImmutable($value) : null;
+        return ResponseDate::local($this->parameter('start'), $this->parameter('timeZone'));
     }
 
     public function ends(): DateTimeInterface|null

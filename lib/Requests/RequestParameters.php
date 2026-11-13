@@ -15,9 +15,6 @@ use stdClass;
 
 class RequestParameters implements RequestParametersInterface
 {
-    public const DATE_FORMAT_LOCAL = Request::DATE_FORMAT_LOCAL;
-    public const DATE_FORMAT_UTC = Request::DATE_FORMAT_UTC;
-
     protected object $_parameters;
 
     public function __construct(&$parameters = null)

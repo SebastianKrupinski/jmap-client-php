@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Calendar;
 
+use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class EventNotificationParameters extends RequestParameters
@@ -43,9 +45,9 @@ class EventNotificationParameters extends RequestParameters
         };
     }
 
-    public function acknowledged(string $value): static
+    public function acknowledged(DateTimeInterface $value): static
     {
-        $this->parameter('acknowledged', $value);
+        $this->parameter('acknowledged', RequestDate::utc($value));
         return $this;
     }
 }

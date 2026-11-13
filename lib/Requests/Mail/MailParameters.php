@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Mail;
 
+use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class MailParameters extends RequestParameters
@@ -50,15 +52,15 @@ class MailParameters extends RequestParameters
         return $this;
     }
 
-    public function received(string $value): static
+    public function received(DateTimeInterface $value): static
     {
-        $this->parameter('receivedAt', $value);
+        $this->parameter('receivedAt', RequestDate::utc($value));
         return $this;
     }
 
-    public function sent(string $value): static
+    public function sent(DateTimeInterface $value): static
     {
-        $this->parameter('sentAt', $value);
+        $this->parameter('sentAt', RequestDate::offset($value));
         return $this;
     }
 

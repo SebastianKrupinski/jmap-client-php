@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Contacts;
 
 use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class ContactDateStampParameters extends RequestParameters
@@ -28,7 +29,7 @@ class ContactDateStampParameters extends RequestParameters
 
     public function value(DateTimeInterface $value): static
     {
-        $this->parameter('utc', $value->format(static::DATE_FORMAT_UTC));
+        $this->parameter('utc', RequestDate::utc($value));
         return $this;
     }
 }

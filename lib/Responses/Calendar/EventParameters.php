@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Calendar;
 
 use DateTimeImmutable;
-use DateTimeInterface;
+use JmapClient\Responses\ResponseDate;
 
 class EventParameters extends EventCommonParameters
 {
@@ -36,16 +36,14 @@ class EventParameters extends EventCommonParameters
         return $this->parameter('method');
     }
 
-    public function created(): DateTimeInterface|null
+    public function created(): DateTimeImmutable|null
     {
-        $value = $this->parameter('created');
-        return ($value) ? new DateTimeImmutable($value) : null;
+        return ResponseDate::utc($this->parameter('created'));
     }
 
-    public function updated(): DateTimeInterface|null
+    public function updated(): DateTimeImmutable|null
     {
-        $value = $this->parameter('updated');
-        return ($value) ? new DateTimeImmutable($value) : null;
+        return ResponseDate::utc($this->parameter('updated'));
     }
 
     /* Scheduling Properties */

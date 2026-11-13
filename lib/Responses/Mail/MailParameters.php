@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Mail;
 
+use DateTimeImmutable;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class MailParameters extends ResponseParameters
@@ -79,14 +81,14 @@ class MailParameters extends ResponseParameters
         return $this->parameter('references');
     }
 
-    public function received(): string|null
+    public function received(): DateTimeImmutable|null
     {
-        return $this->parameter('receivedAt');
+        return ResponseDate::utc($this->parameter('receivedAt'));
     }
 
-    public function sent(): string|null
+    public function sent(): DateTimeImmutable|null
     {
-        return $this->parameter('sentAt');
+        return ResponseDate::offset($this->parameter('sentAt'));
     }
 
     public function sender(): array

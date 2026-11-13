@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Calendar;
 
 use DateTimeImmutable;
+use JmapClient\Responses\ResponseDate;
 
 class EventMutationParameters extends EventCommonParameters
 {
@@ -17,8 +18,7 @@ class EventMutationParameters extends EventCommonParameters
 
     public function mutationId(): DateTimeImmutable|null
     {
-        $value = $this->parameter('recurrenceId');
-        return ($value) ? new DateTimeImmutable($value) : null;
+        return ResponseDate::local($this->parameter('recurrenceId'));
     }
 
     public function mutationTimeZone(): string|null

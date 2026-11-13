@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Mail;
 
 use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class MailVacationParameters extends RequestParameters
@@ -40,7 +41,7 @@ class MailVacationParameters extends RequestParameters
      */
     public function start(DateTimeInterface $value): static
     {
-        return $this->parameter('fromDate', $value->format(self::DATE_FORMAT_UTC));
+        return $this->parameter('fromDate', RequestDate::utc($value));
     }
 
     /**
@@ -52,7 +53,7 @@ class MailVacationParameters extends RequestParameters
      */
     public function end(DateTimeInterface $value): static
     {
-        return $this->parameter('toDate', $value->format(self::DATE_FORMAT_UTC));
+        return $this->parameter('toDate', RequestDate::utc($value));
     }
 
     /**

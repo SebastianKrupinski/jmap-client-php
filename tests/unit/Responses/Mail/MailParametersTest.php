@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Responses\Mail;
 
+use DateTimeImmutable;
 use JmapClient\Responses\Mail\MailParameters;
 use JmapClient\Responses\Mail\MailPart;
 use PHPUnit\Framework\TestCase;
@@ -180,12 +181,15 @@ class MailParametersTest extends TestCase
 
     public function testReceived(): void
     {
-        $this->assertSame($this->response['receivedAt'], $this->mail->received());
+        $this->assertInstanceOf(DateTimeImmutable::class, $this->mail->received());
+        $this->assertSame('2026-05-01T11:22:33+00:00', $this->mail->received()->format(DATE_ATOM));
+        $this->assertSame('UTC', $this->mail->received()->getTimezone()->getName());
     }
 
     public function testSent(): void
     {
-        $this->assertSame($this->response['sentAt'], $this->mail->sent());
+        $this->assertInstanceOf(DateTimeImmutable::class, $this->mail->sent());
+        $this->assertSame('2026-05-01T10:11:12+00:00', $this->mail->sent()->format(DATE_ATOM));
     }
 
     public function testSender(): void

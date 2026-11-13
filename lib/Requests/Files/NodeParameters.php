@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Files;
 
+use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class NodeParameters extends RequestParameters
@@ -78,21 +80,21 @@ class NodeParameters extends RequestParameters
         return $this;
     }
 
-    public function created(string $value): static
+    public function created(DateTimeInterface $value): static
     {
-        $this->parameter('created', $value);
+        $this->parameter('created', RequestDate::utc($value));
         return $this;
     }
 
-    public function modified(string $value): static
+    public function modified(DateTimeInterface $value): static
     {
-        $this->parameter('modified', $value);
+        $this->parameter('modified', RequestDate::utc($value));
         return $this;
     }
 
-    public function accessed(string $value): static
+    public function accessed(DateTimeInterface $value): static
     {
-        $this->parameter('accessed', $value);
+        $this->parameter('accessed', RequestDate::utc($value));
         return $this;
     }
 

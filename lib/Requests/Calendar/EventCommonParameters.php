@@ -11,14 +11,11 @@ namespace JmapClient\Requests\Calendar;
 
 use DateInterval;
 use DateTimeInterface;
-use JmapClient\Requests\Request;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class EventCommonParameters extends RequestParameters
 {
-    public const DATE_FORMAT_LOCAL = Request::DATE_FORMAT_LOCAL;
-    public const DATE_FORMAT_UTC = Request::DATE_FORMAT_UTC;
-
     /* Metadata Properties */
 
     public function sequence(int $value): static
@@ -37,7 +34,7 @@ class EventCommonParameters extends RequestParameters
 
     public function starts(DateTimeInterface $value): static
     {
-        $this->parameter('start', $value->format(self::DATE_FORMAT_LOCAL));
+        $this->parameter('start', RequestDate::local($value));
         return $this;
     }
 

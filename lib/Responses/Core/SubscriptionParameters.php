@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Core;
 
+use DateTimeImmutable;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class SubscriptionParameters extends ResponseParameters
@@ -28,9 +30,9 @@ class SubscriptionParameters extends ResponseParameters
         return $this->parameter('url');
     }
 
-    public function expiration(): string|null
+    public function expiration(): DateTimeImmutable|null
     {
-        return $this->parameter('expires');
+        return ResponseDate::utc($this->parameter('expires'));
     }
 
     public function verification(): string|null

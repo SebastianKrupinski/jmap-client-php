@@ -72,8 +72,9 @@ class NodeResponseTest extends TestCase
         $this->assertSame(NodeKind::File, $file->kind());
         $this->assertSame('text/plain', $file->type());
         $this->assertSame(12, $file->size());
-        $this->assertSame('2026-11-02T10:00:00Z', $file->modified());
-        $this->assertSame('2026-11-03T10:00:00Z', $file->changed());
+        $this->assertSame('2026-11-02T10:00:00+00:00', $file->modified()->format(DATE_ATOM));
+        $this->assertSame('2026-11-03T10:00:00+00:00', $file->changed()->format(DATE_ATOM));
+        $this->assertSame('2026-11-01T10:00:00+00:00', $file->created()->format(DATE_ATOM));
 
         $link = $response->object(1);
         $this->assertSame(NodeKind::SymLink, $link->kind());

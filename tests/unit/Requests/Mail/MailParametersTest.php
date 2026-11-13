@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Requests\Mail;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use JmapClient\Requests\Mail\MailParameters;
 use JmapClient\Requests\Mail\MailPart;
 use PHPUnit\Framework\TestCase;
@@ -89,16 +91,18 @@ class MailParametersTest extends TestCase
 
     public function testReceived(): void
     {
-        $this->mail->received('2026-05-01T11:22:33Z');
+        $this->mail->received(new DateTimeImmutable('2026-05-01 07:22:33', new DateTimeZone('America/Toronto')));
 
+        // receivedAt is a UTCDate, so the date is converted to UTC
         $this->assertSame('2026-05-01T11:22:33Z', $this->parameters->receivedAt);
     }
 
     public function testSent(): void
     {
-        $this->mail->sent('2026-05-01T10:11:12Z');
+        $this->mail->sent(new DateTimeImmutable('2026-05-01 12:11:12', new DateTimeZone('Europe/Warsaw')));
 
-        $this->assertSame('2026-05-01T10:11:12Z', $this->parameters->sentAt);
+        // sentAt is a Date, so the date keeps its UTC offset
+        $this->assertSame('2026-05-01T12:11:12+02:00', $this->parameters->sentAt);
     }
 
     public function testSender(): void

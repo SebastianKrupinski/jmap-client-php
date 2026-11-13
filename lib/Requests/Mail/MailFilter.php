@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Mail;
 
 use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestFilter;
 
 class MailFilter extends RequestFilter
@@ -115,13 +116,13 @@ class MailFilter extends RequestFilter
 
     public function receivedBefore(DateTimeInterface $value): static
     {
-        $this->condition('before', $this->utcDate($value));
+        $this->condition('before', RequestDate::utc($value));
         return $this;
     }
 
     public function receivedAfter(DateTimeInterface $value): static
     {
-        $this->condition('after', $this->utcDate($value));
+        $this->condition('after', RequestDate::utc($value));
         return $this;
     }
 

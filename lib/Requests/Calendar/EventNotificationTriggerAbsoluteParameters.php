@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Calendar;
 
-use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class EventNotificationTriggerAbsoluteParameters extends RequestParameters
@@ -27,9 +27,9 @@ class EventNotificationTriggerAbsoluteParameters extends RequestParameters
         return $this;
     }
 
-    public function when(DateTime|DateTimeImmutable $value): static
+    public function when(DateTimeInterface $value): static
     {
-        $this->parameter('when', $value->format(self::DATE_FORMAT_UTC));
+        $this->parameter('when', RequestDate::utc($value));
         return $this;
     }
 }
