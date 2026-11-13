@@ -25,6 +25,7 @@ class ResponseClasses
         'ContactCard' => 'JmapClient\Responses\Contacts\ContactParameters',
         'FileNode' => 'JmapClient\Responses\Files\NodeParameters',
         'Quota' => 'JmapClient\Responses\Quota\QuotaParameters',
+        'SieveScript' => 'JmapClient\Responses\Sieve\ScriptParameters',
     ];
 
     private static array $commands = [
@@ -110,6 +111,13 @@ class ResponseClasses
         'Quota/changes' => 'JmapClient\Responses\Quota\QuotaChanges',
         'Quota/query' => 'JmapClient\Responses\Quota\QuotaQuery',
         'Quota/queryChanges' => 'JmapClient\Responses\Quota\QuotaQueryChanges',
+        // Sieve
+        'SieveScript/get' => 'JmapClient\Responses\Sieve\ScriptGet',
+        'SieveScript/set' => 'JmapClient\Responses\Sieve\ScriptSet',
+        'SieveScript/changes' => 'JmapClient\Responses\Sieve\ScriptChanges',
+        'SieveScript/query' => 'JmapClient\Responses\Sieve\ScriptQuery',
+        'SieveScript/queryChanges' => 'JmapClient\Responses\Sieve\ScriptQueryChanges',
+        'SieveScript/validate' => 'JmapClient\Responses\Sieve\ScriptValidate',
     ];
 
     public static function listCommand(): array
