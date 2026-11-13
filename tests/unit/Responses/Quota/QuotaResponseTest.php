@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Responses\Quota;
 
+use JmapClient\Enums\Quota\QuotaResource;
+use JmapClient\Enums\Quota\QuotaScope;
 use JmapClient\Responses\Quota\QuotaChanges;
 use JmapClient\Responses\Quota\QuotaGet;
 use JmapClient\Responses\Quota\QuotaParameters;
@@ -52,12 +54,12 @@ class QuotaResponseTest extends TestCase
         $this->assertInstanceOf(QuotaGet::class, $response);
         $this->assertInstanceOf(QuotaParameters::class, $quota);
         $this->assertSame('quota-1', $quota->id());
-        $this->assertSame('octets', $quota->resource());
+        $this->assertSame(QuotaResource::Octets, $quota->resource());
         $this->assertSame(1056, $quota->used());
         $this->assertSame(1600, $quota->warnLimit());
         $this->assertSame(1800, $quota->softLimit());
         $this->assertSame(2000, $quota->hardLimit());
-        $this->assertSame('account', $quota->scope());
+        $this->assertSame(QuotaScope::Account, $quota->scope());
         $this->assertSame('Storage', $quota->name());
         $this->assertSame(['Email'], $quota->types());
         $this->assertSame('Personal account storage.', $quota->description());
@@ -105,5 +107,13 @@ class QuotaResponseTest extends TestCase
 
         $this->assertInstanceOf(QuotaQuery::class, $bundle->response(0));
         $this->assertInstanceOf(QuotaQueryChanges::class, $bundle->response(1));
+    }
+
+    public function testUnknownScopeAndResourceReturnNull(): void
+    {
+        $quota = new QuotaParameters(['resourceType' => 'messages', 'scope' => 'tenant']);
+
+        $this->assertNull($quota->resource());
+        $this->assertNull($quota->scope());
     }
 }
