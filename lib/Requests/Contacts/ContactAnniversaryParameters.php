@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Contacts;
 
+use JmapClient\Enums\Contacts\ContactAnniversaryKind;
 use JmapClient\Requests\RequestParameters;
 
 class ContactAnniversaryParameters extends RequestParameters
@@ -41,9 +42,9 @@ class ContactAnniversaryParameters extends RequestParameters
         return new ContactDatePartialParameters($this->_parameters->date);
     }
 
-    public function kind(string $value): static
+    public function kind(ContactAnniversaryKind|string $value): static
     {
-        $this->parameter('kind', $value);
+        $this->parameter('kind', $value instanceof ContactAnniversaryKind ? $value->value : $value);
         return $this;
     }
 

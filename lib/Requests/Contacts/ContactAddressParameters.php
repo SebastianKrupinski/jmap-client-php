@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Contacts;
 
 use DateTimeZone;
+use JmapClient\Enums\Contacts\ContactContext;
+use JmapClient\Enums\Contacts\ContactPhoneticSystem;
 use JmapClient\Requests\RequestParameters;
 
 class ContactAddressParameters extends RequestParameters
@@ -50,11 +52,11 @@ class ContactAddressParameters extends RequestParameters
         }
     }
 
-    public function context(string ...$value): static
+    public function context(ContactContext|string ...$value): static
     {
         $collection = [];
         foreach ($value as $entry) {
-            $collection[$entry] = true;
+            $collection[$entry instanceof ContactContext ? $entry->value : $entry] = true;
         }
         $this->parameter('contexts', (object)$collection);
         return $this;
@@ -96,9 +98,9 @@ class ContactAddressParameters extends RequestParameters
         return $this;
     }
 
-    public function phoneticSystem(string $value): static
+    public function phoneticSystem(ContactPhoneticSystem|string $value): static
     {
-        $this->parameter('phoneticSystem', $value);
+        $this->parameter('phoneticSystem', $value instanceof ContactPhoneticSystem ? $value->value : $value);
         return $this;
     }
 }

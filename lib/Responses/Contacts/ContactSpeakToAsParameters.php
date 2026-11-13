@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactGrammaticalGender;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactSpeakToAsParameters extends ResponseParameters
@@ -24,9 +25,10 @@ class ContactSpeakToAsParameters extends ResponseParameters
      *
      * @return string|null
      */
-    public function grammaticalGender(): string|null
+    public function grammaticalGender(): ContactGrammaticalGender|string|null
     {
-        return $this->parameter('grammaticalGender');
+        $value = $this->parameter('grammaticalGender');
+        return is_string($value) ? (ContactGrammaticalGender::tryFrom($value) ?? $value) : null;
     }
 
     /**

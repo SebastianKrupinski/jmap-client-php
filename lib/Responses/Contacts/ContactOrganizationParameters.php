@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactContext;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactOrganizationParameters extends ResponseParameters
@@ -15,7 +16,7 @@ class ContactOrganizationParameters extends ResponseParameters
 
     public function context(): array
     {
-        return array_keys($this->parameter('contexts') ?? []);
+        return array_map(fn ($value) => ContactContext::tryFrom((string) $value) ?? (string) $value, array_keys($this->parameter('contexts') ?? []));
     }
 
     public function name(): string|null

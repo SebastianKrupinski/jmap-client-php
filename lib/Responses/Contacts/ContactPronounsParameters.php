@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactContext;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactPronounsParameters extends ResponseParameters
@@ -39,7 +40,7 @@ class ContactPronounsParameters extends ResponseParameters
     public function contexts(): array|null
     {
         $value = $this->parameter('contexts');
-        return $value ? array_keys((array)$value) : null;
+        return $value ? array_map(fn ($value) => ContactContext::tryFrom((string) $value) ?? (string) $value, array_keys((array) $value)) : null;
     }
 
     /**

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactContext;
+use JmapClient\Enums\Contacts\ContactPhoneFeature;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactPhoneParameters extends ResponseParameters
@@ -20,7 +22,7 @@ class ContactPhoneParameters extends ResponseParameters
 
     public function context(): array
     {
-        return array_keys($this->parameter('contexts') ?? []);
+        return array_map(fn ($value) => ContactContext::tryFrom((string) $value) ?? (string) $value, array_keys($this->parameter('contexts') ?? []));
     }
 
     public function priority(): int|null
@@ -35,6 +37,6 @@ class ContactPhoneParameters extends ResponseParameters
 
     public function features(): array
     {
-        return array_keys($this->parameter('features') ?? []);
+        return array_map(fn ($value) => ContactPhoneFeature::tryFrom((string) $value) ?? (string) $value, array_keys($this->parameter('features') ?? []));
     }
 }

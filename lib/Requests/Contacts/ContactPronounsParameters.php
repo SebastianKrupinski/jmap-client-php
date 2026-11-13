@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Contacts;
 
+use JmapClient\Enums\Contacts\ContactContext;
 use JmapClient\Requests\RequestParameters;
 
 class ContactPronounsParameters extends RequestParameters
@@ -45,11 +46,11 @@ class ContactPronounsParameters extends RequestParameters
      * @param string ...$values
      * @return static
      */
-    public function contexts(string ...$values): static
+    public function contexts(ContactContext|string ...$values): static
     {
         $collection = [];
         foreach ($values as $value) {
-            $collection[$value] = true;
+            $collection[$value instanceof ContactContext ? $value->value : $value] = true;
         }
         $this->parameter('contexts', (object)$collection);
         return $this;

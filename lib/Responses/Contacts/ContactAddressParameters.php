@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Contacts;
 
 use DateTimeZone;
+use JmapClient\Enums\Contacts\ContactContext;
+use JmapClient\Enums\Contacts\ContactPhoneticSystem;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactAddressParameters extends ResponseParameters
@@ -23,14 +25,14 @@ class ContactAddressParameters extends ResponseParameters
     {
         $components = $this->parameter('components') ?? [];
         foreach ($components as $key => $data) {
-            $components[$key] = new ContactComponentParameters($data);
+            $components[$key] = new ContactAddressComponentParameters($data);
         }
         return $components;
     }
 
     public function context(): array
     {
-        return array_keys((array)($this->parameter('contexts') ?? []));
+        return array_map(fn ($value) => ContactContext::tryFrom((string) $value) ?? (string) $value, array_keys((array) ($this->parameter('contexts') ?? [])));
     }
 
     public function separator(): string|null
@@ -64,8 +66,9 @@ class ContactAddressParameters extends ResponseParameters
         return $this->parameter('phoneticScript');
     }
 
-    public function phoneticSystem(): string|null
+    public function phoneticSystem(): ContactPhoneticSystem|string|null
     {
-        return $this->parameter('phoneticSystem');
+        $value = $this->parameter('phoneticSystem');
+        return is_string($value) ? (ContactPhoneticSystem::tryFrom($value) ?? $value) : null;
     }
 }

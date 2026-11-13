@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Tests\Unit\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactContext;
 use JmapClient\Responses\Contacts\ContactAddressParameters;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +21,7 @@ class ContactAddressParametersTest extends TestCase
             'contexts' => ['private' => true, 'billing' => true],
         ]);
 
-        $this->assertSame(['private', 'billing'], $address->context());
+        $this->assertSame([ContactContext::Private, ContactContext::Billing], $address->context());
     }
 
     public function testContextMissing(): void

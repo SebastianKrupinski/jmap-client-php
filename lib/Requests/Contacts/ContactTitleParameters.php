@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Contacts;
 
+use JmapClient\Enums\Contacts\ContactTitleKind;
 use JmapClient\Requests\RequestParameters;
 
 class ContactTitleParameters extends RequestParameters
@@ -31,9 +32,9 @@ class ContactTitleParameters extends RequestParameters
         return $this;
     }
 
-    public function kind(string $value): static
+    public function kind(ContactTitleKind|string $value): static
     {
-        $this->parameter('kind', $value);
+        $this->parameter('kind', $value instanceof ContactTitleKind ? $value->value : $value);
         return $this;
     }
 

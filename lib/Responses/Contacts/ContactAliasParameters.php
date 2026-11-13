@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactContext;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactAliasParameters extends ResponseParameters
@@ -26,7 +27,7 @@ class ContactAliasParameters extends ResponseParameters
     public function context(): array|null
     {
         $collection = $this->parameter('contexts') ?? [];
-        return array_keys($collection);
+        return array_map(fn ($value) => ContactContext::tryFrom((string) $value) ?? (string) $value, array_keys($collection));
     }
 
     public function priority(): int|null

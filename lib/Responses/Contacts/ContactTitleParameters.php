@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Contacts;
 
+use JmapClient\Enums\Contacts\ContactContext;
+use JmapClient\Enums\Contacts\ContactTitleKind;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactTitleParameters extends ResponseParameters
@@ -18,14 +20,15 @@ class ContactTitleParameters extends ResponseParameters
         return $this->parameter('name');
     }
 
-    public function kind(): string|null
+    public function kind(): ContactTitleKind|string|null
     {
-        return $this->parameter('kind');
+        $value = $this->parameter('kind');
+        return is_string($value) ? (ContactTitleKind::tryFrom($value) ?? $value) : null;
     }
 
     public function context(): array
     {
-        return array_keys($this->parameter('contexts') ?? []);
+        return array_map(fn ($value) => ContactContext::tryFrom((string) $value) ?? (string) $value, array_keys($this->parameter('contexts') ?? []));
     }
 
     public function relation(): string|null
