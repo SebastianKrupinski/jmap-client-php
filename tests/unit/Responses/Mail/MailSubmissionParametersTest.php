@@ -45,7 +45,7 @@ class MailSubmissionParametersTest extends TestCase
         $this->assertSame('sender@example.com', $submission->from());
         $this->assertSame(['one@example.com', 'two@example.com'], $submission->to());
         $this->assertSame(['NOTIFY' => 'SUCCESS'], $submission->envelope()['rcptTo'][1]['parameters']);
-        $this->assertSame('2026-11-12T10:00:00Z', $submission->sent());
+        $this->assertSame('2026-11-12T10:00:00+00:00', $submission->sent()->format(DATE_ATOM));
         $this->assertSame(MailSubmissionUndoStatus::Final, $submission->undoStatus());
         $this->assertSame('yes', $submission->delivery('one@example.com')['delivered']);
         $this->assertNull($submission->delivery('two@example.com'));

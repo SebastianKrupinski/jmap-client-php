@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Files;
 
+use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestFilter;
 
 class NodeFilter extends RequestFilter
@@ -39,39 +41,39 @@ class NodeFilter extends RequestFilter
 
     // Chronology Filters
 
-    public function createdBefore(string $value): static
+    public function createdBefore(DateTimeInterface $value): static
     {
-        $this->condition('createdBefore', $value);
+        $this->condition('createdBefore', RequestDate::utc($value));
         return $this;
     }
 
-    public function createdAfter(string $value): static
+    public function createdAfter(DateTimeInterface $value): static
     {
-        $this->condition('createdAfter', $value);
+        $this->condition('createdAfter', RequestDate::utc($value));
         return $this;
     }
 
-    public function modifiedBefore(string $value): static
+    public function modifiedBefore(DateTimeInterface $value): static
     {
-        $this->condition('modifiedBefore', $value);
+        $this->condition('modifiedBefore', RequestDate::utc($value));
         return $this;
     }
 
-    public function modifiedAfter(string $value): static
+    public function modifiedAfter(DateTimeInterface $value): static
     {
-        $this->condition('modifiedAfter', $value);
+        $this->condition('modifiedAfter', RequestDate::utc($value));
         return $this;
     }
 
-    public function accessedBefore(string $value): static
+    public function accessedBefore(DateTimeInterface $value): static
     {
-        $this->condition('accessedBefore', $value);
+        $this->condition('accessedBefore', RequestDate::utc($value));
         return $this;
     }
 
-    public function accessedAfter(string $value): static
+    public function accessedAfter(DateTimeInterface $value): static
     {
-        $this->condition('accessedAfter', $value);
+        $this->condition('accessedAfter', RequestDate::utc($value));
         return $this;
     }
 

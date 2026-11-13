@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Calendar;
 
+use DateTimeImmutable;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class EventNotificationParameters extends ResponseParameters
@@ -33,8 +35,8 @@ class EventNotificationParameters extends ResponseParameters
         };
     }
 
-    public function acknowledged(): string|null
+    public function acknowledged(): DateTimeImmutable|null
     {
-        return $this->parameter('acknowledged');
+        return ResponseDate::utc($this->parameter('acknowledged'));
     }
 }

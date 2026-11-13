@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Core;
 
 use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class SubscriptionParameters extends RequestParameters
@@ -34,7 +35,7 @@ class SubscriptionParameters extends RequestParameters
 
     public function expiration(DateTimeInterface $value): static
     {
-        $this->parameter('expires', $value->format(self::DATE_FORMAT_UTC));
+        $this->parameter('expires', RequestDate::utc($value));
         return $this;
     }
 

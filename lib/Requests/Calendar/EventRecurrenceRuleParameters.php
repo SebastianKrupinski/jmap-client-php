@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Calendar;
 
-use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class EventRecurrenceRuleParameters extends RequestParameters
@@ -45,9 +45,9 @@ class EventRecurrenceRuleParameters extends RequestParameters
         return $this;
     }
 
-    public function until(DateTime|DateTimeImmutable $value): static
+    public function until(DateTimeInterface $value): static
     {
-        $this->parameter('until', $value->format(self::DATE_FORMAT_LOCAL));
+        $this->parameter('until', RequestDate::local($value));
         return $this;
     }
 

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Calendar;
 
 use DateTimeImmutable;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class EventNotificationTriggerAbsoluteParameters extends ResponseParameters
@@ -21,7 +22,6 @@ class EventNotificationTriggerAbsoluteParameters extends ResponseParameters
 
     public function when(): DateTimeImmutable|null
     {
-        $value = $this->parameter('when');
-        return ($value) ? new DateTimeImmutable($value) : null;
+        return ResponseDate::utc($this->parameter('when'));
     }
 }

@@ -15,9 +15,6 @@ class Request implements \JsonSerializable
     public const REQUEST_COMMAND = 1;
     public const REQUEST_IDENTIFIER = 2;
 
-    public const DATE_FORMAT_LOCAL = 'Y-m-d\TH:i:s';
-    public const DATE_FORMAT_UTC = 'Y-m-d\TH:i:s\Z';
-
     protected string $_space;
     protected string $_class;
     protected string $_method;

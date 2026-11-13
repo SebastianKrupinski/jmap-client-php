@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Mail;
 
+use DateTimeImmutable;
 use JmapClient\Requests\Mail\MailSubmissionUndoStatus;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class MailSubmissionParameters extends ResponseParameters
@@ -53,9 +55,9 @@ class MailSubmissionParameters extends ResponseParameters
         return array_values(array_filter(array_map(fn ($recipient) => $recipient['email'] ?? null, $recipients), 'is_string'));
     }
 
-    public function sent(): string|null
+    public function sent(): DateTimeImmutable|null
     {
-        return $this->parameter('sendAt');
+        return ResponseDate::utc($this->parameter('sendAt'));
     }
 
     public function undoStatus(): MailSubmissionUndoStatus|null

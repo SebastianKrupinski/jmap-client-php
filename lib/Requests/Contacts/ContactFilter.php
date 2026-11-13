@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Contacts;
 
-use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestFilter;
 
 class ContactFilter extends RequestFilter
@@ -43,30 +43,30 @@ class ContactFilter extends RequestFilter
         return $this;
     }
 
-    public function createdAfter(DateTime|DateTimeImmutable $value): static
+    public function createdAfter(DateTimeInterface $value): static
     {
-        $this->condition('createdAfter', $value->format(self::DATE_FORMAT_UTC));
+        $this->condition('createdAfter', RequestDate::utc($value));
 
         return $this;
     }
 
-    public function createdBefore(DateTime|DateTimeImmutable $value): static
+    public function createdBefore(DateTimeInterface $value): static
     {
-        $this->condition('createdBefore', $value->format(self::DATE_FORMAT_UTC));
+        $this->condition('createdBefore', RequestDate::utc($value));
 
         return $this;
     }
 
-    public function updatedAfter(DateTime|DateTimeImmutable $value): static
+    public function updatedAfter(DateTimeInterface $value): static
     {
-        $this->condition('updatedAfter', $value->format(self::DATE_FORMAT_UTC));
+        $this->condition('updatedAfter', RequestDate::utc($value));
 
         return $this;
     }
 
-    public function updatedBefore(DateTime|DateTimeImmutable $value): static
+    public function updatedBefore(DateTimeInterface $value): static
     {
-        $this->condition('updatedBefore', $value->format(self::DATE_FORMAT_UTC));
+        $this->condition('updatedBefore', RequestDate::utc($value));
 
         return $this;
     }

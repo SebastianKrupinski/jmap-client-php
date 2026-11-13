@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Mail;
 
 use DateTimeImmutable;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class MailVacationParameters extends ResponseParameters
@@ -41,8 +42,7 @@ class MailVacationParameters extends ResponseParameters
      */
     public function start(): DateTimeImmutable|null
     {
-        $value = $this->parameter('fromDate');
-        return ($value) ? new DateTimeImmutable($value) : null;
+        return ResponseDate::utc($this->parameter('fromDate'));
     }
 
     /**
@@ -52,8 +52,7 @@ class MailVacationParameters extends ResponseParameters
      */
     public function end(): ?DateTimeImmutable
     {
-        $value = $this->parameter('toDate');
-        return ($value) ? new DateTimeImmutable($value) : null;
+        return ResponseDate::utc($this->parameter('toDate'));
     }
 
     /**

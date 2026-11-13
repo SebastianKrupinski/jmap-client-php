@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Calendar;
 
 use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 
 /**
  * EventParameters class for building JMAP Calendar Event objects
@@ -87,7 +88,7 @@ class EventParameters extends EventCommonParameters
      */
     public function created(DateTimeInterface $value): static
     {
-        $this->parameter('created', $value->format(self::DATE_FORMAT_UTC));
+        $this->parameter('created', RequestDate::utc($value));
         return $this;
     }
 
@@ -99,7 +100,7 @@ class EventParameters extends EventCommonParameters
      */
     public function updated(DateTimeInterface $value): static
     {
-        $this->parameter('updated', $value->format(self::DATE_FORMAT_UTC));
+        $this->parameter('updated', RequestDate::utc($value));
         return $this;
     }
 
@@ -146,7 +147,7 @@ class EventParameters extends EventCommonParameters
      */
     public function recurrenceMutations(DateTimeInterface $date, ?EventMutationParameters $object = null): EventMutationParameters
     {
-        $id = $date->format(self::DATE_FORMAT_LOCAL);
+        $id = RequestDate::local($date);
         if (!isset($this->_parameters->recurrenceOverrides->$id)) {
             $this->parameterStructured('recurrenceOverrides', $id, new \stdClass());
         }

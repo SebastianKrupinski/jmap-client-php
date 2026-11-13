@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Tasks;
 
-use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestFilter;
 
 class TaskFilter extends RequestFilter
@@ -29,16 +29,16 @@ class TaskFilter extends RequestFilter
         return $this;
     }
 
-    public function after(DateTime|DateTimeImmutable $value): static
+    public function after(DateTimeInterface $value): static
     {
-        $this->condition('after', $value->format(self::DATE_FORMAT_LOCAL));
+        $this->condition('after', RequestDate::local($value));
 
         return $this;
     }
 
-    public function before(DateTime|DateTimeImmutable $value): static
+    public function before(DateTimeInterface $value): static
     {
-        $this->condition('before', $value->format(self::DATE_FORMAT_LOCAL));
+        $this->condition('before', RequestDate::local($value));
 
         return $this;
     }

@@ -11,9 +11,6 @@ namespace JmapClient\Requests;
 
 class RequestFilter
 {
-    public const DATE_FORMAT_LOCAL = Request::DATE_FORMAT_LOCAL;
-    public const DATE_FORMAT_UTC = Request::DATE_FORMAT_UTC;
-
     protected object $_filter;
 
     public function __construct(object &$filter)
@@ -26,10 +23,5 @@ class RequestFilter
         $this->_filter->$property = $value;
 
         return $this;
-    }
-
-    protected function utcDate(\DateTimeInterface $value): string
-    {
-        return \DateTimeImmutable::createFromInterface($value)->setTimezone(new \DateTimeZone('UTC'))->format(self::DATE_FORMAT_UTC);
     }
 }

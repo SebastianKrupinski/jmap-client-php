@@ -9,16 +9,12 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Tasks;
 
-use DateTime;
-use DateTimeImmutable;
-use JmapClient\Requests\Request;
+use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestParameters;
 
 class TaskParameters extends RequestParameters
 {
-    public const DATE_FORMAT_LOCAL = Request::DATE_FORMAT_LOCAL;
-    public const DATE_FORMAT_UTC = Request::DATE_FORMAT_UTC;
-
     public function __construct(&$parameters = null)
     {
         parent::__construct($parameters);
@@ -45,16 +41,16 @@ class TaskParameters extends RequestParameters
         return $this;
     }
 
-    public function created(DateTime|DateTimeImmutable $value): static
+    public function created(DateTimeInterface $value): static
     {
-        $this->parameter('created', $value->format(self::DATE_FORMAT_UTC));
+        $this->parameter('created', RequestDate::utc($value));
 
         return $this;
     }
 
-    public function updated(DateTime|DateTimeImmutable $value): static
+    public function updated(DateTimeInterface $value): static
     {
-        $this->parameter('updated', $value->format(self::DATE_FORMAT_UTC));
+        $this->parameter('updated', RequestDate::utc($value));
 
         return $this;
     }

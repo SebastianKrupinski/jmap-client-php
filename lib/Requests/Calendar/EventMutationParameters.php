@@ -10,12 +10,13 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Calendar;
 
 use DateTimeInterface;
+use JmapClient\Requests\RequestDate;
 
 class EventMutationParameters extends EventCommonParameters
 {
     public function mutationId(DateTimeInterface $value): static
     {
-        $this->parameter('recurrenceId', $value->format(self::DATE_FORMAT_LOCAL));
+        $this->parameter('recurrenceId', RequestDate::local($value));
         return $this;
     }
 

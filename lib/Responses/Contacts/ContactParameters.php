@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace JmapClient\Responses\Contacts;
 
 use DateTimeImmutable;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class ContactParameters extends ResponseParameters
@@ -43,14 +44,12 @@ class ContactParameters extends ResponseParameters
 
     public function created(): DateTimeImmutable|null
     {
-        $value = $this->parameter('created');
-        return ($value) ? new DateTimeImmutable($value) : null;
+        return ResponseDate::utc($this->parameter('created'));
     }
 
     public function updated(): DateTimeImmutable|null
     {
-        $value = $this->parameter('updated');
-        return ($value) ? new DateTimeImmutable($value) : null;
+        return ResponseDate::utc($this->parameter('updated'));
     }
 
     public function source(): string|null

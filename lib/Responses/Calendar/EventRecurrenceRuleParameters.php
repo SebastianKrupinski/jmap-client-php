@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Calendar;
 
+use DateTimeImmutable;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class EventRecurrenceRuleParameters extends ResponseParameters
@@ -28,9 +30,9 @@ class EventRecurrenceRuleParameters extends ResponseParameters
         return $this->parameter('count');
     }
 
-    public function until(): string|null
+    public function until(): DateTimeImmutable|null
     {
-        return $this->parameter('until');
+        return ResponseDate::local($this->parameter('until'));
     }
 
     public function scale(): string

@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Files;
 
+use DateTimeImmutable;
 use JmapClient\Requests\Files\NodeKind;
+use JmapClient\Responses\ResponseDate;
 use JmapClient\Responses\ResponseParameters;
 
 class NodeParameters extends ResponseParameters
@@ -60,24 +62,24 @@ class NodeParameters extends ResponseParameters
         return $this->parameter('role');
     }
 
-    public function created(): string|null
+    public function created(): DateTimeImmutable|null
     {
-        return $this->parameter('created');
+        return ResponseDate::utc($this->parameter('created'));
     }
 
-    public function modified(): string|null
+    public function modified(): DateTimeImmutable|null
     {
-        return $this->parameter('modified');
+        return ResponseDate::utc($this->parameter('modified'));
     }
 
-    public function changed(): string|null
+    public function changed(): DateTimeImmutable|null
     {
-        return $this->parameter('changed');
+        return ResponseDate::utc($this->parameter('changed'));
     }
 
-    public function accessed(): string|null
+    public function accessed(): DateTimeImmutable|null
     {
-        return $this->parameter('accessed');
+        return ResponseDate::utc($this->parameter('accessed'));
     }
 
     public function executable(): bool|null
