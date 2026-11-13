@@ -9,27 +9,44 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Mail;
 
-use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
 use JmapClient\Requests\RequestFilter;
 
 class MailSubmissionFilter extends RequestFilter
 {
-    public function undoStatus(string $value): static
+    public function identities(string ...$value): static
     {
-        $this->condition('undoStatus', $value);
+        $this->condition('identityIds', $value);
         return $this;
     }
 
-    public function sendBefore(DateTime|DateTimeImmutable $value): static
+    public function messages(string ...$value): static
     {
-        $this->condition('before', $value->format(self::DATE_FORMAT_LOCAL));
+        $this->condition('emailIds', $value);
         return $this;
     }
 
-    public function sendAfter(DateTime|DateTimeImmutable $value): static
+    public function threads(string ...$value): static
     {
-        $this->condition('after', $value->format(self::DATE_FORMAT_LOCAL));
+        $this->condition('threadIds', $value);
+        return $this;
+    }
+
+    public function undoStatus(MailSubmissionUndoStatus $value): static
+    {
+        $this->condition('undoStatus', $value->value);
+        return $this;
+    }
+
+    public function sendBefore(DateTimeInterface $value): static
+    {
+        $this->condition('before', $this->utcDate($value));
+        return $this;
+    }
+
+    public function sendAfter(DateTimeInterface $value): static
+    {
+        $this->condition('after', $this->utcDate($value));
         return $this;
     }
 }

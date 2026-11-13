@@ -9,8 +9,7 @@ declare(strict_types=1);
 
 namespace JmapClient\Requests\Mail;
 
-use DateTime;
-use DateTimeImmutable;
+use DateTimeInterface;
 use JmapClient\Requests\RequestFilter;
 
 class MailFilter extends RequestFilter
@@ -77,25 +76,52 @@ class MailFilter extends RequestFilter
 
     public function keywordPresent(string $value): static
     {
-        $this->condition('before', $value);
+        $this->condition('hasKeyword', $value);
         return $this;
     }
 
     public function keywordAbsent(string $value): static
     {
-        $this->condition('after', $value);
+        $this->condition('notKeyword', $value);
         return $this;
     }
 
-    public function receivedBefore(DateTime|DateTimeImmutable $value): static
+    public function threadKeywordAll(string $value): static
     {
-        $this->condition('before', $value->format(self::DATE_FORMAT_UTC));
+        $this->condition('allInThreadHaveKeyword', $value);
         return $this;
     }
 
-    public function receivedAfter(DateTime|DateTimeImmutable $value): static
+    public function threadKeywordSome(string $value): static
     {
-        $this->condition('after', $value->format(self::DATE_FORMAT_UTC));
+        $this->condition('someInThreadHaveKeyword', $value);
+        return $this;
+    }
+
+    public function threadKeywordNone(string $value): static
+    {
+        $this->condition('noneInThreadHaveKeyword', $value);
+        return $this;
+    }
+
+    /**
+     * Emails that have the header, and when a value is given, whose header value contains it
+     */
+    public function header(string $name, ?string $value = null): static
+    {
+        $this->condition('header', $value === null ? [$name] : [$name, $value]);
+        return $this;
+    }
+
+    public function receivedBefore(DateTimeInterface $value): static
+    {
+        $this->condition('before', $this->utcDate($value));
+        return $this;
+    }
+
+    public function receivedAfter(DateTimeInterface $value): static
+    {
+        $this->condition('after', $this->utcDate($value));
         return $this;
     }
 
