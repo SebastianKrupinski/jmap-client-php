@@ -10,6 +10,8 @@ declare(strict_types=1);
 namespace JmapClient\Requests\Files;
 
 use DateTimeInterface;
+use JmapClient\Enums\Files\NodeKind;
+use JmapClient\Enums\Files\NodeRole;
 use JmapClient\Requests\RequestDate;
 use JmapClient\Requests\RequestFilter;
 
@@ -135,9 +137,9 @@ class NodeFilter extends RequestFilter
         return $this;
     }
 
-    public function hasRole(string $value): static
+    public function hasRole(NodeRole|string $value): static
     {
-        $this->condition('role', $value);
+        $this->condition('role', $value instanceof NodeRole ? $value->value : $value);
         return $this;
     }
 

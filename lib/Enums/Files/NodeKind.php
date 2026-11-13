@@ -7,7 +7,7 @@ declare(strict_types=1);
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-namespace JmapClient\Requests\Files;
+namespace JmapClient\Enums\Files;
 
 /**
  * FileNode @type values defined by the JMAP FileNode Types registry
