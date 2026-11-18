@@ -13,6 +13,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use JmapClient\Requests\Mail\MailParameters;
 use JmapClient\Requests\Mail\MailPart;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class MailParametersTest extends TestCase
@@ -51,6 +52,90 @@ class MailParametersTest extends TestCase
 
         $this->assertSame('Example subject', $this->parameters->{'header:Subject:asRaw'});
         $this->assertSame('Header value', $this->parameters->{'header:X-Test:asRaw'});
+    }
+
+    public function testHeaderReplacesSameHeaderInAnyCase(): void
+    {
+        $this->mail
+            ->header('subject', ' First')
+            ->header('Subject', ' Second');
+
+        $this->assertSame(['header:Subject:asRaw' => ' Second'], get_object_vars($this->parameters));
+    }
+
+    public function testHeaderReplacesParsedProperties(): void
+    {
+        $this->mail
+            ->messageId('<m@example.com>')
+            ->inReplyTo('<r@example.com>')
+            ->references('<r@example.com>')
+            ->sent(new DateTimeImmutable('2026-01-01T10:00:00+01:00'))
+            ->sender('sender@example.com')
+            ->from('from@example.com')
+            ->to('to@example.com')
+            ->cc('cc@example.com')
+            ->bcc('bcc@example.com')
+            ->replyTo('reply@example.com')
+            ->subject('Subject');
+
+        $headers = [
+            'Message-ID' => ' <m2@example.com>',
+            'In-Reply-To' => ' <r2@example.com>',
+            'References' => ' <r2@example.com>',
+            'Date' => ' Thu, 01 Jan 2026 10:00:00 +0100',
+            'Sender' => ' sender2@example.com',
+            'From' => ' from2@example.com',
+            'To' => ' to2@example.com',
+            'Cc' => ' cc2@example.com',
+            'Bcc' => ' bcc2@example.com',
+            'Reply-To' => ' reply2@example.com',
+            'Subject' => ' Subject 2',
+        ];
+        $this->mail->headers($headers);
+
+        $expected = [];
+        foreach ($headers as $name => $value) {
+            $expected["header:$name:asRaw"] = $value;
+        }
+        $this->assertSame($expected, get_object_vars($this->parameters));
+    }
+
+    public static function parsedPropertyProvider(): array
+    {
+        return [
+            'messageId' => ['messageId', ['<m@example.com>'], 'message-id'],
+            'inReplyTo' => ['inReplyTo', ['<r@example.com>'], 'in-reply-to'],
+            'references' => ['references', ['<r@example.com>'], 'references'],
+            'sent' => ['sent', [new DateTimeImmutable('2026-01-01T10:00:00+01:00')], 'date'],
+            'sender' => ['sender', ['sender@example.com'], 'sender'],
+            'from' => ['from', ['from@example.com'], 'from'],
+            'to' => ['to', ['to@example.com'], 'to'],
+            'cc' => ['cc', ['cc@example.com'], 'cc'],
+            'bcc' => ['bcc', ['bcc@example.com'], 'bcc'],
+            'replyTo' => ['replyTo', ['reply@example.com'], 'reply-to'],
+            'subject' => ['subject', ['Subject'], 'subject'],
+        ];
+    }
+
+    #[DataProvider('parsedPropertyProvider')]
+    public function testParsedPropertyReplacesHeader(string $method, array $arguments, string $header): void
+    {
+        $this->parameters->{"header:$header:asRaw"} = ' raw';
+        $this->parameters->{'header:X-Other:asRaw'} = ' other';
+
+        $this->mail->$method(...$arguments);
+
+        $this->assertObjectNotHasProperty("header:$header:asRaw", $this->parameters);
+        $this->assertSame(' other', $this->parameters->{'header:X-Other:asRaw'});
+    }
+
+    public function testBodyTextReplacesContentTypeHeader(): void
+    {
+        $this->mail->bodyPartStructure()->header('Content-Type', ' text/html');
+        $this->mail->bodyTextPlain('Body', 'part-1');
+
+        $this->assertSame('text/plain', $this->parameters->bodyStructure->type);
+        $this->assertObjectNotHasProperty('header:Content-Type:asRaw', $this->parameters->bodyStructure);
     }
 
     public function testMessageId(): void
@@ -203,8 +288,8 @@ class MailParametersTest extends TestCase
         $this->assertInstanceOf(MailPart::class, $part);
         $this->assertSame('body-part', $this->parameters->bodyStructure->partId);
         $this->assertSame('multipart/alternative', $this->parameters->bodyStructure->type);
-        $this->assertSame('Content-Language', $this->parameters->bodyStructure->headers[0]->name);
-        $this->assertSame('en', $this->parameters->bodyStructure->headers[0]->value);
+        $this->assertSame('en', $this->parameters->bodyStructure->{'header:Content-Language:asRaw'});
+        $this->assertObjectNotHasProperty('headers', $this->parameters->bodyStructure);
     }
 
     public function testBodyPartValue(): void

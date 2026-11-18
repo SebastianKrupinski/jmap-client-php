@@ -16,6 +16,22 @@ use JmapClient\Requests\RequestParameters;
 
 class MailParameters extends RequestParameters
 {
+    use MailHeaders;
+
+    protected const HEADER_PROPERTIES = [
+        'message-id' => ['messageId'],
+        'in-reply-to' => ['inReplyTo'],
+        'references' => ['references'],
+        'date' => ['sentAt'],
+        'sender' => ['sender'],
+        'from' => ['from'],
+        'to' => ['to'],
+        'cc' => ['cc'],
+        'bcc' => ['bcc'],
+        'reply-to' => ['replyTo'],
+        'subject' => ['subject'],
+    ];
+
     public function __construct(&$parameters = null)
     {
         parent::__construct($parameters);
@@ -27,28 +43,23 @@ class MailParameters extends RequestParameters
         return $this;
     }
 
-    public function headers(array $headers): static
-    {
-        foreach ($headers as $name => $value) {
-            $this->parameter(sprintf('header:%s:asRaw', $name), $value);
-        }
-        return $this;
-    }
-
     public function messageId(string $value): static
     {
+        $this->headerRemove('Message-ID');
         $this->parameterCollection('messageId', $value);
         return $this;
     }
 
     public function inReplyTo(string $value): static
     {
+        $this->headerRemove('In-Reply-To');
         $this->parameterCollection('inReplyTo', $value);
         return $this;
     }
 
     public function references(string $value): static
     {
+        $this->headerRemove('References');
         $this->parameterCollection('references', $value);
         return $this;
     }
@@ -61,48 +72,56 @@ class MailParameters extends RequestParameters
 
     public function sent(DateTimeInterface $value): static
     {
+        $this->headerRemove('Date');
         $this->parameter('sentAt', RequestDate::offset($value));
         return $this;
     }
 
     public function sender(string $address, string $name = ''): static
     {
+        $this->headerRemove('Sender');
         $this->parameterCollection('sender', (object) ['name' => $name, 'email' => $address]);
         return $this;
     }
 
     public function from(string $address, string $name = ''): static
     {
+        $this->headerRemove('From');
         $this->parameterCollection('from', (object) ['name' => $name, 'email' => $address]);
         return $this;
     }
 
     public function to(string $address, string $name = ''): static
     {
+        $this->headerRemove('To');
         $this->parameterCollection('to', (object) ['name' => $name, 'email' => $address]);
         return $this;
     }
 
     public function cc(string $address, string $name = ''): static
     {
+        $this->headerRemove('Cc');
         $this->parameterCollection('cc', (object) ['name' => $name, 'email' => $address]);
         return $this;
     }
 
     public function bcc(string $address, string $name = ''): static
     {
+        $this->headerRemove('Bcc');
         $this->parameterCollection('bcc', (object) ['name' => $name, 'email' => $address]);
         return $this;
     }
 
     public function replyTo(string $address, string $name = ''): static
     {
+        $this->headerRemove('Reply-To');
         $this->parameterCollection('replyTo', (object) ['name' => $name, 'email' => $address]);
         return $this;
     }
 
     public function subject(string $value): static
     {
+        $this->headerRemove('Subject');
         $this->parameter('subject', $value);
         return $this;
     }
@@ -113,8 +132,7 @@ class MailParameters extends RequestParameters
             $id = uniqid();
         }
 
-        $this->parameterStructured('bodyStructure', 'partId', $id);
-        $this->parameterStructured('bodyStructure', 'type', $type);
+        $this->bodyPartStructure()->id($id)->type($type);
         $this->bodyPartValue($id, $content);
 
         return $this;
