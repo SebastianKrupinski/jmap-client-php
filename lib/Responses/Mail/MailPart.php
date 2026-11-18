@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace JmapClient\Responses\Mail;
 
+use JmapClient\Enums\Mail\MailHeaderForm;
+
 class MailPart
 {
     protected array $_part = [];
@@ -43,6 +45,16 @@ class MailPart
     public function headers(): array|null
     {
         return $this->_part['headers'] ?? null;
+    }
+
+    public function header(string $name, MailHeaderForm $form = MailHeaderForm::Raw, bool $all = false): mixed
+    {
+        $property = sprintf('header:%s:%s', $name, $form->value);
+        if ($all) {
+            $property .= ':all';
+        }
+
+        return $this->_part[$property] ?? null;
     }
 
     public function name(): string|null
