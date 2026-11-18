@@ -13,6 +13,16 @@ use JmapClient\Requests\RequestParameters;
 
 class MailPart extends RequestParameters
 {
+    use MailHeaders;
+
+    protected const HEADER_PROPERTIES = [
+        'content-type' => ['type', 'charset'],
+        'content-disposition' => ['disposition', 'name'],
+        'content-id' => ['cid'],
+        'content-language' => ['language'],
+        'content-location' => ['location'],
+    ];
+
     protected object $_parameters;
 
     public function __construct(&$parameters)
@@ -40,63 +50,50 @@ class MailPart extends RequestParameters
 
     public function type(string $value): static
     {
+        $this->headerRemove('Content-Type');
         $this->_parameters->type = $value;
         return $this;
     }
 
     public function disposition(string $value): static
     {
+        $this->headerRemove('Content-Disposition');
         $this->_parameters->disposition = $value;
         return $this;
     }
 
     public function name(string $value): static
     {
+        $this->headerRemove('Content-Disposition');
         $this->_parameters->name = $value;
         return $this;
     }
 
     public function charset(string $value): static
     {
+        $this->headerRemove('Content-Type');
         $this->_parameters->charset = $value;
         return $this;
     }
 
     public function language(string|array $value): static
     {
+        $this->headerRemove('Content-Language');
         $this->_parameters->language = $value;
         return $this;
     }
 
     public function location(string $value): static
     {
+        $this->headerRemove('Content-Location');
         $this->_parameters->location = $value;
         return $this;
     }
 
     public function cid(string $value): static
     {
+        $this->headerRemove('Content-ID');
         $this->_parameters->cid = $value;
-        return $this;
-    }
-
-    public function headers(array $value): static
-    {
-        $this->_parameters->headers = $value;
-        return $this;
-    }
-
-    public function header(string $name, string $value): static
-    {
-        if (!isset($this->_parameters->headers) || !is_array($this->_parameters->headers)) {
-            $this->_parameters->headers = [];
-        }
-
-        $this->_parameters->headers[] = (object) [
-            'name' => $name,
-            'value' => $value,
-        ];
-
         return $this;
     }
 
