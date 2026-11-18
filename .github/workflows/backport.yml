@@ -117,6 +117,21 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # Open the backport PR, reporting failures on the original PR
+          open_pr() {
+            local target="$1" branch="$2" url err
+            if url=$(gh pr create --repo "$REPO" --base "$target" --head "$branch" \
+              --title "[$target] $title" \
+              --body "Backport of #$PR_NUMBER to \`$target\`." 2>/tmp/pr-err); then
+              comment "✅ Backport to \`$target\` created: $url"
+            else
+              err=$(cat /tmp/pr-err)
+              echo "$err"
+              comment "⚠️ Backport branch \`$branch\` was pushed, but opening the PR failed: \`$err\`. Comment \`/backport to $target\` again to retry."
+              failed=1
+            fi
+          }
+
           failed=0
           for target in $targets; do
             if ! [[ "$target" =~ ^[A-Za-z0-9._/-]+$ ]] \
@@ -128,7 +143,14 @@ jobs:
 
             branch="backport/$PR_NUMBER/$target"
             if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
-              echo "Branch $branch already exists, skipping."
+              # Branch left over from an earlier run: reuse it
+              existing=$(gh pr list --repo "$REPO" --head "$branch" --base "$target" \
+                --state open --json url --jq '.[0].url // empty')
+              if [ -n "$existing" ]; then
+                comment "ℹ️ Backport to \`$target\` already exists: $existing"
+              else
+                open_pr "$target" "$branch"
+              fi
               continue
             fi
 
@@ -138,10 +160,7 @@ jobs:
             # shellcheck disable=SC2086
             if git cherry-pick -x $commits; then
               git push origin "$branch"
-              url=$(gh pr create --repo "$REPO" --base "$target" --head "$branch" \
-                --title "[$target] $title" \
-                --body "Backport of #$PR_NUMBER to \`$target\`.")
-              comment "✅ Backport to \`$target\` created: $url"
+              open_pr "$target" "$branch"
             else
               git cherry-pick --abort || true
               comment "$(printf '%s\n' \
