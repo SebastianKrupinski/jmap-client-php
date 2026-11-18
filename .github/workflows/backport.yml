@@ -1,0 +1,160 @@
+# Backport merged pull requests to stable branches.
+#
+# Usage: comment on a pull request with one or more lines like
+#
+#   /backport to stable2.7
+#   /backport to stable2.6
+#
+# - If the PR is already merged, the backport PRs are created right away.
+# - If the PR is still open, the request is remembered (👀 reaction) and the
+#   backports are created once the PR is merged.
+# - Only users with write, maintain or admin permission on the repository can
+#   request backports. Requests from anyone else get a 👎 and are ignored.
+# - If a cherry-pick conflicts, a comment with manual instructions is posted.
+name: Backport
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_target:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: backport-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  backport:
+    if: >
+      (github.event_name == 'issue_comment'
+        && github.event.issue.pull_request
+        && contains(github.event.comment.body, '/backport'))
+      || (github.event_name == 'pull_request_target' && github.event.pull_request.merged)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          # PRs opened with the default GITHUB_TOKEN do not trigger other
+          # workflows (CI). Set a BACKPORT_TOKEN secret to get CI on backports.
+          token: ${{ secrets.BACKPORT_TOKEN || github.token }}
+
+      - name: Create backports
+        env:
+          GH_TOKEN: ${{ secrets.BACKPORT_TOKEN || github.token }}
+          REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
+        run: |
+          set -euo pipefail
+
+          parse_targets() { tr -d '\r' | grep -oP '^\s*/backport\s+to\s+\K\S+' || true; }
+          react() { [ -n "$COMMENT_ID" ] && gh api -X POST "repos/$REPO/issues/comments/$COMMENT_ID/reactions" -f content="$1" >/dev/null || true; }
+          comment() { gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$1"; }
+
+          # Only users with write, maintain or admin permission on the
+          # repository may request backports (checked live via the API).
+          can_backport() {
+            local perm
+            perm=$(gh api "repos/$REPO/collaborators/$1/permission" --jq '.role_name' 2>/dev/null || echo none)
+            case "$perm" in admin|maintain|write) return 0 ;; *) return 1 ;; esac
+          }
+
+          # Collect requested target branches
+          if [ "$EVENT" = "issue_comment" ]; then
+            if ! can_backport "$COMMENT_AUTHOR"; then
+              echo "@$COMMENT_AUTHOR is not allowed to request backports."
+              react '-1'
+              exit 0
+            fi
+            targets=$(printf '%s\n' "$COMMENT_BODY" | parse_targets)
+          else
+            # On merge: re-check every queued /backport comment's author
+            targets=""
+            while IFS= read -r entry; do
+              author=$(base64 -d <<<"$entry" | jq -r '.user')
+              if can_backport "$author"; then
+                targets="$targets"$'\n'"$(base64 -d <<<"$entry" | jq -r '.body' | parse_targets)"
+              else
+                echo "Ignoring backport request from @$author (insufficient permission)."
+              fi
+            done < <(gh api --paginate "repos/$REPO/issues/$PR_NUMBER/comments" \
+              --jq '.[] | select(.body | contains("/backport")) | {user: .user.login, body: .body} | @base64')
+          fi
+          targets=$(printf '%s\n' "$targets" | sed '/^$/d' | sort -u)
+          if [ -z "$targets" ]; then
+            echo "No backport requests found."
+            exit 0
+          fi
+
+          pr_json=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json title,mergedAt,commits)
+          if [ "$(jq -r '.mergedAt != null' <<<"$pr_json")" != "true" ]; then
+            echo "PR is not merged yet; backport will run on merge."
+            react eyes
+            exit 0
+          fi
+          title=$(jq -r '.title' <<<"$pr_json")
+
+          # Make sure the PR commits are available (also after squash merges
+          # or deleted source branches) and skip merge commits.
+          git fetch --no-tags origin "pull/$PR_NUMBER/head"
+          commits=""
+          for oid in $(jq -r '.commits[].oid' <<<"$pr_json"); do
+            if [ "$(git rev-list --parents -n1 "$oid" | wc -w)" -eq 2 ]; then
+              commits="$commits $oid"
+            fi
+          done
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          failed=0
+          for target in $targets; do
+            if ! [[ "$target" =~ ^[A-Za-z0-9._/-]+$ ]] \
+              || ! git ls-remote --exit-code --heads origin "$target" >/dev/null; then
+              comment "⚠️ Backport to \`$target\` failed: the branch does not exist."
+              failed=1
+              continue
+            fi
+
+            branch="backport/$PR_NUMBER/$target"
+            if git ls-remote --exit-code --heads origin "$branch" >/dev/null; then
+              echo "Branch $branch already exists, skipping."
+              continue
+            fi
+
+            git fetch --no-tags origin "$target"
+            git switch -C "$branch" "origin/$target"
+
+            # shellcheck disable=SC2086
+            if git cherry-pick -x $commits; then
+              git push origin "$branch"
+              url=$(gh pr create --repo "$REPO" --base "$target" --head "$branch" \
+                --title "[$target] $title" \
+                --body "Backport of #$PR_NUMBER to \`$target\`.")
+              comment "✅ Backport to \`$target\` created: $url"
+            else
+              git cherry-pick --abort || true
+              comment "$(printf '%s\n' \
+                "⚠️ Backport to \`$target\` failed due to conflicts. Please backport manually:" \
+                '```bash' \
+                "git fetch origin $target pull/$PR_NUMBER/head" \
+                "git switch -c $branch origin/$target" \
+                "git cherry-pick -x$commits" \
+                "# resolve conflicts, then:" \
+                "git push origin $branch" \
+                '```')"
+              failed=1
+            fi
+          done
+
+          if [ "$failed" -eq 0 ]; then react '+1'; else react confused; exit 1; fi
