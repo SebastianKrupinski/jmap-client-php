@@ -67,4 +67,16 @@ class RequestTest extends TestCase
 
         $this->assertSame($expected, $clone->jsonEncode());
     }
+
+    public function testRelativeLimitIsPositionedFromAnAnchorRecord(): void
+    {
+        $query = new MailQuery('account');
+        $query->limitRelative('M1234', 25, 1);
+
+        $command = json_decode($query->jsonEncode(), true)[1];
+
+        $this->assertSame('M1234', $command['anchor']);
+        $this->assertSame(25, $command['limit']);
+        $this->assertSame(1, $command['anchorOffset']);
+    }
 }
