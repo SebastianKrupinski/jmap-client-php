@@ -17,6 +17,7 @@ use JmapClient\Responses\Mail\MailQuery as MailQueryResponse;
 use JmapClient\Responses\ResponseException;
 use JmapClient\Session\Account;
 use JmapClient\Tests\Integration\ClientFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class MailQueryTest extends TestCase
@@ -110,9 +111,7 @@ class MailQueryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider sortProvider
-     */
+    #[DataProvider('sortProvider')]
     public function testMailQuerySortByKeyword(string $sort): void
     {
         $plainId = $this->createMail('Plain Mail ' . time(), false);
@@ -135,9 +134,7 @@ class MailQueryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider filterProvider
-     */
+    #[DataProvider('filterProvider')]
     public function testMailQueryFilterByKeyword(string $filter, bool $matchesFlagged): void
     {
         $plainId = $this->createMail('Plain Mail ' . time(), false);

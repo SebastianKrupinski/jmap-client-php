@@ -19,6 +19,7 @@ use JmapClient\Responses\Contacts\ContactQuery as ContactQueryResponse;
 use JmapClient\Responses\Contacts\ContactSet as ContactSetResponse;
 use JmapClient\Session\Account;
 use JmapClient\Tests\Integration\ClientFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ContactTest extends TestCase
@@ -246,9 +247,7 @@ class ContactTest extends TestCase
         return [$r, $contactId];
     }
 
-    /**
-     * @dataProvider contactDataProvider
-     */
+    #[DataProvider('contactDataProvider')]
     public function testContactSetCreate(string $contactKey): void
     {
         $data = $this->generateContactData($contactKey);
