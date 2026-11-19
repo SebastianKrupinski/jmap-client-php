@@ -25,7 +25,7 @@ class InvalidParameterTypeException extends \InvalidArgumentException
         private mixed $actualValue,
         private string $parameterName = 'parameter',
         int $code = 0,
-        \Throwable $previous = null
+        ?\Throwable $previous = null
     ) {
         $actualType = is_object($actualValue) ? get_class($actualValue) : gettype($actualValue);
 
