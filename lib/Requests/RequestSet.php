@@ -52,13 +52,15 @@ class RequestSet extends Request implements RequestSetInterface
         }
 
         // evaluate if create parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
+        // keyed by id, so kept as an object to be encoded as a map whatever the ids
+        $this->_command['create'] ??= new \stdClass();
+        if (!isset($this->_command['create']->{$id}) && $object === null) {
+            $this->_command['create']->{$id} = new \stdClass();
         } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
+            $object->bind($this->_command['create']->{$id});
         }
         // return instance of the specific parameters class
-        $instance = new $class($this->_command['create'][$id]);
+        $instance = new $class($this->_command['create']->{$id});
 
         return $instance;
     }
@@ -87,13 +89,15 @@ class RequestSet extends Request implements RequestSetInterface
         }
 
         // evaluate if update parameter exist and create if needed
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
+        // keyed by id, so kept as an object to be encoded as a map whatever the ids
+        $this->_command['update'] ??= new \stdClass();
+        if (!isset($this->_command['update']->{$id}) && $object === null) {
+            $this->_command['update']->{$id} = new \stdClass();
         } elseif ($object !== null) {
-            $object->bind($this->_command['update'][$id]);
+            $object->bind($this->_command['update']->{$id});
         }
         // return instance of the specific parameters class
-        $instance = new $class($this->_command['update'][$id]);
+        $instance = new $class($this->_command['update']->{$id});
 
         return $instance;
     }
@@ -121,15 +125,17 @@ class RequestSet extends Request implements RequestSetInterface
             throw new InvalidParameterTypeException($class . '|' . RequestPatchInterface::class, $object, 'object');
         }
 
-        if (!isset($this->_command['update'][$id]) && $object === null) {
-            $this->_command['update'][$id] = new \stdClass();
+        // keyed by id, so kept as an object to be encoded as a map whatever the ids
+        $this->_command['update'] ??= new \stdClass();
+        if (!isset($this->_command['update']->{$id}) && $object === null) {
+            $this->_command['update']->{$id} = new \stdClass();
         } elseif ($object instanceof RequestPatchInterface) {
-            $object->bind($this->_command['update'][$id]);
+            $object->bind($this->_command['update']->{$id});
         } elseif ($object instanceof RequestParametersInterface) {
-            $object->patch()->bind($this->_command['update'][$id]);
+            $object->patch()->bind($this->_command['update']->{$id});
         }
 
-        return new RequestPatch($this->_command['update'][$id]);
+        return new RequestPatch($this->_command['update']->{$id});
     }
 
     /**
