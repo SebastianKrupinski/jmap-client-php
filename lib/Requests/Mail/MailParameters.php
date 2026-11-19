@@ -138,12 +138,12 @@ class MailParameters extends RequestParameters
         return $this;
     }
 
-    public function bodyTextPlain(string $content, string $id = null): static
+    public function bodyTextPlain(string $content, ?string $id = null): static
     {
         return $this->bodyText($content, 'text/plain', $id);
     }
 
-    public function bodyTextHtml(string $content, string $id = null): static
+    public function bodyTextHtml(string $content, ?string $id = null): static
     {
         return $this->bodyText($content, 'text/html', $id);
     }
