@@ -96,13 +96,15 @@ class RequestCopy extends Request
         }
 
         // evaluate if copy parameter exist and create if needed
-        if (!isset($this->_command['create'][$id]) && $object === null) {
-            $this->_command['create'][$id] = new \stdClass();
+        // keyed by id, so kept as an object to be encoded as a map whatever the ids
+        $this->_command['create'] ??= new \stdClass();
+        if (!isset($this->_command['create']->{$id}) && $object === null) {
+            $this->_command['create']->{$id} = new \stdClass();
         } elseif ($object !== null) {
-            $object->bind($this->_command['create'][$id]);
+            $object->bind($this->_command['create']->{$id});
         }
-        $this->_command['create'][$id]->id = $source;
+        $this->_command['create']->{$id}->id = $source;
 
-        return new $class($this->_command['create'][$id]);
+        return new $class($this->_command['create']->{$id});
     }
 }

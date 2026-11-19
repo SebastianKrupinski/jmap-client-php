@@ -79,4 +79,18 @@ class RequestTest extends TestCase
         $this->assertSame(25, $command['limit']);
         $this->assertSame(1, $command['anchorOffset']);
     }
+
+    public function testObjectsKeyedByIdAreEncodedAsMapsWhateverTheIds(): void
+    {
+        $request = new \JmapClient\Requests\Files\NodeSet('account');
+        $request->create('0')->label('created');
+        $request->update('0')->label('updated');
+
+        $command = json_decode($request->jsonEncode(), false)[1];
+
+        $this->assertIsObject($command->create);
+        $this->assertSame('created', $command->create->{'0'}->name);
+        $this->assertIsObject($command->update);
+        $this->assertSame('updated', $command->update->{'0'}->name);
+    }
 }
