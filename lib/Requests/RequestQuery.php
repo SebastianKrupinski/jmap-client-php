@@ -56,7 +56,14 @@ class RequestQuery extends Request implements RequestQueryInterface
         return $this;
     }
 
-    public function limitRelative(?int $anchor = null, ?int $count = null, ?int $offset = null): static
+    /**
+     * Limits results to those around an anchor record (RFC 8620 5.5)
+     *
+     * @param string|null $anchor id of the record the results are positioned from
+     * @param int|null $count maximum number of results
+     * @param int|null $offset position of the first result relative to the anchor; 1 starts after it
+     */
+    public function limitRelative(?string $anchor = null, ?int $count = null, ?int $offset = null): static
     {
         if ($anchor !== null) {
             $this->_command['anchor'] = $anchor;

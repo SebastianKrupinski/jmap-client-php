@@ -53,7 +53,7 @@ interface RequestQueryInterface
      *
      * @return self
      */
-    public function limitRelative(?int $anchor = null, ?int $count = null, ?int $offset = null): static;
+    public function limitRelative(?string $anchor = null, ?int $count = null, ?int $offset = null): static;
 
     /**
      * Enable or disable total count calculation
