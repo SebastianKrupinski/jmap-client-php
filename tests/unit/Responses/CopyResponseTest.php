@@ -14,6 +14,7 @@ use JmapClient\Responses\Contacts\ContactCopy;
 use JmapClient\Responses\Mail\MailboxParameters;
 use JmapClient\Responses\Mail\MailCopy;
 use JmapClient\Responses\ResponseBundle;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CopyResponseTest extends TestCase
@@ -27,9 +28,7 @@ class CopyResponseTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider copyProvider
-     */
+    #[DataProvider('copyProvider')]
     public function testCopyResponseIsDeserialized(string $method, string $class): void
     {
         $bundle = new ResponseBundle([

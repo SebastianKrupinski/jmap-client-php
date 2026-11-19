@@ -24,6 +24,7 @@ use JmapClient\Responses\Calendar\EventQuery as EventQueryResponse;
 use JmapClient\Responses\Calendar\EventSet as EventSetResponse;
 use JmapClient\Session\Account;
 use JmapClient\Tests\Integration\ClientFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class EventTest extends TestCase
@@ -349,9 +350,7 @@ class EventTest extends TestCase
         return [$r, $eventId];
     }
 
-    /**
-     * @dataProvider eventDataProvider
-     */
+    #[DataProvider('eventDataProvider')]
     public function testEventSetCreate(string $eventKey): void
     {
         $data = $this->generateEventData($eventKey);
